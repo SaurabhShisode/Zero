@@ -1,0 +1,1 @@
+{"version":3,"file":"discussionController.d.ts","sourceRoot":"","sources":["../../src/controllers/discussionController.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AACxC,OAAO,KAAK,EAAE,WAAW,EAAE,MAAM,uBAAuB,CAAC;AAGzD,eAAO,MAAM,YAAY,GAAU,KAAK,WAAW,EAAE,KAAK,QAAQ,gDAOjE,CAAC;AAEF,eAAO,MAAM,UAAU,GAAU,KAAK,WAAW,EAAE,KAAK,QAAQ,gDAY/D,CAAC"}
