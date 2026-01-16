@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from 'lucide-react';
 import zeroLogo from "/icons/zero.svg"
-
+import bgImage from "../assets/authbg3.png";
 const faqs = [
   {
     q: "What is Zero built for?",
@@ -67,9 +67,16 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-black text-white">
       <section className="relative min-h-screen overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
+         <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${bgImage})` }}
+      />
+        
+        <div className="absolute  inset-0 bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black" />
 
+        
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
+        
         <nav className="relative z-20 w-full">
           <div className="max-w-6xl mx-auto px-8 py-4 flex items-center gap-10">
             <div className="flex items-center">

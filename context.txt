@@ -1,0 +1,375 @@
+Project Context: ZERO
+
+Tagline: One problem a day. Zero regret.
+
+High-Level Overview
+
+Zero is a placement-focused consistency platform designed to help students and developers build real technical discipline through daily, structured practice. Instead of offering large problem libraries or gamified leaderboards, Zero enforces a minimal and intentional workflow: users receive exactly one curated problem per day per selected skill, must explain their approach before marking it solved, and automatically receive revision tasks for weak areas.
+
+The platform is built around habit formation, deep understanding, and interview readiness rather than speed or competition.
+
+Core Philosophy
+
+Consistency over volume
+
+Thinking before coding
+
+Revision over repetition
+
+Discipline over dopamine
+
+Preparation over performance
+
+Primary User Flow
+
+User signs up and configures preferences
+
+User selects skills, difficulty, time commitment, language, and company focus
+
+Each day, the platform assigns one problem per enabled skill
+
+User solves the problem on an external platform such as LeetCode or HackerRank
+
+User returns to Zero and marks the problem as solved, wrong, or skipped
+
+Before marking solved, the user must write a short explanation of their approach
+
+If marked wrong or skipped, the platform schedules revision tasks automatically
+
+Streaks, heatmaps, and badges update based on consistency
+
+Users can discuss the problem in a dedicated thread
+
+Users can compare streaks privately with friends
+
+Feature Breakdown
+Daily Problem Engine
+
+Assigns one problem per day per skill
+
+Same problem for all users who enabled that skill
+
+Problems are stored as references with title, platform link, difficulty, company tags, and cooldown period
+
+Supports coding, MCQs, debugging, and output-based questions
+
+Time-bound challenge option for interview simulation
+
+Skill Configuration System
+
+Users can configure:
+
+Skills such as DSA, SQL, JavaScript, Java, System Design, CS Fundamentals, Operating Systems, DBMS, Networking, Aptitude, Behavioral, and more
+
+Difficulty level: Easy, Medium, Hard
+
+Preferred programming language
+
+Daily time commitment
+
+Company focus: FAANG, Service-based, Startups, Any
+
+Placement Mode toggle
+
+Explain Before Code
+
+User must write an approach note before marking a problem as solved
+
+Minimum length validation to enforce thinking
+
+Approach is stored with the solve record for review and analytics
+
+Streak and Discipline System
+
+Tracks:
+
+Current streak
+
+Longest streak
+
+Freeze availability
+
+Weekly consistency
+
+Missed days
+Streaks increase only when a problem is marked solved on consecutive days
+
+Heatmap Profile
+
+GitHub-style activity heatmap
+
+Visualizes daily solves
+
+Public shareable profile link
+
+Shows recent activity and streak stats
+
+Revision Scheduler
+
+Automatically schedules revision tasks when a problem is marked wrong or skipped
+
+Uses spaced repetition:
+
+3 days later
+
+7 days later
+
+14 days later
+
+Revisions are linked to original problems
+
+Placement Mode
+
+When enabled:
+
+Mixes multiple skills into daily problems
+
+Adds time pressure
+
+Includes HR and behavioral questions
+
+Simulates online assessment patterns
+
+Adjusts difficulty dynamically
+
+Discussions System
+
+Each daily problem has its own discussion thread
+
+Users can comment, reply, and share insights
+
+Designed to avoid global noise and keep discussion focused
+
+Shows recent activity on the daily problem card
+
+Private Peer Comparison
+
+Users can add friends using profile slugs
+
+Can compare streaks and consistency metrics
+
+No public leaderboard
+
+Encourages accountability, not competition
+
+Badge System
+
+Examples:
+
+7 Day Consistency
+
+30 Day Discipline
+
+Zero Miss Week
+
+SQL Join Master
+Badges are awarded automatically based on streak and skill-specific milestones
+
+Technical Architecture
+Frontend
+
+React with TypeScript
+
+Vite for development and builds
+
+Tailwind CSS for design system and styling
+
+Framer Motion for UI animations and transitions
+
+Zustand for global auth and user state
+
+Axios for API communication
+
+Glassmorphism-inspired dark UI focused on minimalism and readability
+
+Backend
+
+Node.js with Express
+
+TypeScript for strict typing
+
+MongoDB with Mongoose
+
+JWT-based authentication
+
+Rate limiting middleware for auth routes
+
+Modular structure:
+
+Controllers for business logic
+
+Routes for API mapping
+
+Models for database schema
+
+Services for reusable systems like badges
+
+Middleware for auth and security
+
+Database Models
+User
+
+email
+
+passwordHash
+
+name
+
+profileSlug
+
+preferences (skill configuration)
+
+placementMode
+
+streak (current, max, freezeAvailable)
+
+friends
+
+badges
+
+timestamps
+
+Problem
+
+title
+
+link
+
+skill
+
+difficulty
+
+companyTags
+
+cooldownDays
+
+timestamps
+
+DailyProblem
+
+date
+
+skill
+
+problem reference
+
+assignedAt
+
+Solve
+
+user reference
+
+problem reference
+
+date
+
+status (solved, wrong, skipped)
+
+placementMode
+
+approachNote
+
+timestamps
+
+RevisionTask
+
+user reference
+
+problem reference
+
+scheduledFor
+
+status (pending, done)
+
+timestamps
+
+DiscussionComment
+
+dailyProblem reference
+
+user reference
+
+message
+
+timestamps
+
+API Structure
+
+Main route groups:
+
+/api/auth
+
+/api/daily
+
+/api/preferences
+
+/api/problems
+
+/api/solve
+
+/api/revision
+
+/api/profile
+
+/api/discussion
+
+Protected routes use JWT middleware.
+
+UI Design System
+
+Dark-first minimal interface
+
+Glassmorphism cards with soft glow and blur
+
+Thin, modern typography using fonts like Geist, Space Grotesk, and Inter
+
+High letter spacing and low visual noise
+
+Focused cards instead of dashboards
+
+Animations only to guide attention, not distract
+
+Positioning
+
+Zero is not a coding platform.
+It is a discipline platform for placements and technical growth.
+
+It differentiates itself by:
+
+Enforcing one problem per day
+
+Requiring explanation before completion
+
+Automatically scheduling revisions
+
+Prioritizing habit over leaderboard
+
+Target Users
+
+College students preparing for campus placements
+
+Self-taught developers building interview readiness
+
+Coding clubs and peer learning groups
+
+Engineers maintaining long-term technical consistency
+
+Long-Term Vision
+
+AI-powered difficulty tuning
+
+Smart weakness detection
+
+Resume-ready consistency reports
+
+Recruiter-accessible profiles
+
+Native mobile app
+
+Campus communities
+
+Mock interview simulations
+
+One-Line Summary for AI
+
+Zero is a full-stack, habit-focused placement preparation platform that delivers one curated daily problem per skill, enforces explanation before solving, schedules spaced revisions automatically, tracks consistency with streaks and heatmaps, and provides focused discussions, private peer comparison, and interview simulation modes, all built with a modern TypeScript, React, Node.js, and MongoDB architecture.
