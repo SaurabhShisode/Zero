@@ -1,10 +1,17 @@
 import { create } from "zustand";
 
-type User = {
+export type Preference = {
+  skill: string;
+  enabled: boolean;
+  difficulty: "Easy" | "Medium" | "Hard";
+};
+
+export type User = {
   id: string;
   email: string;
   name: string;
   profileSlug: string;
+  preferences: Preference[];
 };
 
 type AuthState = {
@@ -26,5 +33,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: () => {
     localStorage.removeItem("token");
     set({ user: null, token: null });
-  },
+  }
 }));

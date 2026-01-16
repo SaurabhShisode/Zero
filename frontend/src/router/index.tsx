@@ -3,7 +3,8 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Dashboard from "../pages/Dashboard";
 import Profile from "../pages/Profile";
-import Landing from "../pages/landing";
+import Landing from "../pages/Landing";
+import Onboarding from "../pages/Onboarding";
 import { useAuthStore } from "../store/authStore";
 
 export default function AppRouter() {
@@ -13,6 +14,11 @@ export default function AppRouter() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+
+      <Route
+        path="/onboarding"
+        element={token ? <Onboarding /> : <Navigate to="/login" />}
+      />
 
       <Route
         path="/"
