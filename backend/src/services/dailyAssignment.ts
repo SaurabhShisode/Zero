@@ -22,9 +22,16 @@ export const assignDailyProblems = async (inputDate?: Date) => {
     const excludeIds = recent.map((r) => r.problem);
 
     const candidates = await Problem.aggregate([
-      { $match: { skill, _id: { $nin: excludeIds } } },
-      { $sample: { size: 1 } },
+      {
+        $match: {
+          skills: { $in: [skill] },
+          _id: { $nin: excludeIds }
+        }
+      },
+      { $sample: { size: 1 } }
     ]);
+
+
 
     if (candidates.length === 0) continue;
 

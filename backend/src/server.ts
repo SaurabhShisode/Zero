@@ -13,7 +13,7 @@ import profileRoutes from "./routes/profile.js";
 import problemRoutes from "./routes/problems.js";
 import revisionRoutes from "./routes/revision.js";
 import { assignDailyProblems } from "./services/dailyAssignment.js";
-
+import { startDailyCron } from "./cron/dailyCron.js";
 const app = express();
 
 app.use(
@@ -39,27 +39,20 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 const start = async () => {
   try {
     await connectDb();
+    startDailyCron();
   } catch (err) {
-    // eslint-disable-next-line no-console
+
     console.error("DB connection failed", err);
   }
 
   app.listen(env.port, () => {
-    // eslint-disable-next-line no-console
+ 
     console.log(`API running on :${env.port}`);
   });
 
-  cron.schedule(env.cronSchedule, async () => {
-    try {
-      await assignDailyProblems();
-      // eslint-disable-next-line no-console
-      console.log("Daily problems assigned");
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Cron failed", err);
-    }
-  });
+  
 };
 
 start();
+
 

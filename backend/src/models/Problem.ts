@@ -5,7 +5,7 @@ import { Skills, Difficulties } from "./common.js";
 export interface IProblem {
   title: string;
   link: string;
-  skill: Skill;
+  skills: Skill[];
   difficulty: Difficulty;
   companyTags: string[];
   cooldownDays: number;
@@ -16,11 +16,28 @@ export interface IProblem {
 const problemSchema = new Schema<IProblem>(
   {
     title: { type: String, required: true },
-    link: { type: String, required: true },
-    skill: { type: String, enum: Skills, required: true },
-    difficulty: { type: String, enum: Difficulties, required: true },
+
+    link: {
+      type: String,
+      required: true,
+      unique: true
+    },
+
+    skills: {
+      type: [String],
+      enum: Skills,
+      required: true
+    },
+
+    difficulty: {
+      type: String,
+      enum: Difficulties,
+      required: true
+    },
+
     companyTags: { type: [String], default: [] },
-    cooldownDays: { type: Number, default: 14 },
+
+    cooldownDays: { type: Number, default: 14 }
   },
   { timestamps: true }
 );
