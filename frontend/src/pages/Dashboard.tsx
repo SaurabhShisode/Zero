@@ -1,51 +1,49 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
-import { api } from "../api/client";
+import Sidebar from "../dashboard/Sidebar";
+import type { View } from "../dashboard/Sidebar";
 
-type DailyProblem = {
-  _id: string;
-  skill: string;
-  problem: {
-    title: string;
-    link: string;
-  };
-};
+
+import DailyView from "../dashboard/DailyView";
+import CompanyView from "../dashboard/CompanyView";
+import TopicsView from "../dashboard/TopicsView";
+import PlacementView from "../dashboard/PlacementView";
+import DiscussionsView from "../dashboard/DiscussionsView";
+import ProfileView from "../dashboard/ProfileView";
+import SettingsView from "../dashboard/SettingsView";
 
 export default function Dashboard() {
-  const [daily, setDaily] = useState<DailyProblem[]>([]);
+  const [view, setView] = useState<View>("daily");
 
-  useEffect(() => {
-    api.get("/api/daily").then((res) => setDaily(res.data.daily));
-  }, []);
+  const renderView = () => {
+    switch (view) {
+      case "company":
+        return <CompanyView />;
+      case "topics":
+        return <TopicsView />;
+      case "placement":
+        return <PlacementView />;
+      case "discussions":
+        return <DiscussionsView />;
+      case "profile":
+        return <ProfileView />;
+      case "settings":
+        return <SettingsView />;
+      default:
+        return <DailyView />;
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <Navbar />
+    <>
+    <div className="min-h-screen bg-[#020617] text-white flex">
+     
+      <Sidebar active={view} onChange={setView} />
 
-      <div className="p-6 space-y-6">
-        <h1 className="text-xl font-semibold">Today</h1>
-
-        {daily.length === 0 && (
-          <p className="text-gray-400">No daily problems yet</p>
-        )}
-
-        {daily.map((item) => (
-          <div
-            key={item._id}
-            className="border border-gray-800 rounded p-4 space-y-2"
-          >
-            <div className="text-sm text-gray-400">{item.skill}</div>
-            <div className="font-medium">{item.problem.title}</div>
-            <a
-              href={item.problem.link}
-              target="_blank"
-              className="text-blue-400 underline text-sm"
-            >
-              Open problem
-            </a>
-          </div>
-        ))}
-      </div>
+      <main className="ml-0 md:ml-64 h-screen w-full overflow-y-auto">
+        {renderView()}
+      </main>
     </div>
+    </>
   );
 }
