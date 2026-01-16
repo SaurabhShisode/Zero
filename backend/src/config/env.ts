@@ -11,6 +11,10 @@ const env = {
   defaultCooldownDays: process.env.DEFAULT_COOLDOWN_DAYS
     ? Number(process.env.DEFAULT_COOLDOWN_DAYS)
     : 14,
+
+    firebaseProjectId: process.env.FIREBASE_PROJECT_ID as string,
+  firebaseClientEmail: process.env.FIREBASE_CLIENT_EMAIL as string,
+  firebasePrivateKey: process.env.FIREBASE_PRIVATE_KEY as string
 };
 
 export default env;
