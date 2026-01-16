@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { api } from "../api/client";
 import { useAuthStore } from "../store/authStore";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
-import bgImage from "../assets/authbg2.png";
-import zeroLogo from "/icons/zero.svg"
+import bgImage from "../assets/authbg3.png";
+import { Eye, EyeOff } from "lucide-react";
+
+
 export default function Signup() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -18,17 +20,27 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {
+    if (!name || !email || !password) {
+      setError("All fields are required");
+      return;
+    }
+
     try {
       setLoading(true);
+      setError("");
+
       const res = await api.post("/api/auth/signup", {
         name,
         email,
         password
       });
+
       setAuth(res.data.user, res.data.token);
       navigate("/");
-    } catch {
-      setError("Signup failed");
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message || "Signup failed";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -37,6 +49,8 @@ export default function Signup() {
   const signupWithGoogle = async () => {
     try {
       setLoading(true);
+      setError("");
+
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
@@ -56,47 +70,21 @@ export default function Signup() {
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white flex flex-col">
-
-
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImage})` }}
       />
 
-
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0f172a]/80 to-black" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
 
-
-      <nav className="relative z-20 w-full">
-        <div className="max-w-6xl mx-auto px-8 py-4 flex items-center">
-          <div className="flex items-center gap-1">
-            <img
-              src={zeroLogo}
-              alt="Zero logo"
-              className="h-15 w-15"
-            />
-            <span className="text-2xl text-white font-geist">
-              zero
-            </span>
-          </div>
-        </div>
-      </nav>
-
-
       <div className="relative z-10 flex-1 flex items-center justify-center px-6">
-        <div
-
-          className="w-full max-w-md"
-        >
+        <div className="w-full max-w-md">
           <div className="relative group">
-
-
             <div className="absolute -inset-1 rounded-3xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
             <div className="relative rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.6)] overflow-hidden">
               <div className="p-8 space-y-6">
-
                 <div className="text-center space-y-2">
                   <h1 className="text-2xl font-geist font-semibold">
                     Create your Zero account
@@ -109,17 +97,7 @@ export default function Signup() {
                 <button
                   onClick={signupWithGoogle}
                   disabled={loading}
-                  className="
-                  w-full flex items-center justify-center gap-3
-                  px-4 py-3 rounded-lg
-                  bg-white/5 border border-white/20
-                  text-white font-medium
-                  transition-all duration-300
-                  hover:bg-white/10 hover:border-white/40
-                  active:scale-[0.98]
-                  disabled:opacity-50
-                  font-geist cursor-pointer
-                "
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white font-medium transition-all duration-300 hover:bg-white/10 hover:border-white/40 active:scale-[0.98] disabled:opacity-50 font-geist cursor-pointer"
                 >
                   <img
                     src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
@@ -144,19 +122,36 @@ export default function Signup() {
                   />
 
                   <input
+                    type="email"
                     className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
 
-                  <input
-                    type="password"
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute inset-y-0 right-3 flex items-center text-white/40 hover:text-white transition cursor-pointer"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5 text-black" />
+                      ) : (
+                        <Eye className="h-5 w-5 text-black" />
+                      )}
+                    </button>
+                  </div>
+
+
                 </div>
 
                 {error && (
@@ -168,21 +163,12 @@ export default function Signup() {
                 <button
                   onClick={submit}
                   disabled={loading}
-                  className="
-                  w-full py-3 rounded-lg
-                  bg-white text-black font-medium
-                  shadow-[0_10px_30px_rgba(0,0,0,0.3)]
-                  transition-all duration-300
-                  hover:bg-white/90 hover:scale-[1.02]
-                  active:scale-[0.98]
-                  disabled:opacity-50
-                  font-geist cursor-pointer
-                "
+                  className="w-full py-3 rounded-lg bg-white text-black font-medium shadow-[0_10px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:bg-white/90 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 font-geist cursor-pointer"
                 >
                   {loading ? "Creating account..." : "Sign up"}
                 </button>
 
-                <p className="text-sm text-white/50 text-center  font-geist">
+                <p className="text-sm text-white/50 text-center font-geist">
                   Already have an account?{" "}
                   <Link
                     to="/login"
@@ -191,7 +177,6 @@ export default function Signup() {
                     Login
                   </Link>
                 </p>
-
               </div>
             </div>
           </div>
@@ -199,5 +184,4 @@ export default function Signup() {
       </div>
     </div>
   );
-
 }

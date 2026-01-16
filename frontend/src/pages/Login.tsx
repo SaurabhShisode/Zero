@@ -5,7 +5,7 @@ import { api } from "../api/client";
 import { useAuthStore } from "../store/authStore";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
-import bgImage from "../assets/authbg2.png";
+import bgImage from "../assets/authbg3.png";
 import zeroLogo from "/icons/zero.svg"
 
 export default function Login() {
@@ -63,21 +63,6 @@ export default function Login() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0f172a]/80 to-black" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
 
-
-      <nav className="relative z-20 w-full">
-        <div className="max-w-6xl mx-auto px-8 py-4 flex items-center">
-          <div className="flex items-center gap-1">
-            <img
-              src={zeroLogo}
-              alt="Zero logo"
-              className="h-15 w-15"
-            />
-            <span className="text-2xl text-white font-geist">
-              zero
-            </span>
-          </div>
-        </div>
-      </nav>
 
 
       <div className="relative z-10 flex-1 flex items-center justify-center px-6">
