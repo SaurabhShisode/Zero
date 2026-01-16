@@ -4,7 +4,7 @@ import { User } from "../models/User.js";
 import { signToken } from "../utils/jwt.js";
 import { Skills } from "../models/common.js";
 import type { Difficulty } from "../models/common.js";
-
+import admin from "../config/firebase.js";
 const randomSuffix = (): string => Math.random().toString(36).slice(2, 7);
 
 const DEFAULT_DIFFICULTY: Difficulty = "Easy";
@@ -105,6 +105,65 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     });
   } catch {
     return res.status(500).json({ message: "Login failed" });
+  }
+};
+
+export const googleAuth = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const token = String(req.body.token || "");
+    if (!token) {
+      return res.status(400).json({ message: "Missing Google token" });
+    }
+
+    const decoded = await admin.auth().verifyIdToken(token);
+
+    const email = decoded.email?.toLowerCase();
+    const name = decoded.name || "Zero User";
+
+    if (!email) {
+      return res.status(400).json({ message: "Google account has no email" });
+    }
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      const profileSlug = `${email.split("@")[0]}-${randomSuffix()}`;
+
+      const defaultPreferences = Skills.map((skill) => ({
+        skill,
+        enabled: false,
+        difficulty: DEFAULT_DIFFICULTY
+      }));
+
+      user = await User.create({
+        email,
+        passwordHash: "google",
+        name,
+        profileSlug,
+        preferences: defaultPreferences,
+        streak: {
+          current: 0,
+          max: 0,
+          freezeAvailable: 1
+        },
+        placementMode: false
+      });
+    }
+
+    const jwtToken = signToken(user.id);
+
+    return res.json({
+      token: jwtToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        profileSlug: user.profileSlug,
+        preferences: user.preferences
+      }
+    });
+  } catch {
+    return res.status(401).json({ message: "Google authentication failed" });
   }
 };
 

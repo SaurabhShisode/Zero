@@ -2,15 +2,25 @@ import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.js";
 import { User } from "../models/User.js";
 import { Skills } from "../models/common.js";
-import type { Difficulty } from "../models/common.js";
+import type { Difficulty, Skill } from "../models/common.js";
 
 type PreferenceInput = {
-  skill: string;
+  skill: Skill;
   enabled: boolean;
   difficulty: Difficulty;
 };
 
 const DIFFICULTIES: Difficulty[] = ["Easy", "Medium", "Hard"];
+
+const PLACEMENT_MODE_SKILLS: Skill[] = [
+  "DSA",
+  "Aptitude",
+  "Behavioral",
+  "SystemDesign",
+  "OperatingSystems",
+  "DBMS",
+  "Networking"
+];
 
 export const updatePreferences = async (
   req: AuthRequest,
@@ -32,7 +42,7 @@ export const updatePreferences = async (
 
     for (const pref of preferences) {
       if (
-        !Skills.includes(pref.skill as (typeof Skills)[number]) ||
+        !Skills.includes(pref.skill) ||
         typeof pref.enabled !== "boolean" ||
         !DIFFICULTIES.includes(pref.difficulty)
       ) {
@@ -40,11 +50,25 @@ export const updatePreferences = async (
       }
     }
 
+    let finalPreferences = preferences;
+
+    if (placementMode === true) {
+      finalPreferences = preferences.map((pref) => {
+        if (PLACEMENT_MODE_SKILLS.includes(pref.skill)) {
+          return {
+            ...pref,
+            enabled: true
+          };
+        }
+        return pref;
+      });
+    }
+
     const user = await User.findByIdAndUpdate(
       req.userId,
       {
-        preferences,
-        placementMode: placementMode === true,
+        preferences: finalPreferences,
+        placementMode: placementMode === true
       },
       { new: true, select: "-passwordHash" }
     );
