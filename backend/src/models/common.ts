@@ -3,18 +3,12 @@ export const Skills = [
   "SQL",
   "JavaScript",
   "Java",
-  "Python",
-  "CPlusPlus",
   "SystemDesign",
-  "CSFundamentals",
   "OperatingSystems",
-  "ComputerNetworks",
   "DBMS",
-  "LowLevelDesign",
-  "HighLevelDesign",
+  "Networking",
   "Aptitude",
-  "CoreMaths",
-  "Behavioral",
+  "Behavioral"
 ] as const;
 
 export type Skill = (typeof Skills)[number];
