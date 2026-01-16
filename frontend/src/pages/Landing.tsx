@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from 'lucide-react';
-
+import zeroLogo from "/icons/zero.svg"
 
 const faqs = [
   {
@@ -72,35 +72,15 @@ export default function Landing() {
 
         <nav className="relative z-20 w-full">
           <div className="max-w-6xl mx-auto px-8 py-4 flex items-center gap-10">
-            <div className="flex items-center text-2xl text-white font-geist tracking-tight">
-              <svg width="40" height="40" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="ringGradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stop-color="#8FA2FF" />
-                    <stop offset="100%" stop-color="#4F6BFF" />
-                  </linearGradient>
+            <div className="flex items-center">
+              <img
+                src={zeroLogo}
+                alt="Zero logo"
+                className="h-15 w-15 "
+              />
 
-                  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
 
-                <circle
-                  cx="40"
-                  cy="40"
-                  r="22"
-                  stroke="url(#ringGradient)"
-                  stroke-width="6"
-                  fill="none"
-                  filter="url(#glow)"
-                />
-              </svg>
-
-              zero
+              <p className=" text-2xl text-white font-geist ">zero</p>
             </div>
 
             <div className="flex gap-6 items-center text-sm font-geist">
@@ -159,10 +139,11 @@ export default function Landing() {
     shadow-[0_10px_30px_rgba(0,0,0,0.15)]
     transition-all duration-300 ease-out
     hover:bg-white 
-    active:translate-y-0 hover:scale-106
+    active:translate-y-0 hover:scale-106 flex items-center gap-1
   "
               >
-                Start with Zero
+                Start with
+                Zero
               </Link>
 
 
@@ -665,10 +646,22 @@ for (day in journey) {
       </section>
 
       <section className="relative bg-black text-white py-28">
-        <h1 className="font-geist text-6xl mb-4 text-center">Zero Regrets.</h1>
-        <h1 className="font-geist text-6xl mb-20 text-center">Build yourself with consistency.</h1>
+        <div className="relative flex items-center justify-center gap-2 mb-4">
+          <img
+            src={zeroLogo}
+            alt="Zero logo"
+            className="h-24 w-24"
+          />
+          <h1 className="font-geist text-6xl">
+            Regrets.
+          </h1>
+        </div>
 
+        <h1 className="font-geist text-6xl text-center mb-20">
+          Build yourself with consistency.
+        </h1>
       </section>
+
       <section className="h-120 rounded-2xl  border border-white/15 bg-white/10 backdrop-blur-sm shadow-lg overflow-hidden transition font-geist mx-20">
 
       </section>
