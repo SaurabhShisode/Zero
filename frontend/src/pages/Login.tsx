@@ -1,54 +1,84 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+
 import { api } from "../api/client";
 import { useAuthStore } from "../store/authStore";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebase";
 import bgImage from "../assets/authbg3.png";
-import zeroLogo from "/icons/zero.svg"
+
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
   const setAuth = useAuthStore((s) => s.setAuth);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async () => {
-    try {
-      setLoading(true);
-      const res = await api.post("/api/auth/login", { email, password });
-      setAuth(res.data.user, res.data.token);
-      navigate("/");
-    } catch {
-      setError("Invalid credentials");
-    } finally {
-      setLoading(false);
+
+const getRateLimitMessage = (err: any) => {
+  if (err?.response?.status === 429) {
+    const retryAfter = err.response.headers?.["retry-after"];
+    if (retryAfter) {
+      const minutes = Math.ceil(Number(retryAfter) / 60);
+      return `Too many attempts. Try again in ${minutes} minute${minutes > 1 ? "s" : ""}.`;
     }
-  };
+    return "Too many attempts. Try again in a few minutes.";
+  }
 
-  const loginWithGoogle = async () => {
-    try {
-      setLoading(true);
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
+  return err?.response?.data?.message || "Something went wrong.";
+};
 
-      const res = await api.post("/api/auth/google", {
-        token: idToken
-      });
+const submit = async () => {
+  try {
+    setLoading(true);
+    setError("");
 
-      setAuth(res.data.user, res.data.token);
-      navigate("/");
-    } catch {
-      setError("Google login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await api.post("/api/auth/login", { email, password });
+    const user = res.data.user;
+
+    setAuth(user, res.data.token);
+
+    const hasSkill = user.preferences.some((p: any) => p.enabled);
+    navigate(hasSkill ? "/" : "/onboarding");
+  } catch (err: any) {
+    setError(getRateLimitMessage(err));
+  } finally {
+    setLoading(false);
+  }
+};
+
+const loginWithGoogle = async () => {
+  try {
+    setLoading(true);
+    setError("");
+
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+
+    const res = await api.post("/api/auth/google", {
+      token: idToken
+    });
+
+    const user = res.data.user;
+
+    setAuth(user, res.data.token);
+
+    const hasSkill = user.preferences.some((p: any) => p.enabled);
+    navigate(hasSkill ? "/" : "/onboarding");
+  } catch (err: any) {
+    setError(getRateLimitMessage(err));
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white flex flex-col">
@@ -121,13 +151,28 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
 
-                <input
-                  type="password"
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                <div className="relative">
+  <input
+    type={showPassword ? "text" : "password"}
+    className="w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+
+  <button
+    type="button"
+    onClick={() => setShowPassword((v) => !v)}
+    className="absolute inset-y-0 right-3 flex items-center text-white/40 hover:text-white transition cursor-pointer"
+  >
+    {showPassword ? (
+      <EyeOff className="h-5 w-5 text-black" />
+    ) : (
+      <Eye className="h-5 w-5 text-black" />
+    )}
+  </button>
+</div>
+
               </div>
 
               {error && (

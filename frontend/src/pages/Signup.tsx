@@ -19,54 +19,76 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const submit = async () => {
-    if (!name || !email || !password) {
-      setError("All fields are required");
-      return;
+  const getRateLimitMessage = (err: any) => {
+  if (err?.response?.status === 429) {
+    const retryAfter = err.response.headers?.["retry-after"];
+    if (retryAfter) {
+      const minutes = Math.ceil(Number(retryAfter) / 60);
+      return `Too many attempts. Try again in ${minutes} minute${minutes > 1 ? "s" : ""}.`;
     }
+    return "Too many attempts. Try again in a few minutes.";
+  }
 
-    try {
-      setLoading(true);
-      setError("");
+  return err?.response?.data?.message || "Something went wrong.";
+};
 
-      const res = await api.post("/api/auth/signup", {
-        name,
-        email,
-        password
-      });
 
-      setAuth(res.data.user, res.data.token);
-      navigate("/");
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Signup failed";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const submit = async () => {
+  if (!name || !email || !password) {
+    setError("All fields are required");
+    return;
+  }
 
-  const signupWithGoogle = async () => {
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
+    const res = await api.post("/api/auth/signup", {
+      name,
+      email,
+      password
+    });
 
-      const res = await api.post("/api/auth/google", {
-        token: idToken
-      });
+    const user = res.data.user;
 
-      setAuth(res.data.user, res.data.token);
-      navigate("/");
-    } catch {
-      setError("Google signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+    setAuth(user, res.data.token);
+
+    const hasSkill = user.preferences.some((p: any) => p.enabled);
+    navigate(hasSkill ? "/" : "/onboarding");
+  } catch (err: any) {
+    setError(getRateLimitMessage(err));
+  } finally {
+    setLoading(false);
+  }
+};
+
+const signupWithGoogle = async () => {
+  try {
+    setLoading(true);
+    setError("");
+
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const idToken = await result.user.getIdToken();
+
+    const res = await api.post("/api/auth/google", {
+      token: idToken
+    });
+
+    const user = res.data.user;
+
+    setAuth(user, res.data.token);
+
+    const hasSkill = user.preferences.some((p: any) => p.enabled);
+    navigate(hasSkill ? "/" : "/onboarding");
+  } catch (err: any) {
+    setError(getRateLimitMessage(err));
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white flex flex-col">
