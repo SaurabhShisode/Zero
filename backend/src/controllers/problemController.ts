@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { Problem } from "../models/Problem.js";
 import { Skills } from "../models/common.js";
 import type { Difficulty } from "../models/common.js";
-
+import { DiscussionComment } from "../models/Discussion.js";
 const DIFFICULTIES: Difficulty[] = ["Easy", "Medium", "Hard"];
 
 export const createProblem = async (req: Request, res: Response): Promise<Response> => {
@@ -10,18 +10,23 @@ export const createProblem = async (req: Request, res: Response): Promise<Respon
     const {
       title,
       link,
-      skill,
+      skills,
       difficulty,
       companyTags = [],
-      cooldownDays = 7,
+      cooldownDays = 7
     } = req.body;
 
-    if (!title || !link || !skill || !difficulty) {
+    if (!title || !link || !skills || !difficulty) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    if (!Skills.includes(skill)) {
-      return res.status(400).json({ message: "Invalid skill" });
+    if (!Array.isArray(skills) || skills.length === 0) {
+      return res.status(400).json({ message: "Skills must be a non-empty array" });
+    }
+
+    const invalidSkill = skills.find((s) => !Skills.includes(s));
+    if (invalidSkill) {
+      return res.status(400).json({ message: `Invalid skill: ${invalidSkill}` });
     }
 
     if (!DIFFICULTIES.includes(difficulty)) {
@@ -31,10 +36,10 @@ export const createProblem = async (req: Request, res: Response): Promise<Respon
     const problem = await Problem.create({
       title: String(title).trim(),
       link: String(link).trim(),
-      skill,
+      skills,
       difficulty,
       companyTags,
-      cooldownDays: Number(cooldownDays),
+      cooldownDays: Number(cooldownDays)
     });
 
     return res.status(201).json({ problem });
@@ -42,6 +47,7 @@ export const createProblem = async (req: Request, res: Response): Promise<Respon
     return res.status(500).json({ message: "Failed to create problem" });
   }
 };
+
 
 export const listProblems = async (_req: Request, res: Response): Promise<Response> => {
   try {
@@ -54,3 +60,21 @@ export const listProblems = async (_req: Request, res: Response): Promise<Respon
     return res.status(500).json({ message: "Failed to fetch problems" });
   }
 };
+
+export const getProblemById = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const problem = await Problem.findById(req.params.id);
+
+    if (!problem) {
+      return res.status(404).json({ message: "Problem not found" });
+    }
+
+    return res.json({ problem });
+  } catch {
+    return res.status(500).json({ message: "Failed to load problem" });
+  }
+};
+
