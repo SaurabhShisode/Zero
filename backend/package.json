@@ -5,9 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx src/server.ts",
-    "dev:watch": "nodemon --watch src --exec \"node --loader ts-node/esm --enable-source-maps src/server.ts\"",
-    "seed": "node --loader ts-node/esm --enable-source-maps scripts/seedProblems.ts",
+    "dev": "tsx watch src/server.ts",
+    "seed": "tsx src/scripts/seedProblems.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "echo \"(no lint step yet)\""

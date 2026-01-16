@@ -1,11 +1,15 @@
 import { Router } from "express";
-import { addComment, listComments } from "../controllers/discussionController.js";
 import { requireAuth } from "../middleware/auth.js";
+import {
+  listProblemComments,
+  listDailyComments,
+  addComment
+} from "../controllers/discussionController.js";
 
 const router = Router();
 
-router.get("/:dailyProblemId", requireAuth, listComments);
-router.post("/:dailyProblemId", requireAuth, addComment);
+router.get("/problem/:problemId", listProblemComments);
+router.get("/daily/:dailyProblemId", listDailyComments);
+router.post("/daily/:dailyProblemId", requireAuth, addComment);
 
 export default router;
-
