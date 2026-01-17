@@ -2,7 +2,6 @@ import { Schema, model, Types } from "mongoose";
 
 export interface IDiscussionComment {
   problem: Types.ObjectId;
-  dailyProblem?: Types.ObjectId;
   user: Types.ObjectId;
   message: string;
   createdAt: Date;
@@ -18,11 +17,7 @@ const discussionSchema = new Schema<IDiscussionComment>(
       index: true
     },
 
-    dailyProblem: {
-      type: Schema.Types.ObjectId,
-      ref: "DailyProblem",
-      index: true
-    },
+   
 
     user: {
       type: Schema.Types.ObjectId,
