@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { api } from "../api/client"
-import { Copy, Flame, Award, UserPlus, BarChart2 } from "lucide-react"
+import { Copy, Award, UserPlus, BarChart2 } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 
 type HeatmapDay = {
   date: string
   count: number
 }
+
+type HeatCell = {
+  date: string | null
+  count: number | null
+}
+
 
 type PublicUser = {
   _id: string
@@ -19,14 +25,37 @@ type PublicUser = {
     freezeAvailable: number
   }
 }
+type ProfileStats = {
+  easySolved: number
+  easyTotal: number
+  mediumSolved: number
+  mediumTotal: number
+  hardSolved: number
+  hardTotal: number
+}
 
 
 export default function ProfileView() {
   const user = useAuthStore((s) => s.user)
 
+
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([])
   const [badges] = useState<string[]>(user?.badges || [])
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<ProfileStats | null>(null)
+
+
+  const solvedTotal =
+    (stats?.easySolved || 0) +
+    (stats?.mediumSolved || 0) +
+    (stats?.hardSolved || 0)
+
+  const allTotal =
+    (stats?.easyTotal || 0) +
+    (stats?.mediumTotal || 0) +
+    (stats?.hardTotal || 0)
+
+  const progress = allTotal === 0 ? 0 : solvedTotal / allTotal
 
   const [friendSlug, setFriendSlug] = useState("")
   const [compareData, setCompareData] = useState<{
@@ -42,32 +71,30 @@ export default function ProfileView() {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    api
-      .get("/api/profile/heatmap")
-      .then((res) => {
-        const counts = res.data.counts || {}
-        const days: HeatmapDay[] = []
+    api.get("/api/profile/heatmap").then(res => {
+      setHeatmap(res.data.heatmap || [])
+      
+    })
 
-        const today = new Date()
-        for (let i = 97; i >= 0; i--) {
-          const d = new Date()
-          d.setDate(today.getDate() - i)
-          const key = d.toISOString().slice(0, 10)
-
-          days.push({
-            date: key,
-            count: counts[key] || 0
-          })
-        }
-
-        setHeatmap(days)
-      })
-      .finally(() => setLoading(false))
-
-    api.get("/api/profile/friends").then((res) => {
+    api.get("/api/profile/friends").then(res => {
       setFriends(res.data.friends || [])
     })
+
+    api.get("/api/profile/stats")
+      .then(res => {
+        setStats(res.data.stats)
+      })
+      .finally(() => setLoading(false))
   }, [])
+
+function formatDMY(dateStr: string) {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  })
+}
 
 
 
@@ -114,10 +141,170 @@ export default function ProfileView() {
       alert("Could not compare with friend")
     }
   }
+  function getLast12Months() {
+    const months = []
+    const today = new Date()
+
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1)
+      months.push({
+        year: d.getFullYear(),
+        month: d.getMonth(),
+        label: d.toLocaleString("en-US", { month: "short" })
+      })
+    }
+
+    return months
+  }
+
+  function buildMonthHeatmaps(days: HeatmapDay[]): HeatCell[][][] {
+    const map = new Map<string, number>()
+
+    days.forEach(d => {
+      map.set(d.date, d.count)
+    })
+
+    function format(d: Date) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+        d.getDate()
+      ).padStart(2, "0")}`
+    }
+
+    const today = new Date()
+    today.setHours(23, 59, 59, 999)
+
+    const startDate = new Date()
+    startDate.setFullYear(today.getFullYear() - 1)
+    startDate.setHours(0, 0, 0, 0)
+
+    const monthsMeta = getLast12Months()
+    const months: HeatCell[][][] = []
+
+    monthsMeta.forEach(({ year, month }) => {
+      const firstDay = new Date(year, month, 1)
+      const lastDay = new Date(year, month + 1, 0)
+
+      let date = new Date(firstDay)
+      let monthMatrix: HeatCell[][] = []
+      let week: HeatCell[] = Array.from({ length: 7 }, () => ({
+        date: null,
+        count: null
+      }))
+
+      const offset = date.getDay()
+      for (let i = 0; i < offset; i++) {
+        week[i] = { date: null, count: null }
+      }
+
+      while (date <= lastDay) {
+        const dayIndex = date.getDay()
+        const key = format(date)
+
+        if (date >= startDate && date <= today) {
+          week[dayIndex] = {
+            date: key,
+            count: map.get(key) ?? 0
+          }
+        } else {
+          week[dayIndex] = { date: null, count: null }
+        }
+
+        if (dayIndex === 6) {
+          monthMatrix.push(week)
+          week = Array.from({ length: 7 }, () => ({
+            date: null,
+            count: null
+          }))
+        }
+
+        date.setDate(date.getDate() + 1)
+      }
+
+      monthMatrix.push(week)
+      months.push(monthMatrix)
+    })
+
+    return months
+  }
+  function getColor(count: number | null) {
+    if (count === null) return "transparent"
+    if (count === 0) return "rgba(255,255,255,0.05)"
+    if (count === 1) return "rgba(34,197,94,0.25)"
+    if (count <= 3) return "rgba(34,197,94,0.45)"
+    if (count <= 6) return "rgba(34,197,94,0.65)"
+    return "rgba(34,197,94,0.9)"
+  }
+  const monthHeatmaps = buildMonthHeatmaps(heatmap)
+  const monthsMeta = getLast12Months()
+
+
+
 
   if (loading || !user) {
     return <p className="text-white/40 p-10">Loading profile...</p>
   }
+
+  function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
+    const rad = (angleDeg * Math.PI) / 180
+    return {
+      x: cx + r * Math.cos(rad),
+      y: cy + r * Math.sin(rad)
+    }
+  }
+
+  function describeArc(
+    cx: number,
+    cy: number,
+    r: number,
+    startAngle: number,
+    endAngle: number
+  ) {
+    const start = polarToCartesian(cx, cy, r, startAngle)
+    const end = polarToCartesian(cx, cy, r, endAngle)
+
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
+
+    return [
+      "M",
+      start.x,
+      start.y,
+      "A",
+      r,
+      r,
+      0,
+      largeArcFlag,
+      1,
+      end.x,
+      end.y
+    ].join(" ")
+  }
+
+  const GAP = 14
+  const SEG = 120
+
+  const cx = 104
+  const cy = 104
+  const r = 90
+
+  const easySolved = stats?.easySolved || 0
+  const medSolved = stats?.mediumSolved || 0
+  const hardSolved = stats?.hardSolved || 0
+
+  const easyTotal = stats?.easyTotal || 1
+  const medTotal = stats?.mediumTotal || 1
+  const hardTotal = stats?.hardTotal || 1
+
+  const arcLen = SEG - GAP
+
+  const easyFillDeg = (easySolved / easyTotal) * arcLen
+  const medFillDeg = (medSolved / medTotal) * arcLen
+  const hardFillDeg = (hardSolved / hardTotal) * arcLen
+
+  const easyStart = -90 + GAP / 2
+  const medStart = easyStart + SEG
+  const hardStart = medStart + SEG
+
+
 
   return (
     <section className="font-geist mx-10 mt-10 mb-10 space-y-8">
@@ -149,7 +336,7 @@ export default function ProfileView() {
               </span>
             </span>
 
-           
+
 
           </div>
         </div>
@@ -164,52 +351,156 @@ export default function ProfileView() {
       </motion.div>
 
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.5 }}
-          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-2"
+          className="lg:col-span-3 rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8"
         >
-          <div className="flex items-center gap-2 text-white/60">
-            <Flame className="w-4 h-4" />
-            <span className="text-sm">Current streak</span>
+          <div className="relative flex items-center justify-center">
+            <div className="relative w-52 h-52 flex items-center justify-center">
+              <svg className="w-52 h-52" viewBox="0 0 208 208">
+               
+                <path
+                  d={describeArc(cx, cy, r, easyStart, easyStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(34,197,94,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+
+                <path
+                  d={describeArc(cx, cy, r, easyStart, easyStart + easyFillDeg)}
+                  fill="none"
+                  stroke="rgb(34 197 94)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, medStart, medStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(250,204,21,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, medStart, medStart + medFillDeg)}
+                  fill="none"
+                  stroke="rgb(250 204 21)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+
+                <path
+                  d={describeArc(cx, cy, r, hardStart, hardStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(239,68,68,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+
+                <path
+                  d={describeArc(cx, cy, r, hardStart, hardStart + hardFillDeg)}
+                  fill="none"
+                  stroke="rgb(239 68 68)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+              </svg>
+
+
+
+
+            </div>
+
+
+
+
+            <div className="absolute text-center">
+              <p className="text-4xl font-semibold">
+                {solvedTotal}/{allTotal}
+              </p>
+
+              <p className="text-sm text-white/50">
+                Solved
+              </p>
+            </div>
           </div>
-          <p className="text-3xl font-semibold">
-            {user.streak?.current || 0} days
-          </p>
+
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-green-500">
+                Easy
+              </p>
+              <p className="text-lg font-semibold">
+                {stats?.easySolved || 0}/
+                {stats?.easyTotal || 0}
+
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-yellow-500">
+                Med.
+              </p>
+              <p className="text-lg font-semibold">
+                {stats?.mediumSolved || 0}/{stats?.mediumTotal || 0}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-red-500">
+                Hard
+              </p>
+              <p className="text-lg font-semibold">
+                {stats?.hardSolved || 0}/{stats?.hardTotal || 0}
+
+              </p>
+            </div>
+          </div>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-2"
+          className="lg:col-span-2 flex flex-row items-center justify-between rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8"
         >
-          <div className="flex items-center gap-2 text-white/60">
-            <Flame className="w-4 h-4" />
-            <span className="text-sm">Longest streak</span>
+          <div className="items-center justify-center">
+            <p className="text-base text-white/50">
+              Current streak
+            </p>
+            <p className="text-6xl font-semibold">
+              {user.streak?.current || 0}
+              <span className="text-base text-white/40 ml-1">
+                days
+              </span>
+            </p>
           </div>
-          <p className="text-3xl font-semibold">
-            {user.streak?.max || 0} days
-          </p>
+
+          <div className="h-12 w-px bg-white/10" />
+
+          <div>
+            <p className="text-base text-white/50">
+              Longest streak
+            </p>
+            <p className="text-6xl font-semibold">
+              {user.streak?.max || 0}
+              <span className="text-base text-white/40 ml-1">
+                days
+              </span>
+            </p>
+          </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-2"
-        >
-          <div className="flex items-center gap-2 text-white/60">
-            <Flame className="w-4 h-4" />
-            <span className="text-sm">Freezes left</span>
-          </div>
-          <p className="text-3xl font-semibold">
-            {user.streak?.freezeAvailable || 0}
-          </p>
-        </motion.div>
       </div>
+
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -221,26 +512,54 @@ export default function ProfileView() {
           Consistency heatmap
         </p>
 
-        <div className="grid grid-cols-14 gap-1">
-          {heatmap.map((day) => {
-            const intensity =
-              day.count === 0
-                ? "bg-white/5"
-                : day.count === 1
-                  ? "bg-green-400/20"
-                  : day.count === 2
-                    ? "bg-green-400/40"
-                    : "bg-green-400/70"
+        <div
+  className="
+    w-full
+    overflow-x-auto
+    overflow-y-hidden
+    scrollbar-thin
+    scrollbar-thumb-white/20
+    scrollbar-track-transparent
+    flex
+    justify-center
+  "
+>
 
-            return (
-              <div
-                key={day.date}
-                title={`${day.date} · ${day.count} solves`}
-                className={`h-4 w-4 rounded ${intensity}`}
-              />
-            )
-          })}
+          <div className="flex gap-4 w-max ">
+            {monthHeatmaps.map((month, mIdx) => (
+              <div key={mIdx} className="flex-shrink-0">
+                <p className="text-white/40 text-sm mb-2 text-center">
+                  {monthsMeta[mIdx].label}
+                </p>
+
+                <div className="flex gap-[3px]">
+                  {month.map((week, w) => (
+                    <div key={w} className="flex flex-col gap-[3px]">
+                      {week.map((cell, d) =>
+                        cell.count === null ? (
+                          <div key={d} className="w-[11px] h-[11px]" />
+                        ) : (
+                          <div
+  key={d}
+  className="w-[11px] h-[11px] rounded-[2px] cursor-pointer transition"
+  style={{ backgroundColor: getColor(cell.count) }}
+  title={
+    cell.date
+      ? `${formatDMY(cell.date)} · ${cell.count} solves`
+      : ""
+  }
+/>
+
+                        )
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+
       </motion.div>
 
       <motion.div
@@ -272,60 +591,60 @@ export default function ProfileView() {
         </div>
       </motion.div>
 
-       <motion.div
-  initial={{ opacity: 0, y: 10 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.3 }}
-  className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
->
-  <div className="flex items-center gap-2">
-    <p className="text-sm tracking-wide text-white/40">
-      Friends
-    </p>
-
-    <span className="text-sm text-white/50">
-      ({friends.length})
-    </span>
-  </div>
-
-  {friends.length === 0 && (
-    <p className="text-sm text-white/40">
-      You have not added any friends yet.
-    </p>
-  )}
-
-  <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-hide cursor-pointer">
-    {friends.map((f) => (
-      <div
-        key={f._id}
-        className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10 transition"
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
       >
-        <div className="flex items-center gap-3 min-w-0">
-          <img
-            src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${f.profileSlug}`}
-            className="w-8 h-8 rounded-md"
-          />
+        <div className="flex items-center gap-2">
+          <p className="text-sm tracking-wide text-white/40">
+            Friends
+          </p>
 
-          <div className="min-w-0">
-            <p className="text-sm text-white/80 font-medium truncate">
-              {f.name}
-            </p>
-            <p className="text-xs text-white/40 truncate">
-              {f.profileSlug}
-            </p>
-          </div>
+          <span className="text-sm text-white/50">
+            ({friends.length})
+          </span>
         </div>
 
-        <a
-          href={`/u/${f.profileSlug}`}
-          className="text-xs text-white/50 hover:text-white transition"
-        >
-          View
-        </a>
-      </div>
-    ))}
-  </div>
-</motion.div>
+        {friends.length === 0 && (
+          <p className="text-sm text-white/40">
+            You have not added any friends yet.
+          </p>
+        )}
+
+        <div className="space-y-2 max-h-60 overflow-y-auto scrollbar-hide cursor-pointer">
+          {friends.map((f) => (
+            <div
+              key={f._id}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10 transition"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${f.profileSlug}`}
+                  className="w-8 h-8 rounded-md"
+                />
+
+                <div className="min-w-0">
+                  <p className="text-sm text-white/80 font-medium truncate">
+                    {f.name}
+                  </p>
+                  <p className="text-xs text-white/40 truncate">
+                    {f.profileSlug}
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href={`/u/${f.profileSlug}`}
+                className="text-xs text-white/50 hover:text-white transition"
+              >
+                View
+              </a>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
 
       <motion.div
