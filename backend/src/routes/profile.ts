@@ -1,14 +1,28 @@
-import { Router } from "express";
-import { getHeatmap, publicProfile, addFriend, compareWithFriend, getMyFriends } from "../controllers/profileController.js";
-import { requireAuth } from "../middleware/auth.js";
+import { Router } from "express"
+import {
+  publicProfile,
+  addFriend,
+  compareWithFriend,
+  getMyFriends,
+  getProfileStats,
+  getProfileHeatmap,
+  getPublicProfileStats,
+  getPublicProfileHeatmap
+} from "../controllers/profileController.js"
+import { requireAuth } from "../middleware/auth.js"
 
-const router = Router();
+const router = Router()
 
-router.get("/heatmap", requireAuth, getHeatmap);
-router.get("/public/:slug", publicProfile);
-router.post("/friends", requireAuth, addFriend);
-router.get("/compare/:friendId", requireAuth, compareWithFriend);
+
+router.get("/public/:slug", publicProfile)
+router.get("/public/:slug/stats", getPublicProfileStats)
+router.get("/public/:slug/heatmap", getPublicProfileHeatmap)
+
+
+router.get("/stats", requireAuth, getProfileStats)
+router.get("/heatmap", requireAuth, getProfileHeatmap)
 router.get("/friends", requireAuth, getMyFriends)
+router.post("/friends", requireAuth, addFriend)
+router.get("/compare/:friendId", requireAuth, compareWithFriend)
 
-export default router;
-
+export default router
