@@ -1,8 +1,7 @@
-import { useState } from "react";
-import Navbar from "../components/Navbar";
+import { useState, useRef } from "react";
 import Sidebar from "../dashboard/Sidebar";
+import Topbar from "../dashboard/Topbar";
 import type { View } from "../dashboard/Sidebar";
-
 
 import DailyView from "../dashboard/DailyView";
 import CompanyView from "../dashboard/CompanyView";
@@ -14,6 +13,7 @@ import SettingsView from "../dashboard/SettingsView";
 
 export default function Dashboard() {
   const [view, setView] = useState<View>("daily");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const renderView = () => {
     switch (view) {
@@ -35,15 +35,20 @@ export default function Dashboard() {
   };
 
   return (
-    <>
     <div className="min-h-screen bg-[#020617] text-white flex">
-     
       <Sidebar active={view} onChange={setView} />
 
-      <main className="ml-0 md:ml-64 h-screen w-full overflow-y-auto">
-        {renderView()}
-      </main>
+      <div className="flex-1 flex flex-col ml-0 md:ml-64 h-screen w-full">
+
+        <Topbar view={view} scrollRef={scrollRef} />
+
+        <main
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto scrollbar-hide pt-16"
+        >
+          {renderView()}
+        </main>
+      </div>
     </div>
-    </>
   );
 }
