@@ -18,7 +18,16 @@ type User = {
     freezeAvailable: number
   }
   badges?: string[]
+  stats?: {
+    easySolved: number
+    easyTotal: number
+    mediumSolved: number
+    mediumTotal: number
+    hardSolved: number
+    hardTotal: number
+  }
 }
+
 
 
 type AuthState = {

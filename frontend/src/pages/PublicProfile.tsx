@@ -15,15 +15,15 @@ type HeatCell = {
 }
 
 type PublicUser = {
-  _id: string
+  _id?: string
   name: string
   profileSlug: string
   streak: {
     current: number
     max: number
-    freezeAvailable: number
+    freezeAvailable?: number
   }
-  badges: string[]
+  badges?: string[]
 }
 
 type ProfileStats = {
@@ -55,6 +55,11 @@ export default function PublicProfileView() {
         setUser(userRes.data.user)
         setStats(statsRes.data.stats)
         setHeatmap(heatmapRes.data.heatmap || [])
+      })
+      .catch(() => {
+        setUser(null)
+        setStats(null)
+        setHeatmap([])
       })
       .finally(() => setLoading(false))
   }, [slug])
@@ -182,7 +187,7 @@ export default function PublicProfileView() {
   const monthsMeta = getLast12Months()
 
   return (
-    <section className="font-geist mx-10 mt-10 mb-10 space-y-8 text-white">
+    <section className="font-geist bg-black text-white px-10 pt-10 pb-10 space-y-8 text-white">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -231,14 +236,14 @@ export default function PublicProfileView() {
           <p className="text-sm tracking-wide">Badges</p>
         </div>
 
-        {user.badges.length === 0 && (
+        {(user.badges?.length || 0) === 0 && (
           <p className="text-sm text-white/40">
             No badges yet
           </p>
         )}
 
         <div className="flex flex-wrap gap-2">
-          {user.badges.map(b => (
+          {(user.badges || []).map(b => (
             <span
               key={b}
               className="text-xs px-2 py-1 rounded border border-white/20 text-white/70"
