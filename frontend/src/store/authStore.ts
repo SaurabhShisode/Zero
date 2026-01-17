@@ -7,13 +7,19 @@ export type Preference = {
   difficulty: "Easy" | "Medium" | "Hard";
 };
 
-export type User = {
-  id: string;
-  email: string;
-  name: string;
-  profileSlug: string;
-  preferences: Preference[];
-};
+type User = {
+  _id: string
+  name: string
+  email: string
+  profileSlug: string
+  streak?: {
+    current: number
+    max: number
+    freezeAvailable: number
+  }
+  badges?: string[]
+}
+
 
 type AuthState = {
   user: User | null;
