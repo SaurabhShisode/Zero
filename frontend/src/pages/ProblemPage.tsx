@@ -6,6 +6,9 @@ import { api } from "../api/client";
 import { MoveRight } from 'lucide-react';
 import { useAuthStore } from "../store/authStore";
 import { Trash2 } from "lucide-react";
+import { ArrowLeft } from 'lucide-react';
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 type Problem = {
   _id: string;
@@ -34,6 +37,12 @@ export default function ProblemPage() {
   const { id } = useParams<{ id: string }>();
   const user = useAuthStore((s) => s.user);
   const [history, setHistory] = useState<HistoryItem[]>([])
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const fromLabel = (location.state as any)?.fromLabel;
+  const fromPath = (location.state as any)?.fromPath;
+  const contextLabel = (location.state as any)?.contextLabel;
 
   const [problem, setProblem] = useState<Problem | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -170,26 +179,35 @@ export default function ProblemPage() {
           <div className="lg:col-span-2 space-y-8">
             <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4">
               <div className="flex items-center gap-2 flex-wrap">
-                <span
-                  className={`text-xs  tracking-wide px-2 py-0.5 rounded 
-                    ${problem.difficulty === "Easy"
-                      ? "text-green-400 border-green-400/30 bg-green-400/10"
-                      : problem.difficulty === "Medium"
-                        ? "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
-                        : "text-red-400 border-red-400/30 bg-red-400/10"
-                    }`}
-                >
-                  {problem.difficulty}
-                </span>
-
-                {problem.skills.map((s) => (
-                  <span
-                    key={s}
-                    className="text-xs  tracking-wide px-2 py-0.5 rounded border border-white/20 text-white/40"
+                <div className="flex items-center gap-2 text-sm text-white/50">
+                  <button
+                    onClick={() => {
+                      if (fromPath) {
+                        navigate("/")
+                      } else {
+                        navigate(-1)
+                      }
+                    }}
+                    className="flex gap-2 hover:text-white transition cursor-pointer"
                   >
-                    {s}
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </button>
+
+
+                  <span>/</span>
+
+                  <span className="text-white/70">
+                    {fromLabel || "Problems"}
                   </span>
-                ))}
+
+                  <span>›</span>
+
+                  <span className="truncate max-w-[300px] text-white/90">
+                    {contextLabel || problem.title}
+                  </span>
+                </div>
+
               </div>
 
               <div className="flex items-center justify-between gap-4">
@@ -203,6 +221,28 @@ export default function ProblemPage() {
                     Solved
                   </span>
                 )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-sm  tracking-wide px-2 py-0.5 rounded 
+                    ${problem.difficulty === "Easy"
+                      ? "text-green-400 border-green-400/30 bg-green-400/10"
+                      : problem.difficulty === "Medium"
+                        ? "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
+                        : "text-red-400 border-red-400/30 bg-red-400/10"
+                    }`}
+                >
+                  {problem.difficulty}
+                </span>
+
+                {problem.skills.map((s) => (
+                  <span
+                    key={s}
+                    className="text-sm  tracking-wide px-2 py-0.5 rounded border border-white/20 text-white/40"
+                  >
+                    {s}
+                  </span>
+                ))}
               </div>
 
               <a
@@ -219,24 +259,24 @@ export default function ProblemPage() {
                     This problem was a Daily Problem on:
                   </p>
 
-                  
-                    {history.map((h) => {
-                      const d = new Date(h.date)
-                      const day = String(d.getDate()).padStart(2, "0")
-                      const month = String(d.getMonth() + 1).padStart(2, "0")
-                      const year = d.getFullYear()
 
-                      return (
-                        <span
-                          key={h._id}
-                          className="text-sm   text-white/60"
-                        >
-                          {day}/{month}/{year}
-                          
-                        </span>
-                      )
-                    })}
-                  
+                  {history.map((h) => {
+                    const d = new Date(h.date)
+                    const day = String(d.getDate()).padStart(2, "0")
+                    const month = String(d.getMonth() + 1).padStart(2, "0")
+                    const year = d.getFullYear()
+
+                    return (
+                      <span
+                        key={h._id}
+                        className="text-sm   text-white/60"
+                      >
+                        {day}/{month}/{year}
+
+                      </span>
+                    )
+                  })}
+
                 </div>
               )}
 
@@ -273,9 +313,14 @@ export default function ProblemPage() {
                             </svg>
                           </div>
 
-                          <span className="text-sm text-white/80 font-medium">
+                          <button
+                            onClick={() => navigate(`/u/${c.user.profileSlug}`)}
+                            className="text-sm text-white/80 font-medium hover:text-white transition cursor-pointer"
+                            title="View public profile"
+                          >
                             {c.user.name}
-                          </span>
+                          </button>
+
                         </div>
 
                         <div className="flex items-center gap-3">
