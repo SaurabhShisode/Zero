@@ -1,11 +1,11 @@
-import { create } from "zustand";
-import { api } from "../api/client";
+import { create } from "zustand"
+import { api } from "../api/client"
 
 export type Preference = {
-  skill: string;
-  enabled: boolean;
-  difficulty: "Easy" | "Medium" | "Hard";
-};
+  skill: string
+  enabled: boolean
+  difficulty: "Easy" | "Medium" | "Hard"
+}
 
 type User = {
   _id: string
@@ -28,40 +28,44 @@ type User = {
   }
 }
 
-
-
 type AuthState = {
-  user: User | null;
-  token: string | null;
-  setAuth: (user: User, token: string) => void;
-  hydrate: () => Promise<void>;
-  logout: () => void;
-};
+  user: User | null
+  token: string | null
+  hydrated: boolean
+  setAuth: (user: User, token: string) => void
+  hydrate: () => Promise<void>
+  logout: () => void
+}
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem("token"),
+  hydrated: false,
 
   setAuth: (user, token) => {
-    localStorage.setItem("token", token);
-    set({ user, token });
+    localStorage.setItem("token", token)
+    set({ user, token, hydrated: true })
   },
 
   hydrate: async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      set({ hydrated: true })
+      return
+    }
 
     try {
-      const res = await api.get("/api/auth/me");
-      set({ user: res.data.user, token });
+      const res = await api.get("/api/auth/me")
+      set({ user: res.data.user, token, hydrated: true })
     } catch {
-      localStorage.removeItem("token");
-      set({ user: null, token: null });
+      localStorage.removeItem("token")
+      set({ user: null, token: null, hydrated: true })
     }
   },
 
   logout: () => {
-    localStorage.removeItem("token");
-    set({ user: null, token: null });
+    localStorage.removeItem("token")
+    set({ user: null, token: null, hydrated: true })
   }
-}));
+}))
