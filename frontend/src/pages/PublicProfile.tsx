@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { api } from "../api/client"
 import { Award } from "lucide-react"
-
+import toast from "react-hot-toast"
+import { useAuthStore } from "../store/authStore"
+import { ArrowLeft } from 'lucide-react';
 type HeatmapDay = {
   date: string
   count: number
@@ -35,34 +37,82 @@ type ProfileStats = {
   hardTotal: number
 }
 
+type RecentSolve = {
+  date: string
+  problem: {
+    _id: string
+    title: string
+    difficulty: "Easy" | "Medium" | "Hard"
+  }
+}
+
 export default function PublicProfileView() {
   const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
+  const mySlug = useAuthStore(s => s.user?.profileSlug)
 
   const [user, setUser] = useState<PublicUser | null>(null)
   const [stats, setStats] = useState<ProfileStats | null>(null)
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([])
+  const [recent, setRecent] = useState<RecentSolve[]>([])
   const [loading, setLoading] = useState(true)
+
+  const [adding, setAdding] = useState(false)
+  const [isFriend, setIsFriend] = useState(false)
 
   useEffect(() => {
     if (!slug) return
 
+    setLoading(true)
+
     Promise.all([
       api.get(`/api/profile/public/${slug}`),
       api.get(`/api/profile/public/${slug}/stats`),
-      api.get(`/api/profile/public/${slug}/heatmap`)
+      api.get(`/api/profile/public/${slug}/heatmap`),
+      api.get(`/api/profile/public/${slug}/recent`)
     ])
-      .then(([userRes, statsRes, heatmapRes]) => {
+      .then(([userRes, statsRes, heatmapRes, recentRes]) => {
         setUser(userRes.data.user)
         setStats(statsRes.data.stats)
         setHeatmap(heatmapRes.data.heatmap || [])
+        setRecent(recentRes.data.recent || [])
       })
       .catch(() => {
         setUser(null)
         setStats(null)
         setHeatmap([])
+        setRecent([])
       })
       .finally(() => setLoading(false))
   }, [slug])
+
+  function handleAddFriend() {
+    if (!user) return
+
+    setAdding(true)
+
+    api
+      .post("/api/profile/friends", {
+        friendSlug: user.profileSlug
+      })
+      .then(() => {
+        setIsFriend(true)
+        toast.success("You are now friends")
+      })
+      .catch(err => {
+        if (err.response?.status === 409) {
+          setIsFriend(true)
+          toast("Already friends", { icon: "✓" })
+        } else if (err.response?.status === 400) {
+          toast.error("You cannot add yourself")
+        } else {
+          toast.error("Failed to add friend")
+        }
+      })
+      .finally(() => {
+        setAdding(false)
+      })
+  }
 
   function formatDMY(dateStr: string) {
     const d = new Date(dateStr)
@@ -94,9 +144,10 @@ export default function PublicProfileView() {
     days.forEach(d => map.set(d.date, d.count))
 
     function format(d: Date) {
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-        d.getDate()
-      ).padStart(2, "0")}`
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(d.getDate()).padStart(2, "0")}`
     }
 
     const today = new Date()
@@ -156,6 +207,12 @@ export default function PublicProfileView() {
     return months
   }
 
+  function diffColor(diff: "Easy" | "Medium" | "Hard") {
+    if (diff === "Easy") return "text-green-400 border-green-400/30"
+    if (diff === "Medium") return "text-yellow-400 border-yellow-400/30"
+    return "text-red-400 border-red-400/30"
+  }
+
   function getColor(count: number | null) {
     if (count === null) return "transparent"
     if (count === 0) return "rgba(255,255,255,0.05)"
@@ -163,6 +220,41 @@ export default function PublicProfileView() {
     if (count <= 3) return "rgba(34,197,94,0.45)"
     if (count <= 6) return "rgba(34,197,94,0.65)"
     return "rgba(34,197,94,0.9)"
+  }
+
+  function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
+    const rad = (angleDeg * Math.PI) / 180
+    return {
+      x: cx + r * Math.cos(rad),
+      y: cy + r * Math.sin(rad)
+    }
+  }
+
+  function describeArc(
+    cx: number,
+    cy: number,
+    r: number,
+    startAngle: number,
+    endAngle: number
+  ) {
+    const start = polarToCartesian(cx, cy, r, startAngle)
+    const end = polarToCartesian(cx, cy, r, endAngle)
+
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
+
+    return [
+      "M",
+      start.x,
+      start.y,
+      "A",
+      r,
+      r,
+      0,
+      largeArcFlag,
+      1,
+      end.x,
+      end.y
+    ].join(" ")
   }
 
   if (loading) {
@@ -174,56 +266,263 @@ export default function PublicProfileView() {
   }
 
   const solvedTotal =
-    stats.easySolved +
-    stats.mediumSolved +
-    stats.hardSolved
+    stats.easySolved + stats.mediumSolved + stats.hardSolved
 
   const allTotal =
-    stats.easyTotal +
-    stats.mediumTotal +
-    stats.hardTotal
+    stats.easyTotal + stats.mediumTotal + stats.hardTotal
 
   const monthHeatmaps = buildMonthHeatmaps(heatmap)
   const monthsMeta = getLast12Months()
 
+  const GAP = 14
+  const SEG = 120
+
+  const cx = 104
+  const cy = 104
+  const r = 90
+
+  const easySolved = stats.easySolved || 0
+  const medSolved = stats.mediumSolved || 0
+  const hardSolved = stats.hardSolved || 0
+
+  const easyTotal = stats.easyTotal || 1
+  const medTotal = stats.mediumTotal || 1
+  const hardTotal = stats.hardTotal || 1
+
+  const arcLen = SEG - GAP
+
+  const easyFillDeg = (easySolved / easyTotal) * arcLen
+  const medFillDeg = (medSolved / medTotal) * arcLen
+  const hardFillDeg = (hardSolved / hardTotal) * arcLen
+
+  const easyStart = -90 + GAP / 2
+  const medStart = easyStart + SEG
+  const hardStart = medStart + SEG
+
   return (
-    <section className="font-geist bg-black text-white px-10 pt-10 pb-10 space-y-8 text-white">
+    <section className="font-geist bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black text-white px-10 pt-10 pb-10 space-y-8">
+
+      <button
+        onClick={() => navigate(-1)}
+        className="px-3 py-2 rounded-lg border bg-white text-black border-white/20 text-sm  transition cursor-pointer flex items-center gap-2 hover:bg-gray-800 hover:text-white"
+      >
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center gap-6"
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between"
       >
-        <img
-          src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${user.profileSlug}`}
-          className="w-24 h-24 rounded-2xl shadow-xl"
-        />
 
-        <div>
-          <h1 className="text-2xl font-semibold">
-            {user.name}
-          </h1>
-          <p className="text-sm text-white/40">
-            @{user.profileSlug}
-          </p>
+        <div className="flex items-center gap-6">
+          <img
+            src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${user.profileSlug}`}
+            className="w-24 h-24 rounded-2xl shadow-xl"
+          />
+
+          <div>
+            <h1 className="text-2xl font-semibold">
+              {user.name}
+            </h1>
+            <p className="text-sm text-white/40">
+              @{user.profileSlug}
+            </p>
+          </div>
         </div>
+
+        {mySlug !== user.profileSlug && (
+          <button
+            onClick={handleAddFriend}
+            disabled={adding || isFriend}
+            className={`px-5 py-2 rounded-lg cursor-pointer text-sm transition ${isFriend
+                ? "bg-white/20 text-white/60 cursor-default"
+                : "bg-white text-black hover:bg-white/90"
+              }`}
+          >
+            {isFriend ? "Friends" : adding ? "Adding..." : "Add Friend"}
+          </button>
+        )}
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6">
-          <p className="text-sm text-white/50">Current streak</p>
-          <p className="text-4xl font-semibold">
-            {user.streak.current} days
-          </p>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="lg:col-span-3 rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8"
+        >
+          <div className="relative flex items-center justify-center">
+            <div className="relative w-52 h-52 flex items-center justify-center">
+              <svg className="w-52 h-52" viewBox="0 0 208 208">
+                <path
+                  d={describeArc(cx, cy, r, easyStart, easyStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(34,197,94,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
 
-        <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6">
-          <p className="text-sm text-white/50">Longest streak</p>
-          <p className="text-4xl font-semibold">
-            {user.streak.max} days
-          </p>
-        </div>
+                <path
+                  d={describeArc(cx, cy, r, easyStart, easyStart + easyFillDeg)}
+                  fill="none"
+                  stroke="rgb(34 197 94)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, medStart, medStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(250,204,21,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, medStart, medStart + medFillDeg)}
+                  fill="none"
+                  stroke="rgb(250 204 21)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, hardStart, hardStart + arcLen)}
+                  fill="none"
+                  stroke="rgba(239,68,68,0.25)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d={describeArc(cx, cy, r, hardStart, hardStart + hardFillDeg)}
+                  fill="none"
+                  stroke="rgb(239 68 68)"
+                  strokeWidth="10"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+
+            <div className="absolute text-center">
+              <p className="text-4xl font-semibold">
+                {solvedTotal}/{allTotal}
+              </p>
+              <p className="text-sm text-white/50">
+                Solved
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-green-500">
+                Easy
+              </p>
+              <p className="text-lg font-semibold">
+                {stats.easySolved}/{stats.easyTotal}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-yellow-500">
+                Med.
+              </p>
+              <p className="text-lg font-semibold">
+                {stats.mediumSolved}/{stats.mediumTotal}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+              <p className="text-sm text-red-500">
+                Hard
+              </p>
+              <p className="text-lg font-semibold">
+                {stats.hardSolved}/{stats.hardTotal}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="lg:col-span-2 flex flex-row items-center justify-between rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8"
+        >
+          <div>
+            <p className="text-base text-white/50">
+              Current streak
+            </p>
+            <p className="text-6xl font-semibold">
+              {user.streak.current}
+              <span className="text-base text-white/40 ml-1">
+                days
+              </span>
+            </p>
+          </div>
+
+          <div className="h-12 w-px bg-white/10" />
+
+          <div>
+            <p className="text-base text-white/50">
+              Longest streak
+            </p>
+            <p className="text-6xl font-semibold">
+              {user.streak.max}
+              <span className="text-base text-white/40 ml-1">
+                days
+              </span>
+            </p>
+          </div>
+        </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.5 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
+      >
+        <p className="text-sm tracking-wide text-white/40">
+          Recently solved problems
+        </p>
+
+        {recent.length === 0 && (
+          <p className="text-sm text-white/40">
+            No problems solved yet. Start today.
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {recent.map((r, i) => (
+            <div
+              key={i}
+              onClick={() => navigate(`/problems/${r.problem._id}`)}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10 transition cursor-pointer"
+            >
+              <div className="min-w-0">
+                <p className="text-sm text-white/90 truncate">
+                  {r.problem.title}
+                </p>
+                <p className="text-xs text-white/40">
+                  {formatDMY(r.date)}
+                </p>
+              </div>
+
+              <span
+                className={`text-sm px-2 py-1 rounded ${diffColor(
+                  r.problem.difficulty
+                )}`}
+              >
+                {r.problem.difficulty}
+              </span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -233,7 +532,9 @@ export default function PublicProfileView() {
       >
         <div className="flex items-center gap-2 text-white/60">
           <Award className="w-4 h-4" />
-          <p className="text-sm tracking-wide">Badges</p>
+          <p className="text-sm tracking-wide">
+            Badges
+          </p>
         </div>
 
         {(user.badges?.length || 0) === 0 && (
@@ -282,7 +583,9 @@ export default function PublicProfileView() {
                           <div
                             key={d}
                             className="w-[11px] h-[11px] rounded-[2px] cursor-pointer transition"
-                            style={{ backgroundColor: getColor(cell.count) }}
+                            style={{
+                              backgroundColor: getColor(cell.count)
+                            }}
                             title={
                               cell.date
                                 ? `${formatDMY(cell.date)} · ${cell.count} solves`
@@ -299,6 +602,7 @@ export default function PublicProfileView() {
           </div>
         </div>
       </motion.div>
+      
     </section>
   )
 }
