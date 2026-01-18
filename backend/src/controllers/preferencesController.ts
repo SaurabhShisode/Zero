@@ -82,3 +82,26 @@ export const updatePreferences = async (
     return res.status(500).json({ message: "Failed to update preferences" });
   }
 };
+
+export const getPreferences = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({ message: "Unauthorized" })
+    }
+
+    const user = await User.findById(req.userId).select(
+      "preferences placementMode"
+    )
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    return res.json({ user })
+  } catch {
+    return res.status(500).json({ message: "Failed to fetch preferences" })
+  }
+}
