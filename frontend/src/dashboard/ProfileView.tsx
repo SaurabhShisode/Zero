@@ -3,6 +3,8 @@ import { motion } from "framer-motion"
 import { api } from "../api/client"
 import { Copy, Award, UserPlus, BarChart2 } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 
 type HeatmapDay = {
   date: string
@@ -12,6 +14,15 @@ type HeatmapDay = {
 type HeatCell = {
   date: string | null
   count: number | null
+}
+
+type RecentSolve = {
+  date: string
+  problem: {
+    _id: string
+    title: string
+    difficulty: "Easy" | "Medium" | "Hard"
+  }
 }
 
 
@@ -35,12 +46,16 @@ type ProfileStats = {
 }
 
 
+
 export default function ProfileView() {
   const user = useAuthStore((s) => s.user)
-
+  const navigate = useNavigate()
+const hydrated = useAuthStore(s => s.hydrated)
+  const [recent, setRecent] = useState<RecentSolve[]>([])
 
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([])
-  const [badges] = useState<string[]>(user?.badges || [])
+  const badges = user?.badges || []
+
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<ProfileStats | null>(null)
 
@@ -66,81 +81,113 @@ export default function ProfileView() {
   const [friends, setFriends] = useState<
     { _id: string; name: string; profileSlug: string }[]
   >([])
-  const [showFriends, setShowFriends] = useState(false)
+
 
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    api.get("/api/profile/heatmap").then(res => {
-      setHeatmap(res.data.heatmap || [])
-      
-    })
+  if (!hydrated || !user?._id) return
 
-    api.get("/api/profile/friends").then(res => {
-      setFriends(res.data.friends || [])
-    })
+  setLoading(true)
 
+  Promise.all([
+    api.get("/api/profile/heatmap"),
+    api.get("/api/profile/friends"),
+    api.get("/api/profile/recent"),
     api.get("/api/profile/stats")
-      .then(res => {
-        setStats(res.data.stats)
-      })
-      .finally(() => setLoading(false))
-  }, [])
+  ])
+    .then(([heatRes, friendsRes, recentRes, statsRes]) => {
+      setHeatmap(heatRes.data.heatmap || [])
+      setFriends(friendsRes.data.friends || [])
+      setRecent(recentRes.data.recent || [])
+      setStats(statsRes.data.stats)
+    })
+    .finally(() => setLoading(false))
+}, [hydrated, user?._id])
 
-function formatDMY(dateStr: string) {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
-  })
-}
 
+
+  function formatDMY(dateStr: string) {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    })
+  }
+
+  function diffColor(diff: "Easy" | "Medium" | "Hard") {
+    if (diff === "Easy") return "text-green-400 border-green-400/30"
+    if (diff === "Medium") return "text-yellow-400 border-yellow-400/30"
+    return "text-red-400 border-red-400/30"
+  }
 
 
 
   const copyProfileLink = () => {
-    if (!user?.profileSlug) return
-    const url = `${window.location.origin}/u/${user.profileSlug}`
-    navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
+  if (!user?.profileSlug) return
+
+  const url = `${window.location.origin}/u/${user.profileSlug}`
+  navigator.clipboard.writeText(url)
+
+  setCopied(true)
+  toast.success("Profile link copied")
+
+  setTimeout(() => setCopied(false), 1500)
+}
+
 
   const addFriend = async () => {
-    if (!friendSlug.trim()) return
+  if (!friendSlug.trim()) {
+    toast.error("Enter a profile slug")
+    return
+  }
 
-    try {
-      await api.post("/api/profile/friends", {
-        friendSlug: friendSlug.trim()
-      })
+  try {
+    await api.post("/api/profile/friends", {
+      friendSlug: friendSlug.trim()
+    })
 
-      alert("Friend added successfully")
-      setFriendSlug("")
-    } catch {
-      alert("Could not add friend")
+    toast.success("Friend added")
+    setFriendSlug("")
+  } catch (err: any) {
+    if (err.response?.status === 409) {
+      toast("Already friends", { icon: "✓" })
+    } else if (err.response?.status === 400) {
+      toast.error("You cannot add yourself")
+    } else if (err.response?.status === 404) {
+      toast.error("User not found")
+    } else {
+      toast.error("Failed to add friend")
     }
   }
+}
+
 
   const compareFriend = async () => {
-    if (!friendSlug.trim()) return
-
-    try {
-      const res = await api.get(
-        `/api/profile/public/${friendSlug.trim()}`
-      )
-
-      const friendId = res.data.user._id
-
-      const compareRes = await api.get(
-        `/api/profile/compare/${friendId}`
-      )
-
-      setCompareData(compareRes.data)
-    } catch {
-      alert("Could not compare with friend")
-    }
+  if (!friendSlug.trim()) {
+    toast.error("Enter a profile slug")
+    return
   }
+
+  try {
+    const res = await api.get(
+      `/api/profile/public/${friendSlug.trim()}`
+    )
+
+    const friendId = res.data.user._id
+
+    const compareRes = await api.get(
+      `/api/profile/compare/${friendId}`
+    )
+
+    setCompareData(compareRes.data)
+    toast.success("Comparison loaded")
+  } catch {
+    toast.error("Could not compare with friend")
+  }
+}
+
   function getLast12Months() {
     const months = []
     const today = new Date()
@@ -240,9 +287,15 @@ function formatDMY(dateStr: string) {
 
 
 
-  if (loading || !user) {
-    return <p className="text-white/40 p-10">Loading profile...</p>
-  }
+  if (!hydrated) {
+  return <p className="text-white/40 p-10">Initializing session...</p>
+}
+
+if (loading || !user || !stats) {
+  return <p className="text-white/40 p-10">Loading profile...</p>
+}
+
+
 
   function polarToCartesian(cx: number, cy: number, r: number, angleDeg: number) {
     const rad = (angleDeg * Math.PI) / 180
@@ -304,6 +357,20 @@ function formatDMY(dateStr: string) {
   const medStart = easyStart + SEG
   const hardStart = medStart + SEG
 
+  const removeFriend = async (friendId: string) => {
+  try {
+    await api.delete(`/api/profile/friends/${friendId}`)
+
+    setFriends(
+      friends.filter(f => f._id !== friendId)
+    )
+
+    toast("Friend removed", { icon: "✖" })
+  } catch {
+    toast.error("Failed to remove friend")
+  }
+}
+
 
 
   return (
@@ -343,7 +410,7 @@ function formatDMY(dateStr: string) {
 
         <button
           onClick={copyProfileLink}
-          className="self-start md:self-center px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
+          className="self-start cursor-pointer md:self-center px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
         >
           <Copy className="w-4 h-4" />
           {copied ? "Copied" : "Copy link"}
@@ -361,7 +428,7 @@ function formatDMY(dateStr: string) {
           <div className="relative flex items-center justify-center">
             <div className="relative w-52 h-52 flex items-center justify-center">
               <svg className="w-52 h-52" viewBox="0 0 208 208">
-               
+
                 <path
                   d={describeArc(cx, cy, r, easyStart, easyStart + arcLen)}
                   fill="none"
@@ -513,7 +580,7 @@ function formatDMY(dateStr: string) {
         </p>
 
         <div
-  className="
+          className="
     w-full
     overflow-x-auto
     overflow-y-hidden
@@ -523,7 +590,7 @@ function formatDMY(dateStr: string) {
     flex
     justify-center
   "
->
+        >
 
           <div className="flex gap-4 w-max ">
             {monthHeatmaps.map((month, mIdx) => (
@@ -540,15 +607,15 @@ function formatDMY(dateStr: string) {
                           <div key={d} className="w-[11px] h-[11px]" />
                         ) : (
                           <div
-  key={d}
-  className="w-[11px] h-[11px] rounded-[2px] cursor-pointer transition"
-  style={{ backgroundColor: getColor(cell.count) }}
-  title={
-    cell.date
-      ? `${formatDMY(cell.date)} · ${cell.count} solves`
-      : ""
-  }
-/>
+                            key={d}
+                            className="w-[11px] h-[11px] rounded-[2px] cursor-pointer transition"
+                            style={{ backgroundColor: getColor(cell.count) }}
+                            title={
+                              cell.date
+                                ? `${formatDMY(cell.date)} · ${cell.count} solves`
+                                : ""
+                            }
+                          />
 
                         )
                       )}
@@ -561,6 +628,51 @@ function formatDMY(dateStr: string) {
         </div>
 
       </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.5 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
+      >
+        <p className="text-sm tracking-wide text-white/40">
+          Recently solved problems
+        </p>
+
+        {recent.length === 0 && (
+          <p className="text-sm text-white/40">
+            No problems solved yet. Start today.
+          </p>
+        )}
+
+        <div className="space-y-2">
+          {recent.map((r, i) => (
+            <div
+              key={i}
+              onClick={() => navigate(`/problems/${r.problem._id}`)}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10 transition cursor-pointer"
+            >
+              <div className="min-w-0">
+                <p className="text-sm text-white/90 truncate">
+                  {r.problem.title}
+                </p>
+                <p className="text-xs text-white/40">
+                  {formatDMY(r.date)}
+                </p>
+              </div>
+
+              <span
+                className={`text-sm px-2 py-1 rounded ${diffColor(
+                  r.problem.difficulty
+                )}`}
+              >
+                {r.problem.difficulty}
+              </span>
+            </div>
+          ))}
+
+        </div>
+      </motion.div>
+
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -617,7 +729,8 @@ function formatDMY(dateStr: string) {
           {friends.map((f) => (
             <div
               key={f._id}
-              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-2 hover:bg-white/10 transition"
+              onClick={() => navigate(`/u/${f.profileSlug}`)}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3 hover:bg-white/10 transition cursor-pointer"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <img
@@ -635,14 +748,19 @@ function formatDMY(dateStr: string) {
                 </div>
               </div>
 
-              <a
-                href={`/u/${f.profileSlug}`}
-                className="text-xs text-white/50 hover:text-white transition"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  removeFriend(f._id)
+                }}
+                className="text-sm px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10 transition cursor-pointer"
               >
-                View
-              </a>
+                Remove
+              </button>
             </div>
           ))}
+
+
         </div>
       </motion.div>
 
@@ -675,7 +793,7 @@ function formatDMY(dateStr: string) {
 
           <button
             onClick={compareFriend}
-            className="px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
+            className="px-4 py-2 cursor-pointer rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
           >
             <BarChart2 className="w-4 h-4" />
             Compare
