@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react"
+
 import Sidebar from "../dashboard/Sidebar";
 import Topbar from "../dashboard/Topbar";
 import type { View } from "../dashboard/Sidebar";
@@ -12,8 +13,16 @@ import ProfileView from "../dashboard/ProfileView";
 import SettingsView from "../dashboard/SettingsView";
 
 export default function Dashboard() {
-  const [view, setView] = useState<View>("daily");
+const [view, setView] = useState<View>(() => {
+  const saved = localStorage.getItem("dashboard-view")
+  return (saved as View) || "daily"
+})
+
+
   const scrollRef = useRef<HTMLDivElement>(null);
+useEffect(() => {
+  localStorage.setItem("dashboard-view", view)
+}, [view])
 
   const renderView = () => {
     switch (view) {
