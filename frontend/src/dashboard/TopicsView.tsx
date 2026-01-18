@@ -102,10 +102,9 @@ export default function TopicsView() {
             onClick={() => setSelected(skill.key)}
             className={`
               px-3 py-1.5 rounded-lg text-sm border transition cursor-pointer
-              ${
-                selected === skill.key
-                  ? "border-white text-white bg-white/10"
-                  : "border-white/20 text-white/50 hover:text-white"
+              ${selected === skill.key
+                ? "border-white text-white bg-white/10"
+                : "border-white/20 text-white/50 hover:text-white"
               }
             `}
           >
@@ -136,17 +135,25 @@ export default function TopicsView() {
             <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition" />
 
             <div
-              onClick={() => navigate(`/problems/${p._id}`)}
+              onClick={() =>
+                navigate(`/problems/${p._id}`, {
+                  state: {
+                    fromLabel: "Topic-wise",
+                    fromPath: "/topics",
+                    contextLabel: p.title
+                  }
+                })
+              }
+
               className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between cursor-pointer"
             >
               <div className="min-w-0 space-y-2">
                 <div className="flex gap-2 flex-wrap">
                   <span
                     className={`text-xs px-2 py-0.5 rounded
-                      ${
-                        p.difficulty === "Easy"
-                          ? "text-green-400 border-green-400/30 bg-green-400/10"
-                          : p.difficulty === "Medium"
+                      ${p.difficulty === "Easy"
+                        ? "text-green-400 border-green-400/30 bg-green-400/10"
+                        : p.difficulty === "Medium"
                           ? "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
                           : "text-red-400 border-red-400/30 bg-red-400/10"
                       }
@@ -196,10 +203,9 @@ export default function TopicsView() {
                       border border-white/30
                       flex items-center justify-center
                       transition
-                      ${
-                        solved[p._id]
-                          ? "bg-white border-white"
-                          : "bg-transparent"
+                      ${solved[p._id]
+                        ? "bg-white border-white"
+                        : "bg-transparent"
                       }
                     `}
                   >

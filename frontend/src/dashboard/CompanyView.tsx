@@ -130,7 +130,16 @@ export default function CompanyView() {
             <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition" />
 
             <div
-              onClick={() => navigate(`/problems/${p._id}`)}
+              onClick={() =>
+  navigate(`/problems/${p._id}`, {
+    state: {
+      fromLabel: "Company-wise",
+      fromPath: location.pathname + location.search,
+      contextLabel: p.title
+    }
+  })
+}
+
               className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between cursor-pointer"
             >
               <div className="min-w-0 space-y-2">
