@@ -11,6 +11,7 @@ import solveRoutes from "./routes/solve.js";
 import discussionRoutes from "./routes/discussion.js";
 import profileRoutes from "./routes/profile.js";
 import problemRoutes from "./routes/problems.js";
+import communityRoutes from "./routes/community.js"
 import revisionRoutes from "./routes/revision.js";
 import { assignDailyProblems } from "./services/dailyAssignment.js";
 import { startDailyCron } from "./cron/dailyCron.js";
@@ -33,6 +34,7 @@ app.use("/api/discussion", discussionRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/problems", problemRoutes);
 app.use("/api/revision", revisionRoutes);
+app.use("/api/community", communityRoutes)
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
