@@ -1,54 +1,56 @@
 import { useEffect, useState, useRef } from "react"
 
-import Sidebar from "../dashboard/Sidebar";
-import Topbar from "../dashboard/Topbar";
-import type { View } from "../dashboard/Sidebar";
+import Sidebar from "../dashboard/Sidebar"
+import Topbar from "../dashboard/Topbar"
+import type { View } from "../dashboard/Sidebar"
 
-import DailyView from "../dashboard/DailyView";
-import CompanyView from "../dashboard/CompanyView";
-import TopicsView from "../dashboard/TopicsView";
-import PlacementView from "../dashboard/PlacementView";
-import DiscussionsView from "../dashboard/CommunityView";
-import ProfileView from "../dashboard/ProfileView";
-import SettingsView from "../dashboard/SettingsView";
+import DailyView from "../dashboard/DailyView"
+import CompanyView from "../dashboard/CompanyView"
+import TopicsView from "../dashboard/TopicsView"
+import PlacementView from "../dashboard/PlacementView"
+import DiscussionsView from "../dashboard/CommunityView"
+import ProfileView from "../dashboard/ProfileView"
+import SettingsView from "../dashboard/SettingsView"
+import BugsView from "../dashboard/BugsView"
 
 export default function Dashboard() {
-const [view, setView] = useState<View>(() => {
-  const saved = localStorage.getItem("dashboard-view")
-  return (saved as View) || "daily"
-})
+  const [view, setView] = useState<View>(() => {
+    const saved = localStorage.getItem("dashboard-view")
+    return (saved as View) || "daily"
+  })
 
+  const scrollRef = useRef<HTMLDivElement>(null)
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-useEffect(() => {
-  localStorage.setItem("dashboard-view", view)
-}, [view])
+  useEffect(() => {
+    localStorage.setItem("dashboard-view", view)
+  }, [view])
 
   const renderView = () => {
     switch (view) {
       case "company":
-        return <CompanyView />;
+        return <CompanyView />
       case "topics":
-        return <TopicsView />;
+        return <TopicsView />
       case "placement":
-        return <PlacementView />;
+        return <PlacementView />
       case "community":
-        return <DiscussionsView />;
+        return <DiscussionsView />
       case "profile":
-        return <ProfileView />;
+        return <ProfileView />
       case "settings":
-        return <SettingsView />;
+        return <SettingsView />
+      case "bugs":
+        return <BugsView />
       default:
-        return <DailyView />;
+        return <DailyView />
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex">
       <Sidebar active={view} onChange={setView} />
 
       <div className="flex-1 flex flex-col ml-0 md:ml-64 h-screen w-full">
-
         <Topbar view={view} scrollRef={scrollRef} />
 
         <main
@@ -59,5 +61,5 @@ useEffect(() => {
         </main>
       </div>
     </div>
-  );
+  )
 }

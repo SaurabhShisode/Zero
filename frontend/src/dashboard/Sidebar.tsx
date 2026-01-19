@@ -5,18 +5,21 @@ import {
     Briefcase,
     MessageCircle,
     User,
-    Settings
+    Settings,
+    Bug
 } from "lucide-react";
 import zeroLogo from "/icons/zero.svg"
 import type { SVGProps } from "react";
 export type View =
-    | "daily"
-    | "company"
-    | "topics"
-    | "placement"
-    | "community"
-    | "profile"
-    | "settings";
+  | "daily"
+  | "company"
+  | "topics"
+  | "placement"
+  | "community"
+  | "profile"
+  | "settings"
+  | "bugs"
+
 
 const SIDEBAR_ITEMS: {
     id: View;
@@ -74,6 +77,26 @@ export default function Sidebar({ active, onChange }: Props) {
                     );
                 })}
             </nav>
+            <div className="px-3 pb-4">
+  <div className="border-t border-white/10 mb-3" />
+
+  <button
+    onClick={() => onChange("bugs")}
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition font-geist text-base ${
+      active === "bugs"
+        ? "bg-red-500 text-white"
+        : "text-red-400 hover:bg-red-500/10 hover:text-red-300 cursor-pointer"
+    }`}
+  >
+    <Bug className="w-5 h-5" />
+    Report a Bug
+  </button>
+
+  <p className="text-xs text-white/40 px-4 mt-2">
+    Help improve ZERO by reporting issues
+  </p>
+</div>
+
         </aside>
     );
 }

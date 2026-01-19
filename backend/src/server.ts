@@ -9,6 +9,7 @@ import preferencesRoutes from "./routes/preferences.js";
 import dailyRoutes from "./routes/daily.js";
 import solveRoutes from "./routes/solve.js";
 import discussionRoutes from "./routes/discussion.js";
+import bugRoutes from "./routes/bugRoutes.js"
 import profileRoutes from "./routes/profile.js";
 import problemRoutes from "./routes/problems.js";
 import communityRoutes from "./routes/community.js"
@@ -35,6 +36,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/problems", problemRoutes);
 app.use("/api/revision", revisionRoutes);
 app.use("/api/community", communityRoutes)
+app.use("/api/bugs", bugRoutes)
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
