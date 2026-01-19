@@ -129,6 +129,26 @@ export default function ProblemPage() {
       setPosting(false);
     }
   };
+  function timeAgo(date: string) {
+    const seconds = Math.floor(
+      (Date.now() - new Date(date).getTime()) / 1000
+    )
+
+    const intervals = [
+      { label: "y", seconds: 31536000 },
+      { label: "mo", seconds: 2592000 },
+      { label: "d", seconds: 86400 },
+      { label: "h", seconds: 3600 },
+      { label: "m", seconds: 60 }
+    ]
+
+    for (const i of intervals) {
+      const count = Math.floor(seconds / i.seconds)
+      if (count >= 1) return `${count}${i.label} ago`
+    }
+
+    return "just now"
+  }
 
   const loadMore = async () => {
     if (!id || !hasMore) return;
@@ -160,8 +180,40 @@ export default function ProblemPage() {
 
 
   if (loading) {
-    return <p className="text-white/40 p-10">Loading problem...</p>;
+    return (
+      <div className="min-h-screen bg-black text-white">
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="mx-auto pt-10 px-6 font-geist pb-10"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4 animate-pulse">
+                <div className="h-4 w-32 bg-white/20 rounded" />
+                <div className="h-8 w-3/4 bg-white/20 rounded" />
+                <div className="h-4 w-24 bg-white/20 rounded" />
+                <div className="h-4 w-full bg-white/10 rounded" />
+              </div>
+
+              <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4 animate-pulse">
+                <div className="h-4 w-24 bg-white/20 rounded" />
+                <div className="h-24 w-full bg-white/10 rounded" />
+              </div>
+            </div>
+
+            <div className="lg:col-span-3 flex">
+              <div className="sticky top-10 w-full self-stretch rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse">
+                <div className="h-6 w-48 bg-white/20 rounded mb-4" />
+                <div className="h-4 w-3/4 bg-white/10 rounded" />
+              </div>
+            </div>
+          </div>
+        </motion.section>
+      </div>
+    )
   }
+
 
   if (!problem) {
     return <p className="text-white/40 p-10">Problem not found</p>;
@@ -296,7 +348,7 @@ export default function ProblemPage() {
                   .map((c) => (
                     <div
                       key={c._id}
-                      className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-1"
+                      className="bg-white/5 border border-white/10 rounded-lg p-4 "
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -325,23 +377,14 @@ export default function ProblemPage() {
 
                         <div className="flex items-center gap-3">
                           <span className="text-xs text-white/40">
-                            {(() => {
-                              const d = new Date(c.createdAt);
-                              const day = String(d.getDate()).padStart(2, "0");
-                              const month = String(d.getMonth() + 1).padStart(2, "0");
-                              const year = d.getFullYear();
-                              let hours = d.getHours();
-                              const minutes = String(d.getMinutes()).padStart(2, "0");
-                              const ampm = hours >= 12 ? "pm" : "am";
-                              hours = hours % 12 || 12;
-                              return `${day}/${month}/${year} ${hours}:${minutes} ${ampm}`;
-                            })()}
+                            {timeAgo(c.createdAt)}
                           </span>
+
 
                           {user?.profileSlug === c.user.profileSlug && (
                             <button
                               onClick={() => deleteComment(c._id)}
-                              className="text-white/40 hover:text-red-500 transition cursor-pointer"
+                              className="text-red-400 hover:text-red-300 transition cursor-pointer"
                               title="Delete comment"
                             >
                               <Trash2 className="w-4 h-4" />
