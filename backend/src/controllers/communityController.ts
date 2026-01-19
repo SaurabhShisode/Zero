@@ -13,31 +13,89 @@ export async function getPosts(req: Request, res: Response) {
   try {
     const sort = String(req.query.sort || "trending")
 
-    let sortQuery: any = { updatedAt: -1 }
-    if (sort === "top") sortQuery = { commentsCount: -1 }
-    if (sort === "new") sortQuery = { createdAt: -1 }
-
     const userId = (req as any).userId
       ? new mongoose.Types.ObjectId((req as any).userId)
       : null
 
-    const posts = await CommunityPost.find()
-      .populate("author", "name profileSlug")
-      .sort(sortQuery)
-      .limit(50)
-      .lean()
+    const pipeline: any[] = [
+      {
+        $addFields: {
+          upvotesCount: {
+            $size: { $ifNull: ["$upvotes", []] }
+          },
+          downvotesCount: {
+            $size: { $ifNull: ["$downvotes", []] }
+          },
+          engagementScore: {
+            $add: [
+              { $ifNull: ["$commentsCount", 0] },
+              { $size: { $ifNull: ["$upvotes", []] } },
+              { $size: { $ifNull: ["$downvotes", []] } }
+            ]
+          },
+          voteScore: {
+            $subtract: [
+              { $size: { $ifNull: ["$upvotes", []] } },
+              { $size: { $ifNull: ["$downvotes", []] } }
+            ]
+          }
+        }
+      }
+    ]
+
+    if (sort === "top") {
+      pipeline.push({ $sort: { voteScore: -1 } })
+    } else if (sort === "new") {
+      pipeline.push({ $sort: { createdAt: -1 } })
+    } else {
+      pipeline.push({ $sort: { engagementScore: -1 } })
+    }
+
+    pipeline.push({ $limit: 50 })
+
+    pipeline.push({
+      $lookup: {
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "author"
+      }
+    })
+
+    pipeline.push({
+      $unwind: "$author"
+    })
+
+    pipeline.push({
+      $project: {
+        title: 1,
+        body: 1,
+        tags: 1,
+        commentsCount: { $ifNull: ["$commentsCount", 0] },
+        upvotes: "$upvotesCount",
+        downvotes: "$downvotesCount",
+        voteScore: 1,
+        engagementScore: 1,
+        createdAt: 1,
+        author: {
+          name: "$author.name",
+          profileSlug: "$author.profileSlug"
+        },
+        upvotesArr: "$upvotes",
+        downvotesArr: "$downvotes"
+      }
+    })
+
+    const posts = await CommunityPost.aggregate(pipeline)
 
     const formattedPosts = posts.map((p: any) => {
-      const upvotes = Array.isArray(p.upvotes) ? p.upvotes : []
-      const downvotes = Array.isArray(p.downvotes) ? p.downvotes : []
-
       let myVote: "up" | "down" | null = null
 
       if (userId) {
-        if (upvotes.some((u: any) => u.toString() === userId.toString())) {
+        if (p.upvotesArr?.some((u: any) => u.toString() === userId.toString())) {
           myVote = "up"
         }
-        if (downvotes.some((u: any) => u.toString() === userId.toString())) {
+        if (p.downvotesArr?.some((u: any) => u.toString() === userId.toString())) {
           myVote = "down"
         }
       }
@@ -47,9 +105,9 @@ export async function getPosts(req: Request, res: Response) {
         title: p.title,
         body: p.body,
         tags: p.tags || [],
-        commentsCount: p.commentsCount || 0,
-        upvotes: upvotes.length,
-        downvotes: downvotes.length,
+        commentsCount: p.commentsCount,
+        upvotes: p.upvotes,
+        downvotes: p.downvotes,
         myVote,
         author: p.author,
         createdAt: p.createdAt
@@ -62,6 +120,7 @@ export async function getPosts(req: Request, res: Response) {
     res.status(500).json({ message: "Failed to fetch posts" })
   }
 }
+
 
 export async function createPost(req: Request, res: Response) {
   try {

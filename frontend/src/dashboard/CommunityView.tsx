@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { api } from "../api/client"
 import { useNavigate } from "react-router-dom"
 import { ArrowBigUp, ArrowBigDown } from 'lucide-react';
+import { User } from 'lucide-react';
 import {
   Plus,
   MessageSquare,
@@ -11,7 +12,8 @@ import {
   Trophy
 } from "lucide-react"
 import toast from "react-hot-toast"
-
+import { useAuthStore } from "../store/authStore"
+import { Trash } from 'lucide-react';
 type Post = {
   _id: string
   title: string
@@ -39,6 +41,8 @@ export default function DiscussionsView() {
   const [openComments, setOpenComments] = useState<string | null>(null)
   const [comments, setComments] = useState<Record<string, any[]>>({})
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
+  const [search, setSearch] = useState("")
+
 
   const [posts, setPosts] = useState<Post[]>([])
   const [sort, setSort] = useState("trending")
@@ -51,7 +55,8 @@ export default function DiscussionsView() {
   const [tags, setTags] = useState("")
   const [commentText, setCommentText] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({})
-  const myUserId = localStorage.getItem("userId")
+  const myUserId = useAuthStore(state => state.user?._id)
+
 
 
 
@@ -273,231 +278,290 @@ export default function DiscussionsView() {
             </button>
           )
         })}
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search discussions..."
+          className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white/80 outline-none w-64"
+        />
+
       </div>
 
-      <div className="space-y-4">
+  <div className="space-y-4">
 
-        {!loading && posts.length === 0 && (
-          <p className="text-white/40 text-sm">
-            No discussions yet. Start one.
-          </p>
-        )}
+  {loading && (
+    <>
+      {[1, 2, 3, 4].map(i => (
+        <div
+          key={i}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5 animate-pulse"
+        >
+          <div className="flex-1 space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-white/20" />
+              <div className="h-3 w-24 rounded bg-white/20" />
+              <div className="h-3 w-12 rounded bg-white/10" />
+            </div>
 
-        <AnimatePresence>
-          {posts.map(post => (
-            <motion.div
-              key={post._id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5"
-            >
+            <div className="h-5 w-3/4 rounded bg-white/20" />
+
+            <div className="space-y-2">
+              <div className="h-3 w-full rounded bg-white/10" />
+              <div className="h-3 w-5/6 rounded bg-white/10" />
+              <div className="h-3 w-2/3 rounded bg-white/10" />
+            </div>
+
+            <div className="flex items-center gap-4 pt-3">
+              <div className="h-4 w-12 rounded bg-white/20" />
+              <div className="h-4 w-12 rounded bg-white/20" />
+              <div className="h-4 w-12 rounded bg-white/20" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </>
+  )}
+
+  {!loading && posts.length === 0 && (
+    <p className="text-white/40 text-sm">
+      No discussions yet. Start one.
+    </p>
+  )}
+
+  <AnimatePresence>
+    {!loading &&
+      posts
+        .filter(p => {
+          if (!search.trim()) return true
+          const q = search.toLowerCase()
+          return (
+            p.title.toLowerCase().includes(q) ||
+            p.body.toLowerCase().includes(q) ||
+            p.tags.some(t => t.toLowerCase().includes(q)) ||
+            p.author.name.toLowerCase().includes(q)
+          )
+        })
+        .map(post => (
+
+              <motion.div
+                key={post._id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5"
+              >
 
 
-              <div className="flex-1 space-y-2 min-w-0">
-                <div className="flex items-center gap-2 text-sm">
-                  <button
-                    onClick={() =>
-                      navigate(`/u/${post.author.profileSlug}`)
-                    }
-                    className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer"
-                  >
-                    <img
-                      src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${post.author.profileSlug}`}
-                      className="w-6 h-6 rounded-full border border-white/20"
-                    />
-                    {post.author.name}
-                  </button>
-
-
-                  <span className="text-white/30">•</span>
-
-                  <span className="text-white/40">
-                    {timeAgo(post.createdAt)}
-                  </span>
-
-
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <h2
-                    onClick={() =>
-                      navigate(`/discussions/${post._id}`)
-                    }
-                    className="text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
-                  >
-                    {post.title}
-                  </h2>
-
-
-
-                  {post.tags.map(t => (
-                    <span
-                      key={t}
-                      className="text-xs px-2 py-1 rounded border border-white/20 text-white/60"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="text-white/50 text-sm">
-                  <p className={expandedPosts[post._id] ? "" : "line-clamp-3"}>
-                    {post.body}
-                  </p>
-
-                  {post.body.length > 180 && (
+                <div className="flex-1 space-y-2 min-w-0">
+                  <div className="flex items-center gap-2 text-sm">
                     <button
-                      onClick={() => toggleExpand(post._id)}
-                      className="mt-1 text-xs text-white/60 hover:text-white transition cursor-pointer"
+                      onClick={() =>
+                        navigate(`/u/${post.author.profileSlug}`)
+                      }
+                      className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer"
                     >
-                      {expandedPosts[post._id] ? "Show less" : "Read more"}
-                    </button>
-                  )}
-                </div>
-
-
-
-                <div className="flex items-center justify-between pt-3  ">
-                  <div className="flex items-center gap-4 text-sm text-white/50">
-                    <button
-                      onClick={() => vote(post._id, "up")}
-                      className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "up"
-                        ? "text-green-400"
-                        : "text-white/50 hover:text-white"
-                        }`}
-                    >
-                      <ArrowBigUp className="w-4 h-4" />
-                      {post.upvotes}
-                    </button>
-
-
-
-                    <button
-                      onClick={() => vote(post._id, "down")}
-                      className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "down"
-                        ? "text-red-400"
-                        : "text-white/50 hover:text-white"
-                        }`}
-                    >
-                      <ArrowBigDown className="w-4 h-4" />
-                      {post.downvotes}
-                    </button>
-
-
-
-                    <button
-                      onClick={() => toggleComments(post._id)}
-                      className="flex items-center gap-1 hover:text-white transition cursor-pointer"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      {post.commentsCount}
-                    </button>
-                  </div>
-                </div>
-                {openComments === post._id && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    className="mt-4 space-y-4"
-                  >
-                    {/* Comment Input */}
-                    <div className="flex gap-3">
-                      <img
-                        src={`https://api.dicebear.com/6.x/thumbs/svg?seed=me`}
-                        className="w-8 h-8 rounded-full border border-white/20"
-                      />
-
-                      <div className="flex-1 relative">
-                        <textarea
-                          value={commentText[post._id] || ""}
-                          onChange={e =>
-                            setCommentText(prev => ({
-                              ...prev,
-                              [post._id]: e.target.value
-                            }))
-                          }
-                          placeholder="Write a comment..."
-                          rows={3}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 pr-16 text-sm outline-none resize-none scrollbar-hide"
-                        />
-
-                        <button
-                          disabled={submitting[post._id]}
-                          onClick={() => submitComment(post._id)}
-                          className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-black text-xs hover:bg-white/90 transition disabled:opacity-50 cursor-pointer"
-                        >
-                          {submitting[post._id] ? "Posting..." : "Post"}
-                        </button>
+                      <div className="w-6 h-6 rounded-full  flex items-center justify-center bg-white/10">
+                        <User className="w-4 h-4 text-white/60" />
                       </div>
+                      {post.author.name}
+                    </button>
 
+
+                    <span className="text-white/30">•</span>
+
+                    <span className="text-white/40">
+                      {timeAgo(post.createdAt)}
+                    </span>
+
+
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-2">
+                    <h2
+                      onClick={() =>
+                        navigate(`/discussions/${post._id}`)
+                      }
+                      className="text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
+                    >
+                      {post.title}
+                    </h2>
+
+
+
+                    {post.tags.map(t => (
+                      <span
+                        key={t}
+                        className="text-xs px-2 py-1 rounded border border-white/20 text-white/60"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="text-white/50 text-sm">
+                    <p className={expandedPosts[post._id] ? "" : "line-clamp-3"}>
+                      {post.body}
+                    </p>
+
+                    {post.body.length > 180 && (
+                      <button
+                        onClick={() => toggleExpand(post._id)}
+                        className="mt-1 text-xs text-white/60 hover:text-white transition cursor-pointer"
+                      >
+                        {expandedPosts[post._id] ? "Show less" : "Read more"}
+                      </button>
+                    )}
+                  </div>
+
+
+
+                  <div className="flex items-center justify-between pt-3  ">
+                    <div className="flex items-center gap-4 text-sm text-white/50">
+                      <button
+                        onClick={() => vote(post._id, "up")}
+                        className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "up"
+                          ? "text-green-400"
+                          : "text-white/50 hover:text-white"
+                          }`}
+                      >
+                        <ArrowBigUp className="w-4 h-4" />
+                        {post.upvotes}
+                      </button>
+
+
+
+                      <button
+                        onClick={() => vote(post._id, "down")}
+                        className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "down"
+                          ? "text-red-400"
+                          : "text-white/50 hover:text-white"
+                          }`}
+                      >
+                        <ArrowBigDown className="w-4 h-4" />
+                        {post.downvotes}
+                      </button>
+
+
+
+                      <button
+                        onClick={() => toggleComments(post._id)}
+                        className="flex items-center gap-1 hover:text-white transition cursor-pointer"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        {post.commentsCount}
+                      </button>
                     </div>
+                  </div>
+                  {openComments === post._id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      className="mt-4 space-y-4"
+                    >
 
-                    <div className=" p-4  gap-3  space-y-3 ">
-                      {(comments[post._id] || [])
-                        .slice(0, expanded[post._id] ? undefined : 5)
-                        .map(c => (
-                          <div
-                            key={c._id}
-                            className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
-                          >
-                            <img
-                              src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${c.author.profileSlug}`}
-                              className="w-7 h-7 rounded-full border border-white/20"
-                            />
+                      <div className="flex gap-3">
+                        <div className="w-8 h-8 rounded-full  flex items-center justify-center bg-white/10">
+                          <User className="w-5 h-5 text-white/60" />
+                        </div>
 
-                            <div className="flex-1 gap-y-2">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-xs text-white/60">
-                                  <span>{c.author.name}</span>
-                                  <span className="text-white/30">•</span>
-                                  <span>{timeAgo(c.createdAt)}</span>
-                                </div>
-
-
-                                {String(c.author._id) === String(myUserId) && (
-
-                                  <button
-                                    onClick={() => deleteComment(post._id, c._id)}
-                                    className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
-                                  >
-                                    Delete
-                                  </button>
-                                )}
-                              </div>
-
-                              <p className="text-sm text-white/70">
-                                {c.message}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-
-
-
-                      {(comments[post._id]?.length || 0) > 5 &&
-                        !expanded[post._id] && (
-                          <button
-                            onClick={() =>
-                              setExpanded(prev => ({
+                        <div className="flex-1 relative">
+                          <textarea
+                            value={commentText[post._id] || ""}
+                            onChange={e =>
+                              setCommentText(prev => ({
                                 ...prev,
-                                [post._id]: true
+                                [post._id]: e.target.value
                               }))
                             }
-                            className="text-xs text-white/50 hover:text-white transition cursor-pointer"
+                            placeholder="Write a comment..."
+                            rows={3}
+                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 pr-16 text-sm outline-none resize-none scrollbar-hide"
+                          />
+
+                          <button
+                            disabled={submitting[post._id]}
+                            onClick={() => submitComment(post._id)}
+                            className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-black text-xs hover:bg-white/90 transition disabled:opacity-50 cursor-pointer"
                           >
-                            Load more comments
+                            {submitting[post._id] ? "Posting..." : "Post"}
                           </button>
+                        </div>
+
+                      </div>
+
+                      <div className="p-4 space-y-3">
+                        {(comments[post._id]?.length || 0) === 0 && (
+                          <p className="text-sm text-white/40 text-center ">
+                            No comments yet. Be the first to start the discussion.
+                          </p>
                         )}
-                    </div>
-                  </motion.div>
-                )}
+
+                        {(comments[post._id] || [])
+                          .slice(0, expanded[post._id] ? undefined : 5)
+                          .map(c => (
+                            <div
+                              key={c._id}
+                              className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
+                            >
+                              <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10">
+                                <User className="w-4 h-4 text-white/60" />
+                              </div>
+
+                              <div className="flex-1 gap-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2 text-xs text-white/60">
+                                    <span
+                                      onClick={() => navigate(`/u/${c.author.profileSlug}`)}
+                                      className="cursor-pointer hover:text-white transition"
+                                    >
+                                      {c.author.name}
+                                    </span>
+
+                                    <span className="text-white/30">•</span>
+                                    <span>{timeAgo(c.createdAt)}</span>
+                                  </div>
+
+                                  {String(c.author._id) === String(myUserId) && (
+                                    <button
+                                      onClick={() => deleteComment(post._id, c._id)}
+                                      className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
+                                    >
+                                      <Trash className="w-4 h-4" />
+                                    </button>
+                                  )}
+                                </div>
+
+                                <p className="text-sm text-white/70 mt-2">
+                                  {c.message}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+
+                        {(comments[post._id]?.length || 0) > 5 &&
+                          !expanded[post._id] && (
+                            <button
+                              onClick={() =>
+                                setExpanded(prev => ({
+                                  ...prev,
+                                  [post._id]: true
+                                }))
+                              }
+                              className="text-xs text-white/50 hover:text-white transition cursor-pointer"
+                            >
+                              Load more comments
+                            </button>
+                          )}
+                      </div>
+
+                    </motion.div>
+                  )}
 
 
 
-              </div>
-            </motion.div>
-          ))}
+                </div>
+              </motion.div>
+            ))}
         </AnimatePresence>
       </div>
 
