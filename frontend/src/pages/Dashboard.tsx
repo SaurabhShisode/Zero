@@ -8,7 +8,7 @@ import DailyView from "../dashboard/DailyView";
 import CompanyView from "../dashboard/CompanyView";
 import TopicsView from "../dashboard/TopicsView";
 import PlacementView from "../dashboard/PlacementView";
-import DiscussionsView from "../dashboard/DiscussionsView";
+import DiscussionsView from "../dashboard/CommunityView";
 import ProfileView from "../dashboard/ProfileView";
 import SettingsView from "../dashboard/SettingsView";
 
@@ -32,7 +32,7 @@ useEffect(() => {
         return <TopicsView />;
       case "placement":
         return <PlacementView />;
-      case "discussions":
+      case "community":
         return <DiscussionsView />;
       case "profile":
         return <ProfileView />;

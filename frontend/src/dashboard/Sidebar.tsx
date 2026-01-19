@@ -14,7 +14,7 @@ export type View =
     | "company"
     | "topics"
     | "placement"
-    | "discussions"
+    | "community"
     | "profile"
     | "settings";
 
@@ -27,7 +27,7 @@ const SIDEBAR_ITEMS: {
         { id: "company", label: "Company Wise", icon: Building2 },
         { id: "topics", label: "Topic Wise", icon: Layers },
         { id: "placement", label: "Placement Mode", icon: Briefcase },
-        { id: "discussions", label: "Discussions", icon: MessageCircle },
+        { id: "community", label: "Community", icon: MessageCircle },
         { id: "profile", label: "Profile", icon: User },
         { id: "settings", label: "Settings", icon: Settings }
     ];

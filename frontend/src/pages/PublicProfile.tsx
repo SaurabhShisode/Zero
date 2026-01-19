@@ -562,7 +562,7 @@ export default function PublicProfileView() {
         className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
       >
         <p className="text-sm tracking-wide text-white/40">
-          Consistency heatmap
+          Consistency Heatmap
         </p>
 
         <div className="w-full overflow-x-auto flex justify-center">
