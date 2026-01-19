@@ -8,6 +8,7 @@ import {
     Settings
 } from "lucide-react";
 import zeroLogo from "/icons/zero.svg"
+import type { SVGProps } from "react";
 export type View =
     | "daily"
     | "company"
@@ -49,6 +50,7 @@ export default function Sidebar({ active, onChange }: Props) {
                 
             </div>
             
+           
 
 
 

@@ -44,7 +44,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex">
+    <div className="min-h-screen bg-black text-white flex">
       <Sidebar active={view} onChange={setView} />
 
       <div className="flex-1 flex flex-col ml-0 md:ml-64 h-screen w-full">

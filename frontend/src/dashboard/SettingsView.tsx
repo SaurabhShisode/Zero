@@ -55,7 +55,7 @@ function DifficultySelect({
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-sm hover:bg-white/15 transition"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 border border-white/15 text-sm hover:bg-white/15 transition cursor-pointer"
       >
         <span>{value}</span>
         {open ? (
@@ -71,7 +71,7 @@ function DifficultySelect({
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 6 }}
-          className="absolute right-0 mt-2 w-28 rounded-xl border border-white/15 bg-black/80 backdrop-blur-xl overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-28 rounded-xl border border-white/15 bg-black/80 backdrop-blur-xl overflow-hidden z-50 "
         >
           {DIFFICULTIES.map(d => (
             <button
@@ -80,7 +80,7 @@ function DifficultySelect({
                 onChange(d)
                 setOpen(false)
               }}
-              className={`w-full text-left px-3 py-2 text-sm transition ${d === value
+              className={`w-full text-left px-3 py-2 text-sm transition cursor-pointer ${d === value
                 ? "bg-white/20"
                 : "hover:bg-white/10"
                 }`}
@@ -204,7 +204,7 @@ function discardChanges() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => toggleSkill(pref.skill)}
-                  className={`w-10 h-6 rounded-full transition ${pref.enabled
+                  className={`w-10 h-6 rounded-full transition cursor-pointer ${pref.enabled
                     ? "bg-white/80 "
                     : "bg-white/20"
                     }`}

@@ -113,9 +113,7 @@ export default function TopicsView() {
         ))}
       </div>
 
-      {loading && (
-        <p className="text-white/40">Loading problems...</p>
-      )}
+      
 
       {!loading && problems.length === 0 && (
         <p className="text-white/40">

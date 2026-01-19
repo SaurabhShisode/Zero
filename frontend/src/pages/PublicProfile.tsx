@@ -300,7 +300,7 @@ export default function PublicProfileView() {
   const hardStart = medStart + SEG
 
   return (
-    <section className="font-geist bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black text-white px-10 pt-10 pb-10 space-y-8">
+    <section className="font-geist bg-black text-white px-10 pt-10 pb-10 space-y-8">
 
       <button
         onClick={() => navigate(-1)}

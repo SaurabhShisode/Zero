@@ -108,12 +108,10 @@ export default function CompanyView() {
         ))}
       </div>
 
-      {loading && (
-        <p className="text-white/40">Loading company problems...</p>
-      )}
+     
 
       {!loading && problems.length === 0 && (
-        <p className="text-white/40">
+        <p className="text-white/40 font-geist">
           No problems found for this category.
         </p>
       )}
