@@ -78,14 +78,56 @@ export default function DailyView() {
       alert("Failed to update solve status")
     }
   }
+  if (loading) {
+    return (
+      <section className="space-y-8 font-geist mx-10 mt-10 mb-10 text-white">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="space-y-2 animate-pulse"
+        >
+          <div className="h-6 w-48 bg-white/20 rounded" />
+          <div className="h-4 w-72 bg-white/10 rounded" />
+        </motion.div>
+
+        <div className="space-y-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: i * 0.1 }}
+              className="relative mt-8 flex justify-center"
+            >
+              <div className="relative w-full">
+                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-16 bg-white/20 rounded" />
+                    <div className="h-4 w-14 bg-white/10 rounded" />
+                  </div>
+
+                  <div className="flex items-center justify-between gap-6">
+                    <div className="h-5 w-64 bg-white/20 rounded" />
+
+                    <div className="flex items-center gap-4">
+                      <div className="h-4 w-28 bg-white/10 rounded" />
+                      <div className="h-5 w-5 bg-white/20 rounded-md" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-8 font-geist mx-10 mt-10 scrollbar-hide mb-10">
       <h1 className="text-xl font-semibold">Today’s Problems</h1>
 
-      {loading && (
-        <p className="text-white/40">Loading daily problems...</p>
-      )}
+      
 
       {!loading && daily.length === 0 && (
         <p className="text-white/40">
@@ -99,21 +141,21 @@ export default function DailyView() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
-          className="relative mt-8 flex justify-center "
+          className="relative mt-4 flex justify-center "
         >
           <div className="relative group w-full">
             <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
             <div
               onClick={() =>
-  navigate(`/problems/${item.problem._id}`, {
-    state: {
-      fromLabel: "Daily",
-      fromPath: location.pathname + location.search,
-      contextLabel: item.problem.title
-    }
-  })
-}
+                navigate(`/problems/${item.problem._id}`, {
+                  state: {
+                    fromLabel: "Daily",
+                    fromPath: location.pathname + location.search,
+                    contextLabel: item.problem.title
+                  }
+                })
+              }
 
 
               className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl text-left cursor-pointer"

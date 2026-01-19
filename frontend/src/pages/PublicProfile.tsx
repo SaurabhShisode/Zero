@@ -258,8 +258,115 @@ export default function PublicProfileView() {
   }
 
   if (loading) {
-    return <p className="text-white/40 p-10">Loading profile...</p>
-  }
+  return (
+    <section className="font-geist bg-black text-white px-10 pt-10 pb-10 space-y-8">
+      <button
+        className="px-3 py-2 rounded-lg border bg-white/10 border-white/20 text-sm text-white/40 flex items-center gap-2 cursor-default"
+      >
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between animate-pulse"
+      >
+        <div className="flex items-center gap-6">
+          <div className="w-24 h-24 rounded-2xl bg-white/20" />
+
+          <div>
+            <div className="h-6 w-40 bg-white/20 rounded mb-2" />
+            <div className="h-4 w-24 bg-white/10 rounded" />
+          </div>
+        </div>
+
+        <div className="h-9 w-28 bg-white/20 rounded-lg" />
+      </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="lg:col-span-3 rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 animate-pulse"
+        >
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="w-52 h-52 rounded-full bg-white/10" />
+
+            <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  className="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+                >
+                  <div className="h-4 w-12 bg-white/20 rounded mx-auto mb-2" />
+                  <div className="h-6 w-16 bg-white/20 rounded mx-auto" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="lg:col-span-2 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 animate-pulse"
+        >
+          <div>
+            <div className="h-4 w-24 bg-white/20 rounded mb-2" />
+            <div className="h-10 w-20 bg-white/20 rounded" />
+          </div>
+
+          <div className="h-12 w-px bg-white/10" />
+
+          <div>
+            <div className="h-4 w-28 bg-white/20 rounded mb-2" />
+            <div className="h-10 w-20 bg-white/20 rounded" />
+          </div>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+      >
+        <div className="h-4 w-48 bg-white/20 rounded" />
+        {[1, 2, 3].map(i => (
+          <div
+            key={i}
+            className="h-10 w-full bg-white/10 rounded"
+          />
+        ))}
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+      >
+        <div className="h-4 w-24 bg-white/20 rounded" />
+        <div className="flex flex-wrap gap-2">
+          {[1, 2, 3, 4].map(i => (
+            <div
+              key={i}
+              className="h-6 w-16 bg-white/10 rounded"
+            />
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+      >
+        <div className="h-4 w-40 bg-white/20 rounded" />
+        <div className="h-24 w-full bg-white/10 rounded" />
+      </motion.div>
+    </section>
+  )
+}
+
 
   if (!user || !stats) {
     return <p className="text-red-400 p-10">Profile not found</p>

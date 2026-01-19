@@ -50,7 +50,7 @@ type ProfileStats = {
 export default function ProfileView() {
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
-const hydrated = useAuthStore(s => s.hydrated)
+  const hydrated = useAuthStore(s => s.hydrated)
   const [recent, setRecent] = useState<RecentSolve[]>([])
 
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([])
@@ -86,24 +86,24 @@ const hydrated = useAuthStore(s => s.hydrated)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-  if (!hydrated || !user?._id) return
+    if (!hydrated || !user?._id) return
 
-  setLoading(true)
+    setLoading(true)
 
-  Promise.all([
-    api.get("/api/profile/heatmap"),
-    api.get("/api/profile/friends"),
-    api.get("/api/profile/recent"),
-    api.get("/api/profile/stats")
-  ])
-    .then(([heatRes, friendsRes, recentRes, statsRes]) => {
-      setHeatmap(heatRes.data.heatmap || [])
-      setFriends(friendsRes.data.friends || [])
-      setRecent(recentRes.data.recent || [])
-      setStats(statsRes.data.stats)
-    })
-    .finally(() => setLoading(false))
-}, [hydrated, user?._id])
+    Promise.all([
+      api.get("/api/profile/heatmap"),
+      api.get("/api/profile/friends"),
+      api.get("/api/profile/recent"),
+      api.get("/api/profile/stats")
+    ])
+      .then(([heatRes, friendsRes, recentRes, statsRes]) => {
+        setHeatmap(heatRes.data.heatmap || [])
+        setFriends(friendsRes.data.friends || [])
+        setRecent(recentRes.data.recent || [])
+        setStats(statsRes.data.stats)
+      })
+      .finally(() => setLoading(false))
+  }, [hydrated, user?._id])
 
 
 
@@ -125,68 +125,68 @@ const hydrated = useAuthStore(s => s.hydrated)
 
 
   const copyProfileLink = () => {
-  if (!user?.profileSlug) return
+    if (!user?.profileSlug) return
 
-  const url = `${window.location.origin}/u/${user.profileSlug}`
-  navigator.clipboard.writeText(url)
+    const url = `${window.location.origin}/u/${user.profileSlug}`
+    navigator.clipboard.writeText(url)
 
-  setCopied(true)
-  toast.success("Profile link copied")
+    setCopied(true)
+    toast.success("Profile link copied")
 
-  setTimeout(() => setCopied(false), 1500)
-}
+    setTimeout(() => setCopied(false), 1500)
+  }
 
 
   const addFriend = async () => {
-  if (!friendSlug.trim()) {
-    toast.error("Enter a profile slug")
-    return
-  }
+    if (!friendSlug.trim()) {
+      toast.error("Enter a profile slug")
+      return
+    }
 
-  try {
-    await api.post("/api/profile/friends", {
-      friendSlug: friendSlug.trim()
-    })
+    try {
+      await api.post("/api/profile/friends", {
+        friendSlug: friendSlug.trim()
+      })
 
-    toast.success("Friend added")
-    setFriendSlug("")
-  } catch (err: any) {
-    if (err.response?.status === 409) {
-      toast("Already friends", { icon: "✓" })
-    } else if (err.response?.status === 400) {
-      toast.error("You cannot add yourself")
-    } else if (err.response?.status === 404) {
-      toast.error("User not found")
-    } else {
-      toast.error("Failed to add friend")
+      toast.success("Friend added")
+      setFriendSlug("")
+    } catch (err: any) {
+      if (err.response?.status === 409) {
+        toast("Already friends", { icon: "✓" })
+      } else if (err.response?.status === 400) {
+        toast.error("You cannot add yourself")
+      } else if (err.response?.status === 404) {
+        toast.error("User not found")
+      } else {
+        toast.error("Failed to add friend")
+      }
     }
   }
-}
 
 
   const compareFriend = async () => {
-  if (!friendSlug.trim()) {
-    toast.error("Enter a profile slug")
-    return
+    if (!friendSlug.trim()) {
+      toast.error("Enter a profile slug")
+      return
+    }
+
+    try {
+      const res = await api.get(
+        `/api/profile/public/${friendSlug.trim()}`
+      )
+
+      const friendId = res.data.user._id
+
+      const compareRes = await api.get(
+        `/api/profile/compare/${friendId}`
+      )
+
+      setCompareData(compareRes.data)
+      toast.success("Comparison loaded")
+    } catch {
+      toast.error("Could not compare with friend")
+    }
   }
-
-  try {
-    const res = await api.get(
-      `/api/profile/public/${friendSlug.trim()}`
-    )
-
-    const friendId = res.data.user._id
-
-    const compareRes = await api.get(
-      `/api/profile/compare/${friendId}`
-    )
-
-    setCompareData(compareRes.data)
-    toast.success("Comparison loaded")
-  } catch {
-    toast.error("Could not compare with friend")
-  }
-}
 
   function getLast12Months() {
     const months = []
@@ -287,13 +287,125 @@ const hydrated = useAuthStore(s => s.hydrated)
 
 
 
-  if (!hydrated) {
-  return <p className="text-white/40 p-10">Initializing session...</p>
-}
+  if (!hydrated || loading || !user || !stats) {
+    return (
+      <section className="font-geist mx-10 mt-10 mb-10 space-y-8 text-white">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex flex-col md:flex-row gap-6 animate-pulse"
+        >
+          <div className="w-24 h-24 rounded-2xl bg-white/20" />
 
-if (loading || !user || !stats) {
-  return <p className="text-white/40 p-10">Loading profile...</p>
-}
+          <div className="flex-1 space-y-2">
+            <div className="h-6 w-40 bg-white/20 rounded" />
+            <div className="h-4 w-32 bg-white/10 rounded" />
+            <div className="h-4 w-48 bg-white/10 rounded" />
+          </div>
+
+          <div className="h-9 w-28 bg-white/20 rounded-lg" />
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="lg:col-span-3 rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 animate-pulse"
+          >
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-52 h-52 rounded-full bg-white/10" />
+
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
+                {[1, 2, 3].map(i => (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+                  >
+                    <div className="h-4 w-12 bg-white/20 rounded mx-auto mb-2" />
+                    <div className="h-6 w-16 bg-white/20 rounded mx-auto" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="lg:col-span-2 flex items-center justify-between rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 animate-pulse"
+          >
+            <div>
+              <div className="h-4 w-24 bg-white/20 rounded mb-2" />
+              <div className="h-10 w-20 bg-white/20 rounded" />
+            </div>
+
+            <div className="h-12 w-px bg-white/10" />
+
+            <div>
+              <div className="h-4 w-28 bg-white/20 rounded mb-2" />
+              <div className="h-10 w-20 bg-white/20 rounded" />
+            </div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+        >
+          <div className="h-4 w-48 bg-white/20 rounded" />
+          <div className="flex gap-2">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div
+                key={i}
+                className="w-[11px] h-[11px] bg-white/10 rounded-[2px]"
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+        >
+          <div className="h-4 w-40 bg-white/20 rounded" />
+          {[1, 2, 3].map(i => (
+            <div
+              key={i}
+              className="h-10 w-full bg-white/10 rounded"
+            />
+          ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+        >
+          <div className="h-4 w-24 bg-white/20 rounded" />
+          <div className="flex flex-wrap gap-2">
+            {[1, 2, 3, 4].map(i => (
+              <div
+                key={i}
+                className="h-6 w-16 bg-white/10 rounded"
+              />
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-3 animate-pulse"
+        >
+          <div className="h-4 w-32 bg-white/20 rounded" />
+          <div className="h-10 w-full bg-white/10 rounded" />
+        </motion.div>
+      </section>
+    )
+  }
+
 
 
 
@@ -358,18 +470,18 @@ if (loading || !user || !stats) {
   const hardStart = medStart + SEG
 
   const removeFriend = async (friendId: string) => {
-  try {
-    await api.delete(`/api/profile/friends/${friendId}`)
+    try {
+      await api.delete(`/api/profile/friends/${friendId}`)
 
-    setFriends(
-      friends.filter(f => f._id !== friendId)
-    )
+      setFriends(
+        friends.filter(f => f._id !== friendId)
+      )
 
-    toast("Friend removed", { icon: "✖" })
-  } catch {
-    toast.error("Failed to remove friend")
+      toast("Friend removed", { icon: "✖" })
+    } catch {
+      toast.error("Failed to remove friend")
+    }
   }
-}
 
 
 

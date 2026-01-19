@@ -79,6 +79,7 @@ export default function CompanyView() {
       alert("Failed to update solve status")
     }
   }
+ 
 
   return (
     <section className="space-y-6 font-geist mx-10 mt-10 mb-10">
@@ -94,21 +95,18 @@ export default function CompanyView() {
           <button
             key={tag.key}
             onClick={() => setSelected(tag.key)}
-            className={`
-              px-3 py-1.5 rounded-lg text-sm border transition cursor-pointer
-              ${
-                selected === tag.key
-                  ? "border-white text-white bg-white/10"
-                  : "border-white/20 text-white/50 hover:text-white"
-              }
-            `}
+
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition cursor-pointer ${selected === tag.key
+              ? "bg-white text-black"
+              : "bg-white/5 text-white/70 hover:bg-white/10"
+              }`}
           >
             {tag.label}
           </button>
         ))}
       </div>
 
-     
+
 
       {!loading && problems.length === 0 && (
         <p className="text-white/40 font-geist">
@@ -117,37 +115,69 @@ export default function CompanyView() {
       )}
 
       <div className="space-y-6">
-        {problems.map((p, index) => (
-          <motion.div
-            key={p._id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.03, duration: 0.4 }}
-            className="relative group"
-          >
-            <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition" />
+  {loading && (
+    <>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: i * 0.05 }}
+          className="relative"
+        >
+          <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse">
+            <div className="flex items-center justify-between">
+              <div className="space-y-3 min-w-0">
+                <div className="flex gap-2">
+                  <div className="h-5 w-14 bg-white/20 rounded" />
+                  <div className="h-5 w-16 bg-white/10 rounded" />
+                  <div className="h-5 w-12 bg-white/10 rounded" />
+                </div>
 
-            <div
-              onClick={() =>
-  navigate(`/problems/${p._id}`, {
-    state: {
-      fromLabel: "Company-wise",
-      fromPath: location.pathname + location.search,
-      contextLabel: p.title
-    }
-  })
-}
+                <div className="h-5 w-64 bg-white/20 rounded" />
+              </div>
 
-              className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between cursor-pointer"
-            >
-              <div className="min-w-0 space-y-2">
+              <div className="flex items-center gap-4">
+                <div className="h-4 w-28 bg-white/10 rounded" />
+                <div className="h-6 w-6 bg-white/20 rounded-md" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </>
+  )}
+
+  {!loading &&
+    problems.map((p, index) => (
+      <motion.div
+        key={p._id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.03, duration: 0.4 }}
+        className="relative group"
+      >
+        <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition" />
+
+        <div
+          onClick={() =>
+            navigate(`/problems/${p._id}`, {
+              state: {
+                fromLabel: "Company-wise",
+                fromPath: location.pathname + location.search,
+                contextLabel: p.title
+              }
+            })
+          }
+          className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between cursor-pointer"
+        >
+           <div className="min-w-0 space-y-2">
                 <div className="flex gap-2 flex-wrap">
                   <span
                     className={`text-xs px-2 py-0.5 rounded
-                      ${
-                        p.difficulty === "Easy"
-                          ? "text-green-400 border-green-400/30 bg-green-400/10"
-                          : p.difficulty === "Medium"
+                      ${p.difficulty === "Easy"
+                        ? "text-green-400 border-green-400/30 bg-green-400/10"
+                        : p.difficulty === "Medium"
                           ? "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
                           : "text-red-400 border-red-400/30 bg-red-400/10"
                       }
@@ -197,10 +227,9 @@ export default function CompanyView() {
                       border border-white/30
                       flex items-center justify-center
                       transition
-                      ${
-                        solved[p._id]
-                          ? "bg-white border-white"
-                          : "bg-transparent"
+                      ${solved[p._id]
+                        ? "bg-white border-white"
+                        : "bg-transparent"
                       }
                     `}
                   >
@@ -219,10 +248,11 @@ export default function CompanyView() {
                   Mark solved
                 </button>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+        </div>
+      </motion.div>
+    ))}
+</div>
+
     </section>
   )
 }
