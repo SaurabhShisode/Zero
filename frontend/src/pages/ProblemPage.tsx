@@ -8,6 +8,7 @@ import { useAuthStore } from "../store/authStore";
 import { Trash2 } from "lucide-react";
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useLocation } from "react-router-dom";
+import ConfirmModal from "../components/ConfirmModal"
 
 
 type Problem = {
@@ -52,6 +53,9 @@ export default function ProblemPage() {
   const [page, setPage] = useState(1);
   const [isSolved, setIsSolved] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [pendingCommentId, setPendingCommentId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!id) return;
@@ -169,14 +173,27 @@ export default function ProblemPage() {
     }
   };
 
-  const deleteComment = async (commentId: string) => {
+  async function handleConfirmDelete() {
+    if (!pendingCommentId) return
+
     try {
-      await api.delete(`/api/discussion/${commentId}`);
-      setComments((prev) => prev.filter((c) => c._id !== commentId));
+      setConfirmLoading(true)
+
+      await api.delete(`/api/discussion/comment/${pendingCommentId}`)
+
+
+      setComments(prev =>
+        prev.filter(c => c._id !== pendingCommentId)
+      )
     } catch {
-      alert("Failed to delete comment");
+      alert("Failed to delete comment")
+    } finally {
+      setConfirmLoading(false)
+      setConfirmOpen(false)
+      setPendingCommentId(null)
     }
-  };
+  }
+
 
 
   if (loading) {
@@ -383,10 +400,14 @@ export default function ProblemPage() {
 
                           {user?.profileSlug === c.user.profileSlug && (
                             <button
-                              onClick={() => deleteComment(c._id)}
+                              onClick={() => {
+                                setPendingCommentId(c._id)
+                                setConfirmOpen(true)
+                              }}
                               className="text-red-400 hover:text-red-300 transition cursor-pointer"
                               title="Delete comment"
                             >
+
                               <Trash2 className="w-4 h-4" />
                             </button>
                           )}
@@ -454,6 +475,19 @@ export default function ProblemPage() {
           </div>
         </div>
       </motion.section>
+      <ConfirmModal
+        open={confirmOpen}
+        loading={confirmLoading}
+        title="Delete Comment"
+        description="This comment will be permanently removed."
+        confirmText="Delete"
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingCommentId(null)
+        }}
+        onConfirm={handleConfirmDelete}
+      />
+
     </div>
   );
 }
