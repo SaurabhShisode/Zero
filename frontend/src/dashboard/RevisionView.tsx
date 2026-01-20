@@ -201,7 +201,7 @@ export default function RevisionView() {
                                     }}
                                     className="px-3 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
                                 >
-                                    Open
+                                    Solve
                                     <ExternalLink className="w-4 h-4" />
                                 </button>
 

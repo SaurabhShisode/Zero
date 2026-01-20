@@ -9,7 +9,7 @@ import { Trash2 } from "lucide-react";
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useLocation } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal"
-
+import { ExternalLink } from "lucide-react"
 
 type Problem = {
   _id: string;
@@ -318,9 +318,9 @@ export default function ProblemPage() {
                 href={problem.link}
                 target="_blank"
                 rel="noreferrer"
-                className="text-sm text-white/60 hover:text-white transition"
+                className="text-sm flex gap-2 text-white/60 hover:text-white transition"
               >
-                Open on platform ↗
+                Solve <ExternalLink className="inline-block w-4 h-4 " />
               </a>
               {history.length > 0 && (
                 <div className=" py-2 flex items-center gap-2">
