@@ -3,7 +3,7 @@ import { assignDailyProblems } from "../services/dailyAssignment.js";
 
 export const startDailyCron = () => {
   cron.schedule(
-    "0 1 * * *",
+    "0 0 * * *",
     async () => {
       try {
         console.log("Running daily problem assignment");
