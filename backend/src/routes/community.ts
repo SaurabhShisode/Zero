@@ -5,7 +5,8 @@ import {
   votePost,
   getComments,
   addComment,
-  deleteComment
+  deleteComment,
+  deletePost
 } from "../controllers/communityController.js"
 import { requireAuth } from "../middleware/auth.js"
 
@@ -19,5 +20,9 @@ router.post("/posts/:id/vote", requireAuth, votePost)
 router.get("/posts/:id/comments", getComments)
 router.post("/posts/:id/comments", requireAuth, addComment)
 router.delete("/comments/:id", requireAuth, deleteComment)
-
+router.delete(
+  "/posts/:id",
+  requireAuth,
+  deletePost
+)
 export default router
