@@ -2,6 +2,7 @@ import type { Response } from "express";
 import type { AuthRequest } from "../middleware/auth.js";
 import { RevisionTask } from "../models/RevisionTask.js";
 import { Types } from "mongoose";
+import { toDay } from "../utils/dates.js";
 
 export const getPendingRevisions = async (
   req: AuthRequest,
@@ -13,11 +14,12 @@ export const getPendingRevisions = async (
     }
 
     const userId = new Types.ObjectId(req.userId);
-
+    const today = toDay()
     const tasks = await RevisionTask.find({
       user: userId,
       status: "pending",
-    }).populate("problem");
+      scheduledFor: { $lte: today }
+    }).populate("problem")
 
     return res.json({ tasks });
   } catch {
