@@ -309,7 +309,13 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="why-zero" className="relative bg-black text-white py-28 mt-24">
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative bg-black text-white py-28 mt-24"
+      >
         <div className="max-w-7xl mx-auto px-8">
           <h1 className="font-geist text-6xl mb-20">Four ways we make your
             <br /> preparations better</h1>
@@ -592,11 +598,17 @@ buildConsistency();
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
 
 
-      <section className="relative bg-black text-white py-32">
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative bg-black text-white py-32"
+      >
         <div className=" mx-10 lg:mx-30 px-8 text-center">
 
           <h2 className="text-4xl md:text-6xl font-geist tracking-tight">
@@ -706,9 +718,15 @@ buildConsistency();
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
-      <section className="relative bg-black text-white py-28">
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative bg-black text-white py-28"
+      >
         <div className="relative flex items-center justify-center gap-2 mb-4">
           <img
             src={zeroLogo}
@@ -723,11 +741,79 @@ buildConsistency();
         <h1 className="font-geist text-6xl text-center mb-20">
           Build yourself with consistency.
         </h1>
+      </motion.section>
+
+
+
+      <section className="relative mx-6 md:mx-20 py-24 font-geist">
+
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="relative max-w-6xl mx-auto group"
+        >
+          <div className="absolute -inset-1 rounded-3xl bg-green-400/20 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
+
+          <div className="relative rounded-3xl border border-white/15 bg-white/10 backdrop-blur-xl p-10">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 items-stretch">
+
+              <div>
+                <p className="text-white/40 text-sm uppercase tracking-wide mb-6">
+                  You today
+                </p>
+
+                <ul className="space-y-4 text-lg">
+                  <li className="flex items-center gap-3 text-white/70">
+                    <span className="h-2 w-2 rounded-full bg-white/30" />
+                    Random problem solving
+                  </li>
+                  <li className="flex items-center gap-3 text-white/70">
+                    <span className="h-2 w-2 rounded-full bg-white/30" />
+                    No clear plan
+                  </li>
+                  <li className="flex items-center gap-3 text-white/70">
+                    <span className="h-2 w-2 rounded-full bg-white/30" />
+                    Inconsistent practice
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="hidden md:block w-px bg-white/20" />
+                <div className="block md:hidden h-px w-full bg-white/20" />
+              </div>
+
+              <div>
+                <p className="text-green-400 text-sm uppercase tracking-wide mb-6">
+                  You in 60 days
+                </p>
+
+                <ul className="space-y-4 text-lg">
+                  <li className="flex items-center gap-3 text-white/90">
+                    <span className="h-2 w-2 rounded-full bg-green-400" />
+                    Daily problem habit
+                  </li>
+                  <li className="flex items-center gap-3 text-white/90">
+                    <span className="h-2 w-2 rounded-full bg-green-400" />
+                    Clear strengths and weak spots
+                  </li>
+                  <li className="flex items-center gap-3 text-white/90">
+                    <span className="h-2 w-2 rounded-full bg-green-400" />
+                    Interview-ready confidence
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </motion.div>
+
+
       </section>
 
-      <section className="h-120 rounded-2xl  border border-white/15 bg-white/10 backdrop-blur-sm shadow-lg overflow-hidden transition font-geist mx-20">
 
-      </section>
 
       <section id="faqs" className="relative bg-black text-white py-28">
         <div className="max-w-4xl mx-auto px-8">
@@ -790,7 +876,13 @@ buildConsistency();
         </div>
       </section>
 
-      <section className="relative overflow-hidden">
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative overflow-hidden"
+      >
         <div className="max-w-7xl mx-auto px-10 py-32 grid md:grid-cols-2 items-center gap-16 font-geist">
 
           <div className="space-y-6">
@@ -840,80 +932,98 @@ buildConsistency();
 
         <div className="border-t border-black/10" />
 
-        <div className="max-w-7xl mx-auto px-10 py-20 grid md:grid-cols-4 gap-12 text-sm text-white font-geist">
 
-          <div className="font-medium text-lg font-geist">
-            Zero
-          </div>
 
-          <div className="space-y-3">
-            <div className="font-medium text-white/80">
-              Resources
+        <footer className="relative  text-white font-geist overflow-hidden">
+
+          <div
+            className="absolute h-[400px] w-[1600px] bottom-0 left-1/2 -translate-x-1/2 bg-blue-500/20 pointer-events-none"
+            style={{
+              maskImage: "radial-gradient(50% 50% at bottom center, black, transparent)",
+              WebkitMaskImage: "radial-gradient(50% 50% at bottom center, black, transparent)",
+            }}
+          ></div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-7xl mx-auto px-10 py-20 grid md:grid-cols-4 gap-12 text-sm relative z-10"
+          >
+            <div className="font-medium text-lg">
+              Zero
             </div>
 
-            {["Mobile", "Manifesto", "Press", "Bug Bounty"].map(item => (
-              <div
-                key={item}
-                className="
-        cursor-pointer
-        text-white/50
-        transition-all duration-200
-        hover:text-white
-        hover:translate-x-1
-        hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-      "
-              >
-                {item}
+            <div className="space-y-3">
+              <div className="font-medium text-white/80">
+                Resources
               </div>
-            ))}
-          </div>
 
-          <div className="space-y-3">
-            <div className="font-medium text-white/80">
-              Support
+              {["Mobile", "Manifesto", "Press", "Bug Bounty"].map(item => (
+                <div
+                  key={item}
+                  className="
+            cursor-pointer
+            text-white/50
+            transition-all duration-200
+            hover:text-white
+            hover:translate-x-1
+            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
+          "
+                >
+                  {item}
+                </div>
+              ))}
             </div>
 
-            {["Help Center", "Contact Us"].map(item => (
-              <div
-                key={item}
-                className="
-        cursor-pointer
-        text-white/50
-        transition-all duration-200
-        hover:text-white
-        hover:translate-x-1
-        hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-      "
-              >
-                {item}
+            <div className="space-y-3">
+              <div className="font-medium text-white/80">
+                Support
               </div>
-            ))}
-          </div>
 
-          <div className="space-y-3">
-            <div className="font-medium text-white/80">
-              Legal
+              {["Help Center", "Contact Us"].map(item => (
+                <div
+                  key={item}
+                  className="
+            cursor-pointer
+            text-white/50
+            transition-all duration-200
+            hover:text-white
+            hover:translate-x-1
+            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
+          "
+                >
+                  {item}
+                </div>
+              ))}
             </div>
 
-            {["Privacy Policy", "Terms of Service", "Data Processing Agreement", "Subprocessors"].map(item => (
-              <div
-                key={item}
-                className="
-        cursor-pointer
-        text-white/50
-        transition-all duration-200
-        hover:text-white
-        hover:translate-x-1
-        hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-      "
-              >
-                {item}
+            <div className="space-y-3">
+              <div className="font-medium text-white/80">
+                Legal
               </div>
-            ))}
-          </div>
 
-        </div>
-      </section>
+              {["Privacy Policy", "Terms of Service", "Data Processing Agreement", "Subprocessors"].map(item => (
+                <div
+                  key={item}
+                  className="
+            cursor-pointer
+            text-white/50
+            transition-all duration-200
+            hover:text-white
+            hover:translate-x-1
+            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
+          "
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </footer>
+
+      </motion.section>
 
 
       <Link
