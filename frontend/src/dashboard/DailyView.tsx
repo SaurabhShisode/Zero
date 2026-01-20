@@ -126,7 +126,7 @@ export default function DailyView() {
     <section className="space-y-8 font-geist mx-10 mt-10 scrollbar-hide mb-10">
       <h1 className="text-xl font-semibold">Today’s Problems</h1>
 
-      
+
 
       {!loading && daily.length === 0 && (
         <p className="text-white/40">
@@ -188,15 +188,16 @@ export default function DailyView() {
                       {item.problem.title}
                     </div>
 
-                    <a
-                      href={item.problem.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="shrink-0 text-sm text-white/50 hover:text-white transition flex items-center gap-2 justify-center"
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        window.open(item.problem.link, "_blank")
+                      }}
+                      className="px-3 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
                     >
-                      Open Platform <ExternalLink className="inline-block h-4 w-4 " />
-                    </a>
+                      Open
+                      <ExternalLink className="w-4 h-4" />
+                    </button>
 
                     <button
                       type="button"

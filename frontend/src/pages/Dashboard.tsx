@@ -12,6 +12,7 @@ import DiscussionsView from "../dashboard/CommunityView"
 import ProfileView from "../dashboard/ProfileView"
 import SettingsView from "../dashboard/SettingsView"
 import BugsView from "../dashboard/BugsView"
+import RevisionView from "../dashboard/RevisionView"
 
 export default function Dashboard() {
   const [view, setView] = useState<View>(() => {
@@ -25,26 +26,29 @@ export default function Dashboard() {
     localStorage.setItem("dashboard-view", view)
   }, [view])
 
-  const renderView = () => {
-    switch (view) {
-      case "company":
-        return <CompanyView />
-      case "topics":
-        return <TopicsView />
-      case "placement":
-        return <PlacementView />
-      case "community":
-        return <DiscussionsView />
-      case "profile":
-        return <ProfileView />
-      case "settings":
-        return <SettingsView />
-      case "bugs":
-        return <BugsView />
-      default:
-        return <DailyView />
-    }
+const renderView = () => {
+  switch (view) {
+    case "company":
+      return <CompanyView />
+    case "topics":
+      return <TopicsView />
+    case "placement":
+      return <PlacementView />
+    case "community":
+      return <DiscussionsView />
+    case "revision":
+      return <RevisionView />
+    case "profile":
+      return <ProfileView />
+    case "settings":
+      return <SettingsView />
+    case "bugs":
+      return <BugsView />
+    default:
+      return <DailyView />
   }
+}
+
 
   return (
     <div className="min-h-screen bg-black text-white flex">

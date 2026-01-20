@@ -6,7 +6,8 @@ import {
     MessageCircle,
     User,
     Settings,
-    Bug
+    Bug,
+    RefreshCcw
 } from "lucide-react";
 import zeroLogo from "/icons/zero.svg"
 
@@ -16,24 +17,27 @@ export type View =
   | "topics"
   | "placement"
   | "community"
+  | "revision"
   | "profile"
   | "settings"
   | "bugs"
 
 
 const SIDEBAR_ITEMS: {
-    id: View;
-    label: string;
-    icon: React.ElementType;
+  id: View;
+  label: string;
+  icon: React.ElementType;
 }[] = [
-        { id: "daily", label: "Daily Problems", icon: Calendar },
-        { id: "company", label: "Company Wise", icon: Building2 },
-        { id: "topics", label: "Topic Wise", icon: Layers },
-        { id: "placement", label: "Placement Mode", icon: Briefcase },
-        { id: "community", label: "Community", icon: MessageCircle },
-        { id: "profile", label: "Profile", icon: User },
-        { id: "settings", label: "Settings", icon: Settings }
-    ];
+  { id: "daily", label: "Daily Problems", icon: Calendar },
+  { id: "revision", label: "Revisions", icon: RefreshCcw },
+  { id: "company", label: "Company Wise", icon: Building2 },
+  { id: "topics", label: "Topic Wise", icon: Layers },
+  { id: "placement", label: "Placement Mode", icon: Briefcase },
+  { id: "community", label: "Community", icon: MessageCircle },
+  { id: "profile", label: "Profile", icon: User },
+  { id: "settings", label: "Settings", icon: Settings }
+]
+
 
 type Props = {
     active: View;
