@@ -4,6 +4,7 @@ import { api } from "../api/client"
 import { useNavigate } from "react-router-dom"
 import { CircleCheck, RefreshCcw, ExternalLink } from "lucide-react"
 import toast from "react-hot-toast"
+import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline"
 
 type Problem = {
     _id: string
@@ -132,9 +133,11 @@ export default function RevisionView() {
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-8 text-center"
+                    className="rounded-2xl  p-8 text-center"
                 >
-                    <p className="text-white/40 text-sm">
+                    <p className="text-white/40 text-2xl">
+                    <ClipboardDocumentCheckIcon className="w-24 h-24 text-white mx-auto mb-4" />
+
                         No pending revisions. You are on track.
                     </p>
                 </motion.div>

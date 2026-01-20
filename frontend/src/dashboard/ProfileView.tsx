@@ -40,12 +40,12 @@ type ProfileStats = {
 
 
 export default function ProfileView() {
-const { user, hydrated } = useAuthStore(
-  useShallow(state => ({
-    user: state.user,
-    hydrated: state.hydrated
-  }))
-)
+  const { user, hydrated } = useAuthStore(
+    useShallow(state => ({
+      user: state.user,
+      hydrated: state.hydrated
+    }))
+  )
 
 
   const navigate = useNavigate()
@@ -69,7 +69,7 @@ const { user, hydrated } = useAuthStore(
     (stats?.mediumTotal || 0) +
     (stats?.hardTotal || 0)
 
-  
+
   const [friendSlug, setFriendSlug] = useState("")
   const [compareData, setCompareData] = useState<{
     you: { streak: any }
@@ -107,6 +107,27 @@ const { user, hydrated } = useAuthStore(
       .finally(() => setLoading(false))
   }, [hydrated, user?._id, fetched])
 
+  function timeAgo(dateStr: string) {
+    const now = new Date()
+    const then = new Date(dateStr)
+
+    const diffMs = now.getTime() - then.getTime()
+    const diffSec = Math.floor(diffMs / 1000)
+    const diffMin = Math.floor(diffSec / 60)
+    const diffHr = Math.floor(diffMin / 60)
+    const diffDay = Math.floor(diffHr / 24)
+
+    if (diffSec < 60) return "Just now"
+    if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? "s" : ""} ago`
+    if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`
+    if (diffDay < 7) return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`
+
+    return then.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric"
+    })
+  }
 
 
   function formatDMY(dateStr: string) {
@@ -772,8 +793,9 @@ const { user, hydrated } = useAuthStore(
                   {r.problem.title}
                 </p>
                 <p className="text-xs text-white/40">
-                  {formatDMY(r.date)}
+                  {timeAgo(r.date)}
                 </p>
+
               </div>
 
               <span

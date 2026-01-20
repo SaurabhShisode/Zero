@@ -3,7 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { MessageCircle } from 'lucide-react';
 import zeroLogo from "/icons/zero.svg"
-
+import step1 from "../assets/step1.png"
+import step2 from "../assets/step2.png"
+import step3 from "../assets/step3.png"
 const faqs = [
   {
     q: "What is Zero built for?",
@@ -23,8 +25,10 @@ const faqs = [
   },
   {
     q: "Does Zero help with understanding solutions?",
-    a: "Yes. Zero encourages you to explain your approach before coding and learn from discussions so you build clarity, not just correct answers."
+    a: "Yes. Zero helps you reflect on solved problems through discussions, edge cases, and spaced revisions so concepts stick long term."
   },
+
+
   {
     q: "Is Zero free to use?",
     a: "Zero offers a free experience with core features and optional upgrades for advanced tracking, curated roadmaps, and deeper insights."
@@ -67,7 +71,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-black text-white">
       <section className="relative min-h-screen overflow-hidden">
-       
+
 
         <div className="absolute  inset-0 bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black" />
 
@@ -347,8 +351,10 @@ for (day in journey) {
                     {`function stayInterviewReady(day) {
   if (!practice(day)) return false;
 
-  explainBeforeCode();
-  solveWithIntent();
+reviewMistakes();
+solveWithIntent();
+buildConsistency();
+
 
   return confidence++;
 }`}
@@ -393,41 +399,43 @@ for (day in journey) {
               </p>
 
 
-              <div className="relative rounded-2xl bg-white/90 text-black shadow-[0_30px_80px_rgba(0,0,0,0.35)] overflow-hidden right-[-40px] top-20">
+              <div className="relative group right-[-40px] top-20">
+                <div className="absolute -inset-2 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
-                <div className="flex items-center gap-2 px-4 py-3 border-b border-black/10 bg-white">
-                  <span className="h-3 w-3 rounded-full bg-red-500" />
-                  <span className="h-3 w-3 rounded-full bg-yellow-400" />
-                  <span className="h-3 w-3 rounded-full bg-green-500" />
-                </div>
-
-
-                <div className="p-5 space-y-4">
-
-                  <div>
-                    <h4 className="font-semibold text-base">
-                      Today’s Problem
-                    </h4>
-                    <p className="text-sm ">
-                      System Design · High level · Architecture
-                    </p>
+                <div className="relative rounded-2xl bg-white/90 text-black shadow-[0_30px_80px_rgba(0,0,0,0.35)] overflow-hidden">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-black/10 bg-white">
+                    <span className="h-3 w-3 rounded-full bg-red-500" />
+                    <span className="h-3 w-3 rounded-full bg-yellow-400" />
+                    <span className="h-3 w-3 rounded-full bg-green-500" />
                   </div>
 
-                  <div className="rounded-lg bg-black/5 px-4 py-3 text-sm">
-                    Design a URL shortening service
-                  </div>
+                  <div className="p-5 space-y-4">
+                    <div>
+                      <h4 className="font-semibold text-base">
+                        Today’s Problem
+                      </h4>
+                      <p className="text-sm">
+                        System Design · High level · Architecture
+                      </p>
+                    </div>
 
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-xs text-black/50">
-                      Explain before coding
-                    </span>
+                    <div className="rounded-lg bg-black/5 px-4 py-3 text-sm">
+                      Design a URL shortening service
+                    </div>
 
-                    <button className="px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-black/90 transition">
-                      Start
-                    </button>
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-xs text-black/50">
+                        Solve. Reflect. Improve.
+                      </span>
+
+                      <button className="px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-black/90 transition">
+                        Start
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+
 
 
             </div>
@@ -470,9 +478,9 @@ for (day in journey) {
 
                     <div className="p-4 space-y-3">
                       {[
-                        ["Arrays & Strings", "Medium"],
-                        ["Linked Lists", "Easy"],
-                        ["Sliding Window", "Medium"],
+                        ["DSA", "Medium"],
+                        ["Operating Systems", "Easy"],
+                        ["Behavioral", "Medium"],
                         ["System Design", "Hard"]
                       ].map(([topic, level], i) => {
                         const enabled = i < 2;
@@ -589,7 +597,7 @@ for (day in journey) {
 
 
       <section className="relative bg-black text-white py-32">
-        <div className=" mx-30 px-8 text-center">
+        <div className=" mx-10 lg:mx-30 px-8 text-center">
 
           <h2 className="text-4xl md:text-6xl font-geist tracking-tight">
             Daily practice in <span className="text-white/40">3 steps</span>
@@ -605,42 +613,93 @@ for (day in journey) {
             <div className="grid md:grid-cols-3 gap-28 items-start">
 
               <div className="group relative">
-                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60" />
+                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+
+                  <img
+                    src={step1}
+                    alt="Configure Zero"
+                    className="
+    absolute inset-3
+    w-full h-full
+    object-cover
+
+    transition-transform
+    duration-300
+    scale-110
+  "
+                  />
+
+                </div>
+
                 <h3 className="mt-6 text-left font-medium text-4xl font-geist">
                   <span className="text-white/40 mr-2">01</span>
                   Configure Zero
                 </h3>
+
                 <p className="text-white/60 mt-2 text-left text-sm leading-relaxed font-geist">
                   Select your topics, difficulty, and goals. Zero curates one focused
-                  problem just for you.
+                  problem for every topic, every day.
                 </p>
               </div>
 
 
+
               <div className="group relative">
-                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60" />
+                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+                  <img
+                    src={step2}
+                    alt="Solve with focus"
+                    className="
+        absolute inset-5
+        w-full h-full
+        object-cover
+        transition-transform
+        duration-300
+        scale-110
+      "
+                  />
+                </div>
+
                 <h3 className="mt-6 text-left font-medium text-4xl font-geist">
                   <span className="text-white/40 mr-2">02</span>
-                  Think clearly
+                  Solve with focus
                 </h3>
+
                 <p className="text-white/60 mt-2 text-left text-sm leading-relaxed font-geist">
-                  Write your approach first. Zero helps you slow down and build
-                  structured problem solving habits.
+                  Work through one carefully selected problem each day and learn
+                  from edge cases, patterns, and discussion insights.
                 </p>
               </div>
 
 
+
               <div className="group relative">
-                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60" />
+                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+                  <img
+                    src={step3}
+                    alt="Build confidence"
+                    className="
+        absolute inset-3
+        w-full h-full
+        object-cover
+        transition-transform
+        duration-300
+        scale-110
+      "
+                  />
+                </div>
+
                 <h3 className="mt-6 text-left font-medium text-4xl font-geist">
                   <span className="text-white/40 mr-2">03</span>
                   Build confidence
                 </h3>
+
                 <p className="text-white/60 mt-2 text-left text-sm leading-relaxed font-geist">
                   Compare solutions, reflect on edge cases, and lock in concepts that
                   actually show up in interviews.
                 </p>
               </div>
+
             </div>
 
 
