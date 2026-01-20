@@ -301,3 +301,37 @@ export async function deleteComment(req: Request, res: Response) {
     res.status(500).json({ message: "Failed to delete comment" })
   }
 }
+export async function deletePost(req: Request, res: Response) {
+  try {
+    const postId = getId(req.params.id)
+    const userId = (req as any).userId
+
+    if (!postId) {
+      return res.status(400).json({ message: "Invalid post id" })
+    }
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" })
+    }
+
+    const userObjectId = new mongoose.Types.ObjectId(userId)
+
+    const post = await CommunityPost.findById(postId)
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" })
+    }
+
+    if (!post.author.equals(userObjectId)) {
+      return res.status(403).json({ message: "Forbidden" })
+    }
+
+    await CommunityComment.deleteMany({ post: post._id })
+    await post.deleteOne()
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Delete post error:", err)
+    res.status(500).json({ message: "Failed to delete post" })
+  }
+}
