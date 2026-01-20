@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LogOut, Bell, User } from "lucide-react";
+import { LogOut} from "lucide-react";
 import type { View } from "./Sidebar";
 import { useAuthStore } from "../store/authStore";
 import type { RefObject } from "react";
@@ -12,7 +12,7 @@ type Props = {
 
 
 
-export default function Topbar({ view, scrollRef }: Props) {
+export default function Topbar({ scrollRef }: Props) {
     const logout = useAuthStore((s) => s.logout);
     const user = useAuthStore(s => s.user)
     const [hidden, setHidden] = useState(false);

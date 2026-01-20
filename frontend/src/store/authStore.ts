@@ -18,6 +18,7 @@ type User = {
     freezeAvailable: number
   }
   badges?: string[]
+  preferences: Preference[]
   stats?: {
     easySolved: number
     easyTotal: number

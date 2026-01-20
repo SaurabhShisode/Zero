@@ -21,15 +21,7 @@ type SkillPreference = {
   difficulty: Difficulty
 }
 
-const ALL_SKILLS: Skill[] = [
-  "DSA",
-  "Aptitude",
-  "Behavioral",
-  "SystemDesign",
-  "OperatingSystems",
-  "DBMS",
-  "Networking"
-]
+
 
 const DIFFICULTIES: Difficulty[] = ["Easy", "Medium", "Hard"]
 function DifficultySelect({

@@ -28,16 +28,6 @@ type RecentSolve = {
 }
 
 
-type PublicUser = {
-  _id: string
-  name: string
-  profileSlug: string
-  streak: {
-    current: number
-    max: number
-    freezeAvailable: number
-  }
-}
 type ProfileStats = {
   easySolved: number
   easyTotal: number
@@ -79,8 +69,7 @@ const { user, hydrated } = useAuthStore(
     (stats?.mediumTotal || 0) +
     (stats?.hardTotal || 0)
 
-  const progress = allTotal === 0 ? 0 : solvedTotal / allTotal
-
+  
   const [friendSlug, setFriendSlug] = useState("")
   const [compareData, setCompareData] = useState<{
     you: { streak: any }

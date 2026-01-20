@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useAuthStore } from "../store/authStore";
 import bgImage from "../assets/authbg3.png";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const SKILLS = [
     "DSA",

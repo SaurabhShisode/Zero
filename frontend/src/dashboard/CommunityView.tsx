@@ -92,15 +92,7 @@ export default function DiscussionsView() {
       setLoading(false)
     }
   }
-  async function deletePost(postId: string) {
-    try {
-      await api.delete(`/api/community/posts/${postId}`)
-      setPosts(prev => prev.filter(p => p._id !== postId))
-      toast.success("Post deleted")
-    } catch {
-      toast.error("Failed to delete post")
-    }
-  }
+ 
 
   function toggleComments(postId: string) {
     if (openComments === postId) {
@@ -121,30 +113,7 @@ export default function DiscussionsView() {
       [postId]: !prev[postId]
     }))
   }
-  async function deleteComment(postId: string, commentId: string) {
-    try {
-      await api.delete(`/api/community/comments/${commentId}`)
 
-      setComments(prev => ({
-        ...prev,
-        [postId]: (prev[postId] || []).filter(
-          c => c._id !== commentId
-        )
-      }))
-
-      setPosts(prev =>
-        prev.map(p =>
-          p._id === postId
-            ? { ...p, commentsCount: p.commentsCount - 1 }
-            : p
-        )
-      )
-
-      toast.success("Comment deleted")
-    } catch {
-      toast.error("Failed to delete comment")
-    }
-  }
 
   async function loadComments(postId: string) {
     try {
