@@ -96,17 +96,36 @@ export default function RevisionView() {
             </div>
 
             {loading && (
-                <div className="space-y-4">
-                    {[1, 2, 3].map(i => (
-                        <div
+                <>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <motion.div
                             key={i}
-                            className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 animate-pulse"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            className="relative"
                         >
-                            <div className="h-4 w-48 bg-white/20 rounded mb-3" />
-                            <div className="h-3 w-32 bg-white/10 rounded" />
-                        </div>
+                            <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-3 min-w-0">
+                                        <div className="flex gap-2">
+                                            <div className="h-5 w-14 bg-white/20 rounded" />
+                                            <div className="h-5 w-16 bg-white/10 rounded" />
+                                            <div className="h-5 w-12 bg-white/10 rounded" />
+                                        </div>
+
+                                        <div className="h-5 w-64 bg-white/20 rounded" />
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <div className="h-4 w-28 bg-white/10 rounded" />
+                                        <div className="h-6 w-6 bg-white/20 rounded-md" />
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
                     ))}
-                </div>
+                </>
             )}
 
             {!loading && tasks.length === 0 && (
