@@ -14,6 +14,8 @@ import {
 import toast from "react-hot-toast"
 import { useAuthStore } from "../store/authStore"
 import { Trash } from 'lucide-react';
+import ConfirmModal from "../components/ConfirmModal"
+
 type Post = {
   _id: string
   title: string
@@ -43,6 +45,13 @@ export default function DiscussionsView() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({})
   const [search, setSearch] = useState("")
 
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
+  const [pendingAction, setPendingAction] = useState<null | {
+    type: "post" | "comment"
+    postId: string
+    commentId?: string
+  }>(null)
 
   const [posts, setPosts] = useState<Post[]>([])
   const [sort, setSort] = useState("trending")
@@ -55,7 +64,15 @@ export default function DiscussionsView() {
   const [tags, setTags] = useState("")
   const [commentText, setCommentText] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({})
-  const myUserId = useAuthStore(state => state.user?._id)
+  const user = useAuthStore(state => state.user)
+  const hydrated = useAuthStore(state => state.hydrated)
+
+  const myUserId = user?._id
+
+
+
+
+
 
 
 
@@ -75,6 +92,16 @@ export default function DiscussionsView() {
       setLoading(false)
     }
   }
+  async function deletePost(postId: string) {
+    try {
+      await api.delete(`/api/community/posts/${postId}`)
+      setPosts(prev => prev.filter(p => p._id !== postId))
+      toast.success("Post deleted")
+    } catch {
+      toast.error("Failed to delete post")
+    }
+  }
+
   function toggleComments(postId: string) {
     if (openComments === postId) {
       setOpenComments(null)
@@ -87,6 +114,7 @@ export default function DiscussionsView() {
       loadComments(postId)
     }
   }
+
   function toggleExpand(postId: string) {
     setExpandedPosts(prev => ({
       ...prev,
@@ -238,6 +266,57 @@ export default function DiscussionsView() {
     }
   }
 
+  async function handleConfirmDelete() {
+    if (!pendingAction) return
+
+    try {
+      setConfirmLoading(true)
+
+      if (pendingAction.type === "post") {
+        await api.delete(`/api/community/posts/${pendingAction.postId}`)
+        setPosts(prev =>
+          prev.filter(p => p._id !== pendingAction.postId)
+        )
+        toast.success("Post deleted")
+      }
+
+      if (pendingAction.type === "comment" && pendingAction.commentId) {
+        await api.delete(
+          `/api/community/comments/${pendingAction.commentId}`
+        )
+
+        setComments(prev => ({
+          ...prev,
+          [pendingAction.postId]: (prev[pendingAction.postId] || []).filter(
+            c => c._id !== pendingAction.commentId
+          )
+        }))
+
+        setPosts(prev =>
+          prev.map(p =>
+            p._id === pendingAction.postId
+              ? { ...p, commentsCount: p.commentsCount - 1 }
+              : p
+          )
+        )
+
+        toast.success("Comment deleted")
+      }
+    } catch {
+      toast.error("Delete failed")
+    } finally {
+      setConfirmLoading(false)
+      setConfirmOpen(false)
+      setPendingAction(null)
+    }
+  }
+if (!hydrated) {
+  return (
+    <section className="px-8 pt-8 text-white/40">
+      Loading session...
+    </section>
+  )
+}
 
 
   return (
@@ -287,281 +366,309 @@ export default function DiscussionsView() {
 
       </div>
 
-  <div className="space-y-4">
+      <div className="space-y-4">
 
-  {loading && (
-    <>
-      {[1, 2, 3, 4].map(i => (
-        <div
-          key={i}
-          className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5 animate-pulse"
-        >
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-white/20" />
-              <div className="h-3 w-24 rounded bg-white/20" />
-              <div className="h-3 w-12 rounded bg-white/10" />
-            </div>
-
-            <div className="h-5 w-3/4 rounded bg-white/20" />
-
-            <div className="space-y-2">
-              <div className="h-3 w-full rounded bg-white/10" />
-              <div className="h-3 w-5/6 rounded bg-white/10" />
-              <div className="h-3 w-2/3 rounded bg-white/10" />
-            </div>
-
-            <div className="flex items-center gap-4 pt-3">
-              <div className="h-4 w-12 rounded bg-white/20" />
-              <div className="h-4 w-12 rounded bg-white/20" />
-              <div className="h-4 w-12 rounded bg-white/20" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </>
-  )}
-
-  {!loading && posts.length === 0 && (
-    <p className="text-white/40 text-sm">
-      No discussions yet. Start one.
-    </p>
-  )}
-
-  <AnimatePresence>
-    {!loading &&
-      posts
-        .filter(p => {
-          if (!search.trim()) return true
-          const q = search.toLowerCase()
-          return (
-            p.title.toLowerCase().includes(q) ||
-            p.body.toLowerCase().includes(q) ||
-            p.tags.some(t => t.toLowerCase().includes(q)) ||
-            p.author.name.toLowerCase().includes(q)
-          )
-        })
-        .map(post => (
-
-              <motion.div
-                key={post._id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5"
+        {loading && (
+          <>
+            {[1, 2, 3, 4].map(i => (
+              <div
+                key={i}
+                className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5 animate-pulse"
               >
+                <div className="flex-1 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-white/20" />
+                    <div className="h-3 w-24 rounded bg-white/20" />
+                    <div className="h-3 w-12 rounded bg-white/10" />
+                  </div>
+
+                  <div className="h-5 w-3/4 rounded bg-white/20" />
+
+                  <div className="space-y-2">
+                    <div className="h-3 w-full rounded bg-white/10" />
+                    <div className="h-3 w-5/6 rounded bg-white/10" />
+                    <div className="h-3 w-2/3 rounded bg-white/10" />
+                  </div>
+
+                  <div className="flex items-center gap-4 pt-3">
+                    <div className="h-4 w-12 rounded bg-white/20" />
+                    <div className="h-4 w-12 rounded bg-white/20" />
+                    <div className="h-4 w-12 rounded bg-white/20" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+
+        {!loading && posts.length === 0 && (
+          <p className="text-white/40 text-sm">
+            No discussions yet. Start one.
+          </p>
+        )}
+
+        <AnimatePresence>
+          {!loading &&
+            posts
+              .filter(p => {
+                if (!search.trim()) return true
+                const q = search.toLowerCase()
+                return (
+                  p.title.toLowerCase().includes(q) ||
+                  p.body.toLowerCase().includes(q) ||
+                  p.tags.some(t => t.toLowerCase().includes(q)) ||
+                  p.author.name.toLowerCase().includes(q)
+                )
+              })
+              .map(post => (
+
+                <motion.div
+                  key={post._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5"
+                >
 
 
-                <div className="flex-1 space-y-2 min-w-0">
-                  <div className="flex items-center gap-2 text-sm">
-                    <button
-                      onClick={() =>
-                        navigate(`/u/${post.author.profileSlug}`)
-                      }
-                      className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer"
-                    >
-                      <div className="w-6 h-6 rounded-full  flex items-center justify-center bg-white/10">
-                        <User className="w-4 h-4 text-white/60" />
+                  <div className="flex-1 space-y-2 min-w-0">
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() =>
+                            navigate(`/u/${post.author.profileSlug}`)
+                          }
+                          className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer"
+                        >
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/10">
+                            <User className="w-4 h-4 text-white/60" />
+                          </div>
+                          {post.author.name}
+                        </button>
+
+                        <span className="text-white/30">•</span>
+
+                        <span className="text-white/40">
+                          {timeAgo(post.createdAt)}
+                        </span>
                       </div>
-                      {post.author.name}
-                    </button>
 
-
-                    <span className="text-white/30">•</span>
-
-                    <span className="text-white/40">
-                      {timeAgo(post.createdAt)}
-                    </span>
-
-
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-3 pt-2">
-                    <h2
-                      onClick={() =>
-                        navigate(`/discussions/${post._id}`)
-                      }
-                      className="text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
-                    >
-                      {post.title}
-                    </h2>
-
-
-
-                    {post.tags.map(t => (
-                      <span
-                        key={t}
-                        className="text-xs px-2 py-1 rounded border border-white/20 text-white/60"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="text-white/50 text-sm">
-                    <p className={expandedPosts[post._id] ? "" : "line-clamp-3"}>
-                      {post.body}
-                    </p>
-
-                    {post.body.length > 180 && (
-                      <button
-                        onClick={() => toggleExpand(post._id)}
-                        className="mt-1 text-xs text-white/60 hover:text-white transition cursor-pointer"
-                      >
-                        {expandedPosts[post._id] ? "Show less" : "Read more"}
-                      </button>
-                    )}
-                  </div>
-
-
-
-                  <div className="flex items-center justify-between pt-3  ">
-                    <div className="flex items-center gap-4 text-sm text-white/50">
-                      <button
-                        onClick={() => vote(post._id, "up")}
-                        className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "up"
-                          ? "text-green-400"
-                          : "text-white/50 hover:text-white"
-                          }`}
-                      >
-                        <ArrowBigUp className="w-4 h-4" />
-                        {post.upvotes}
-                      </button>
-
-
-
-                      <button
-                        onClick={() => vote(post._id, "down")}
-                        className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "down"
-                          ? "text-red-400"
-                          : "text-white/50 hover:text-white"
-                          }`}
-                      >
-                        <ArrowBigDown className="w-4 h-4" />
-                        {post.downvotes}
-                      </button>
-
-
-
-                      <button
-                        onClick={() => toggleComments(post._id)}
-                        className="flex items-center gap-1 hover:text-white transition cursor-pointer"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                        {post.commentsCount}
-                      </button>
-                    </div>
-                  </div>
-                  {openComments === post._id && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 space-y-4"
-                    >
-
-                      <div className="flex gap-3">
-                        <div className="w-8 h-8 rounded-full  flex items-center justify-center bg-white/10">
-                          <User className="w-5 h-5 text-white/60" />
-                        </div>
-
-                        <div className="flex-1 relative">
-                          <textarea
-                            value={commentText[post._id] || ""}
-                            onChange={e =>
-                              setCommentText(prev => ({
-                                ...prev,
-                                [post._id]: e.target.value
-                              }))
-                            }
-                            placeholder="Write a comment..."
-                            rows={3}
-                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 pr-16 text-sm outline-none resize-none scrollbar-hide"
-                          />
-
+                      {hydrated && myUserId && post.author.profileSlug && (
+                        post.author.profileSlug === user?.profileSlug && (
                           <button
-                            disabled={submitting[post._id]}
-                            onClick={() => submitComment(post._id)}
-                            className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-black text-xs hover:bg-white/90 transition disabled:opacity-50 cursor-pointer"
+                            onClick={() => {
+                              setPendingAction({
+                                type: "post",
+                                postId: post._id
+                              })
+                              setConfirmOpen(true)
+                            }}
+
+                            className="text-red-400 hover:text-red-300 transition cursor-pointer"
+                            title="Delete post"
                           >
-                            {submitting[post._id] ? "Posting..." : "Post"}
+                            <Trash className="w-4 h-4" />
                           </button>
-                        </div>
+                        )
+                      )}
+                    </div>
 
+
+                    <div className="flex flex-wrap items-center gap-3 pt-2">
+                      <h2
+                        onClick={() =>
+                          navigate(`/discussions/${post._id}`)
+                        }
+                        className="text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
+                      >
+                        {post.title}
+                      </h2>
+
+
+
+                      {post.tags.map(t => (
+                        <span
+                          key={t}
+                          className="text-xs px-2 py-1 rounded border border-white/20 text-white/60"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="text-white/50 text-sm">
+                      <p className={expandedPosts[post._id] ? "" : "line-clamp-3"}>
+                        {post.body}
+                      </p>
+
+                      {post.body.length > 180 && (
+                        <button
+                          onClick={() => toggleExpand(post._id)}
+                          className="mt-1 text-xs text-white/60 hover:text-white transition cursor-pointer"
+                        >
+                          {expandedPosts[post._id] ? "Show less" : "Read more"}
+                        </button>
+                      )}
+                    </div>
+
+
+
+                    <div className="flex items-center justify-between pt-3  ">
+                      <div className="flex items-center gap-4 text-sm text-white/50">
+                        <button
+                          onClick={() => vote(post._id, "up")}
+                          className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "up"
+                            ? "text-green-400"
+                            : "text-white/50 hover:text-white"
+                            }`}
+                        >
+                          <ArrowBigUp className="w-4 h-4" />
+                          {post.upvotes}
+                        </button>
+
+
+
+                        <button
+                          onClick={() => vote(post._id, "down")}
+                          className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "down"
+                            ? "text-red-400"
+                            : "text-white/50 hover:text-white"
+                            }`}
+                        >
+                          <ArrowBigDown className="w-4 h-4" />
+                          {post.downvotes}
+                        </button>
+
+
+
+                        <button
+                          onClick={() => toggleComments(post._id)}
+                          className="flex items-center gap-1 hover:text-white transition cursor-pointer"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                          {post.commentsCount}
+                        </button>
                       </div>
+                    </div>
+                    {openComments === post._id && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="mt-4 space-y-4"
+                      >
 
-                      <div className="p-4 space-y-3">
-                        {(comments[post._id]?.length || 0) === 0 && (
-                          <p className="text-sm text-white/40 text-center ">
-                            No comments yet. Be the first to start the discussion.
-                          </p>
-                        )}
+                        <div className="flex gap-3">
+                          <div className="w-8 h-8 rounded-full  flex items-center justify-center bg-white/10">
+                            <User className="w-5 h-5 text-white/60" />
+                          </div>
 
-                        {(comments[post._id] || [])
-                          .slice(0, expanded[post._id] ? undefined : 5)
-                          .map(c => (
-                            <div
-                              key={c._id}
-                              className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
-                            >
-                              <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10">
-                                <User className="w-4 h-4 text-white/60" />
-                              </div>
-
-                              <div className="flex-1 gap-y-2">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2 text-xs text-white/60">
-                                    <span
-                                      onClick={() => navigate(`/u/${c.author.profileSlug}`)}
-                                      className="cursor-pointer hover:text-white transition"
-                                    >
-                                      {c.author.name}
-                                    </span>
-
-                                    <span className="text-white/30">•</span>
-                                    <span>{timeAgo(c.createdAt)}</span>
-                                  </div>
-
-                                  {String(c.author._id) === String(myUserId) && (
-                                    <button
-                                      onClick={() => deleteComment(post._id, c._id)}
-                                      className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
-                                    >
-                                      <Trash className="w-4 h-4" />
-                                    </button>
-                                  )}
-                                </div>
-
-                                <p className="text-sm text-white/70 mt-2">
-                                  {c.message}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-
-                        {(comments[post._id]?.length || 0) > 5 &&
-                          !expanded[post._id] && (
-                            <button
-                              onClick={() =>
-                                setExpanded(prev => ({
+                          <div className="flex-1 relative">
+                            <textarea
+                              value={commentText[post._id] || ""}
+                              onChange={e =>
+                                setCommentText(prev => ({
                                   ...prev,
-                                  [post._id]: true
+                                  [post._id]: e.target.value
                                 }))
                               }
-                              className="text-xs text-white/50 hover:text-white transition cursor-pointer"
+                              placeholder="Write a comment..."
+                              rows={3}
+                              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 pr-16 text-sm outline-none resize-none scrollbar-hide"
+                            />
+
+                            <button
+                              disabled={submitting[post._id]}
+                              onClick={() => submitComment(post._id)}
+                              className="absolute top-2 right-2 px-3 py-1.5 rounded-md bg-white text-black text-xs hover:bg-white/90 transition disabled:opacity-50 cursor-pointer"
                             >
-                              Load more comments
+                              {submitting[post._id] ? "Posting..." : "Post"}
                             </button>
+                          </div>
+
+                        </div>
+
+                        <div className="p-4 space-y-3">
+                          {(comments[post._id]?.length || 0) === 0 && (
+                            <p className="text-sm text-white/40 text-center ">
+                              No comments yet. Be the first to start the discussion.
+                            </p>
                           )}
-                      </div>
 
-                    </motion.div>
-                  )}
+                          {(comments[post._id] || [])
+                            .slice(0, expanded[post._id] ? undefined : 5)
+                            .map(c => (
+                              <div
+                                key={c._id}
+                                className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
+                              >
+                                <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10">
+                                  <User className="w-4 h-4 text-white/60" />
+                                </div>
+
+                                <div className="flex-1 gap-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-xs text-white/60">
+                                      <span
+                                        onClick={() => navigate(`/u/${c.author.profileSlug}`)}
+                                        className="cursor-pointer hover:text-white transition"
+                                      >
+                                        {c.author.name}
+                                      </span>
+
+                                      <span className="text-white/30">•</span>
+                                      <span>{timeAgo(c.createdAt)}</span>
+                                    </div>
+
+                                    {hydrated && myUserId && String(c.author._id) === String(myUserId) && (
+
+                                      <button
+                                        onClick={() => {
+                                          setPendingAction({
+                                            type: "comment",
+                                            postId: post._id,
+                                            commentId: c._id
+                                          })
+                                          setConfirmOpen(true)
+                                        }}
+
+                                        className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
+                                      >
+                                        <Trash className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <p className="text-sm text-white/70 mt-2">
+                                    {c.message}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+
+                          {(comments[post._id]?.length || 0) > 5 &&
+                            !expanded[post._id] && (
+                              <button
+                                onClick={() =>
+                                  setExpanded(prev => ({
+                                    ...prev,
+                                    [post._id]: true
+                                  }))
+                                }
+                                className="text-xs text-white/50 hover:text-white transition cursor-pointer"
+                              >
+                                Load more comments
+                              </button>
+                            )}
+                        </div>
+
+                      </motion.div>
+                    )}
 
 
 
-                </div>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              ))}
         </AnimatePresence>
       </div>
 
@@ -624,6 +731,27 @@ export default function DiscussionsView() {
           </motion.div>
         )}
       </AnimatePresence>
+      <ConfirmModal
+        open={confirmOpen}
+        loading={confirmLoading}
+        title={
+          pendingAction?.type === "post"
+            ? "Delete Post"
+            : "Delete Comment"
+        }
+        description={
+          pendingAction?.type === "post"
+            ? "This post and all its comments will be permanently removed."
+            : "This comment will be permanently removed."
+        }
+        confirmText="Delete"
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingAction(null)
+        }}
+        onConfirm={handleConfirmDelete}
+      />
+
     </section>
   )
 }

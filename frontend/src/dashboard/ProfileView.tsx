@@ -5,6 +5,8 @@ import { Copy, Award, UserPlus, BarChart2 } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
+import { useShallow } from "zustand/react/shallow"
+
 
 type HeatmapDay = {
   date: string
@@ -48,9 +50,16 @@ type ProfileStats = {
 
 
 export default function ProfileView() {
-  const user = useAuthStore((s) => s.user)
+const { user, hydrated } = useAuthStore(
+  useShallow(state => ({
+    user: state.user,
+    hydrated: state.hydrated
+  }))
+)
+
+
   const navigate = useNavigate()
-  const hydrated = useAuthStore(s => s.hydrated)
+
   const [recent, setRecent] = useState<RecentSolve[]>([])
 
   const [heatmap, setHeatmap] = useState<HeatmapDay[]>([])
@@ -81,12 +90,15 @@ export default function ProfileView() {
   const [friends, setFriends] = useState<
     { _id: string; name: string; profileSlug: string }[]
   >([])
+  const [fetched, setFetched] = useState(false)
 
 
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    if (!hydrated || !user?._id) return
+    if (!hydrated) return
+    if (!user?._id) return
+    if (fetched) return
 
     setLoading(true)
 
@@ -101,9 +113,10 @@ export default function ProfileView() {
         setFriends(friendsRes.data.friends || [])
         setRecent(recentRes.data.recent || [])
         setStats(statsRes.data.stats)
+        setFetched(true)
       })
       .finally(() => setLoading(false))
-  }, [hydrated, user?._id])
+  }, [hydrated, user?._id, fetched])
 
 
 
@@ -285,9 +298,11 @@ export default function ProfileView() {
   const monthsMeta = getLast12Months()
 
 
+  if (!hydrated) return null
 
 
-  if (!hydrated || loading || !user || !stats) {
+  if (!fetched || loading || !user || !stats) {
+
     return (
       <section className="font-geist mx-10 mt-10 mb-10 space-y-8 text-white">
         <motion.div
