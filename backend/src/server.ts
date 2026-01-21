@@ -14,8 +14,8 @@ import profileRoutes from "./routes/profile.js";
 import problemRoutes from "./routes/problems.js";
 import communityRoutes from "./routes/community.js"
 import revisionRoutes from "./routes/revision.js";
-import { assignDailyProblems } from "./services/dailyAssignment.js";
-import { startDailyCron } from "./cron/dailyCron.js";
+
+
 const app = express();
 
 app.use(
@@ -43,7 +43,7 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 const start = async () => {
   try {
     await connectDb();
-    startDailyCron();
+    console.log("DB connected successfully");
   } catch (err) {
 
     console.error("DB connection failed", err);

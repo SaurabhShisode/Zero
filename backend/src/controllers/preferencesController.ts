@@ -50,19 +50,21 @@ export const updatePreferences = async (
       }
     }
 
-    let finalPreferences = preferences;
 
-    if (placementMode === true) {
-      finalPreferences = preferences.map((pref) => {
-        if (PLACEMENT_MODE_SKILLS.includes(pref.skill)) {
-          return {
-            ...pref,
-            enabled: true
-          };
+
+    let finalPreferences = Skills.map((skill) => {
+      const incoming = preferences.find(p => p.skill === skill);
+
+      return (
+        incoming || {
+          skill,
+          enabled: false,
+          difficulty: "Easy" as Difficulty
         }
-        return pref;
-      });
-    }
+      );
+    });
+
+
 
     const user = await User.findByIdAndUpdate(
       req.userId,
