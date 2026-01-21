@@ -6,6 +6,10 @@ import zeroLogo from "/icons/zero.svg"
 import step1 from "../assets/step1.png"
 import step2 from "../assets/step2.png"
 import step3 from "../assets/step3.png"
+import gfgLogo from "../assets/gfg.png"
+import lcLogo from "../assets/leetcode.png"
+import hackerrankLogo from "../assets/hackerrank.png"
+import w3schoolsLogo from "../assets/w3schools.png"
 const faqs = [
   {
     q: "What is Zero built for?",
@@ -725,7 +729,7 @@ buildConsistency();
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-black text-white py-28"
+        className="relative bg-black text-white py-10"
       >
         <div className="relative flex items-center justify-center gap-2 mb-4">
           <img
@@ -743,75 +747,110 @@ buildConsistency();
         </h1>
       </motion.section>
 
+      <motion.section
+        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8, ease: "easeOut" }} className="py-32 mx-30 ">
 
+        <div className="relative rounded-3xl border border-white/15 bg-white/10 backdrop-blur-xl p-10 overflow-hidden ">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-10 items-stretch relative">
 
-      <section className="relative mx-6 md:mx-20 py-24 font-geist">
-
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="relative max-w-6xl mx-auto group"
-        >
-          <div className="absolute -inset-1 rounded-3xl bg-green-400/20 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
-
-          <div className="relative rounded-3xl border border-white/15 bg-white/10 backdrop-blur-xl p-10">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 items-stretch">
-
-              <div>
-                <p className="text-white/40 text-sm uppercase tracking-wide mb-6">
-                  You today
+            <div className="flex justify-center">
+              <div className="flex flex-col items-center text-center w-full ">
+                <p className="text-white text-5xl font-inter mb-6">
+                  Without <span className="font-geist"> zero</span>
                 </p>
 
-                <ul className="space-y-4 text-lg">
+                <div className="mb-8 flex flex-wrap justify-center gap-6 mt-10">
+                  {[gfgLogo, lcLogo, hackerrankLogo, w3schoolsLogo].map((logo, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ y: 0 }}
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{
+                        duration: 3 + i,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="flex items-center justify-center hover:scale-105 transition"
+                    >
+                      <img
+                        src={logo}
+                        alt="platform"
+                        className="w-30 h-30 object-contain grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition"
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+
+                <ul className="flex gap-4 text-sm text-left mt-10 font-geist">
                   <li className="flex items-center gap-3 text-white/70">
                     <span className="h-2 w-2 rounded-full bg-white/30" />
-                    Random problem solving
+                    Scattered learning across platforms
                   </li>
                   <li className="flex items-center gap-3 text-white/70">
                     <span className="h-2 w-2 rounded-full bg-white/30" />
-                    No clear plan
+                    No clear daily structure
                   </li>
                   <li className="flex items-center gap-3 text-white/70">
                     <span className="h-2 w-2 rounded-full bg-white/30" />
-                    Inconsistent practice
+                    Motivation fades over time
                   </li>
                 </ul>
               </div>
+            </div>
 
-              <div className="flex justify-center">
-                <div className="hidden md:block w-px bg-white/20" />
-                <div className="block md:hidden h-px w-full bg-white/20" />
-              </div>
+            <div className="flex justify-center">
+              <div className="hidden md:block w-px bg-white/20" />
+              <div className="block md:hidden h-px w-full bg-white/20" />
+            </div>
 
-              <div>
-                <p className="text-green-400 text-sm uppercase tracking-wide mb-6">
-                  You in 60 days
+            <div className="flex justify-center">
+              <div className="flex flex-col items-center text-center w-full ">
+                <p className="text-white text-5xl font-inter mb-6">
+                  With <span className="font-geist"> zero</span>
                 </p>
 
-                <ul className="space-y-4 text-lg">
+                <div className="mb-8 flex flex-wrap justify-center gap-6 mt-10">
+
+                  <img
+                    src={zeroLogo}
+                    alt="Zero"
+                    className="w-30 h-30 object-contain "
+                  />
+
+                </div>
+
+                <ul className="flex gap-4 text-sm text-left mt-10 font-geist">
                   <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-green-400" />
-                    Daily problem habit
+                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
+" />
+                    One focused daily problem loop
                   </li>
                   <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-green-400" />
+                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
+" />
                     Clear strengths and weak spots
                   </li>
                   <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-green-400" />
-                    Interview-ready confidence
+                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
+" />
+                    Interview-ready momentum
                   </li>
                 </ul>
               </div>
-
             </div>
+
           </div>
-        </motion.div>
+        </div>
+      </motion.section>
 
 
-      </section>
+
+
+
+
 
 
 

@@ -15,7 +15,7 @@ export type View =
   | "daily"
   | "company"
   | "topics"
-  | "placement"
+  //| "placement"
   | "community"
   | "revision"
   | "profile"
@@ -32,7 +32,7 @@ const SIDEBAR_ITEMS: {
     { id: "revision", label: "Revisions", icon: RefreshCcw },
     { id: "company", label: "Company Wise", icon: Building2 },
     { id: "topics", label: "Topic Wise", icon: Layers },
-    { id: "placement", label: "Placement Mode", icon: Briefcase },
+    //{ id: "placement", label: "Placement Mode", icon: Briefcase },
     { id: "community", label: "Community", icon: MessageCircle },
     { id: "profile", label: "Profile", icon: User },
     { id: "settings", label: "Settings", icon: Settings }
