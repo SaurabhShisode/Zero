@@ -32,7 +32,7 @@ const renderView = () => {
       return <CompanyView />
     case "topics":
       return <TopicsView />
-    case "placement":
+   // case "placement":
       return <PlacementView />
     case "community":
       return <DiscussionsView />

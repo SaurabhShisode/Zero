@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Briefcase, Clock, Layers, PlayCircle } from "lucide-react"
+import { Clock, Layers, PlayCircle } from "lucide-react"
+import {Briefcase } from "lucide-react"
 import toast from "react-hot-toast"
 
 export default function PlacementView() {
