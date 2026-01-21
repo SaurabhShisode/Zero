@@ -748,110 +748,111 @@ buildConsistency();
       </motion.section>
 
       <motion.section
-        initial={{ opacity: 0, y: 60, scale: 0.9 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        transition={{ duration: 0.8, ease: "easeOut" }} className="py-32 mx-30 ">
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-120px" }}
+        transition={{ duration: 0.9, ease: "easeOut" }}
+        className="relative py-32 px-6 max-w-7xl mx-auto"
+      >
 
-        <div className="relative rounded-3xl border border-white/15 bg-white/10 backdrop-blur-xl p-10 overflow-hidden ">
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-10 items-stretch relative">
 
-            <div className="flex justify-center">
-              <div className="flex flex-col items-center text-center w-full ">
-                <p className="text-white text-5xl font-inter mb-6">
-                  Without <span className="font-geist"> zero</span>
+        <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl p-14 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#7DA2FF]/10 via-transparent to-transparent" />
+
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-16 items-stretch relative">
+
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center"
+            >
+              <div className="flex flex-col items-center text-center w-full">
+                <p className="text-white/50 text-base uppercase tracking-widest mb-10 font-geist">
+                  Without Zero
                 </p>
 
-                <div className="mb-8 flex flex-wrap justify-center gap-6 mt-10">
+                <div className="mb-12 flex flex-wrap justify-center gap-8">
                   {[gfgLogo, lcLogo, hackerrankLogo, w3schoolsLogo].map((logo, i) => (
                     <motion.div
                       key={i}
-                      initial={{ y: 0 }}
-                      animate={{ y: [0, -6, 0] }}
-                      transition={{
-                        duration: 3 + i,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                      className="flex items-center justify-center hover:scale-105 transition"
+                      whileHover={{ scale: 1.08 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      className="opacity-60 hover:opacity-100 transition"
                     >
                       <img
                         src={logo}
                         alt="platform"
-                        className="w-30 h-30 object-contain grayscale hover:grayscale-0 opacity-70 hover:opacity-100 transition"
+                        className="w-20 h-20 object-contain grayscale hover:grayscale-0 transition"
                       />
                     </motion.div>
                   ))}
                 </div>
 
-                <ul className="flex gap-4 text-sm text-left mt-10 font-geist">
-                  <li className="flex items-center gap-3 text-white/70">
-                    <span className="h-2 w-2 rounded-full bg-white/30" />
-                    Scattered learning across platforms
-                  </li>
-                  <li className="flex items-center gap-3 text-white/70">
-                    <span className="h-2 w-2 rounded-full bg-white/30" />
-                    No clear daily structure
-                  </li>
-                  <li className="flex items-center gap-3 text-white/70">
-                    <span className="h-2 w-2 rounded-full bg-white/30" />
-                    Motivation fades over time
-                  </li>
+                <ul className="space-y-6 text-sm text-left font-geist">
+                  {[
+                    "Scattered learning across platforms",
+                    "No consistent daily structure",
+                    "Motivation fades over time"
+                  ].map((text, i) => (
+                    <li key={i} className="flex items-center gap-4 text-white/60">
+                      <span className="h-2.5 w-2.5 rounded-full bg-white/30" />
+                      {text}
+                    </li>
+                  ))}
                 </ul>
               </div>
-            </div>
+            </motion.div>
 
             <div className="flex justify-center">
-              <div className="hidden md:block w-px bg-white/20" />
-              <div className="block md:hidden h-px w-full bg-white/20" />
+              <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-white/20 to-transparent" />
+              <div className="block md:hidden h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             </div>
 
-            <div className="flex justify-center">
-              <div className="flex flex-col items-center text-center w-full ">
-                <p className="text-white text-5xl font-inter mb-6">
-                  With <span className="font-geist"> zero</span>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="flex justify-center"
+            >
+              <div className="flex flex-col items-center text-center w-full">
+                <p className="text-white text-base uppercase tracking-widest mb-10 font-geist">
+                  With Zero
                 </p>
 
-                <div className="mb-8 flex flex-wrap justify-center gap-6 mt-10">
-
-                  <img
-                    src={zeroLogo}
-                    alt="Zero"
-                    className="w-30 h-30 object-contain "
-                  />
-
+                <div className="mb-12 flex justify-center">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 180, damping: 12 }}
+                    className="relative"
+                  >
+                    <div className="absolute -inset-6 rounded-full bg-[#7DA2FF]/20 blur-2xl animate-pulse" />
+                    <img
+                      src={zeroLogo}
+                      alt="Zero"
+                      className="relative w-24 h-24 object-contain"
+                    />
+                  </motion.div>
                 </div>
 
-                <ul className="flex gap-4 text-sm text-left mt-10 font-geist">
-                  <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
-" />
-                    One focused daily problem loop
-                  </li>
-                  <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
-" />
-                    Clear strengths and weak spots
-                  </li>
-                  <li className="flex items-center gap-3 text-white/90">
-                    <span className="h-2 w-2 rounded-full bg-[#7DA2FF]
-" />
-                    Interview-ready momentum
-                  </li>
+                <ul className="space-y-6 text-sm text-left font-geist">
+                  {[
+                    "One focused daily problem loop",
+                    "Clear strengths and weak spots",
+                    "Interview-ready momentum"
+                  ].map((text, i) => (
+                    <li key={i} className="flex items-center gap-4 text-white/90">
+                      <span className="h-2.5 w-2.5 rounded-full bg-[#7DA2FF]" />
+                      {text}
+                    </li>
+                  ))}
                 </ul>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
       </motion.section>
-
-
-
-
-
-
-
 
 
       <section id="faqs" className="relative bg-black text-white py-28">
