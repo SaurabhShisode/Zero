@@ -4,14 +4,33 @@ import { api } from "../api/client"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import toast from "react-hot-toast"
 
+const ALL_SKILLS: Skill[] = [
+  "DSA",
+  "SQL",
+  "JavaScript",
+  "Java",
+  "SystemDesign",
+  "OperatingSystems",
+  "DBMS",
+  "Networking",
+  "Aptitude",
+  "Behavioral"
+]
+
+
+const DEFAULT_DIFFICULTY: Difficulty = "Easy"
+
 type Skill =
   | "DSA"
-  | "Aptitude"
-  | "Behavioral"
+  | "SQL"
+  | "JavaScript"
+  | "Java"
   | "SystemDesign"
   | "OperatingSystems"
   | "DBMS"
   | "Networking"
+  | "Aptitude"
+  | "Behavioral"
 
 type Difficulty = "Easy" | "Medium" | "Hard"
 
@@ -85,6 +104,45 @@ function DifficultySelect({
     </div>
   )
 }
+function SettingsSkeleton() {
+  return (
+    <section className="font-geist space-y-8 mx-10 mt-10 mb-10 animate-pulse">
+      <div className="space-y-2">
+        <div className="h-6 w-32 rounded bg-white/10" />
+        <div className="h-4 w-64 rounded bg-white/5" />
+      </div>
+
+      <div className="rounded-2xl border border-white/15 bg-white/10 p-6 space-y-4">
+        <div className="h-5 w-40 rounded bg-white/10" />
+
+        <div className="space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-6 rounded-full bg-white/20" />
+                <div className="h-4 w-24 rounded bg-white/10" />
+              </div>
+
+              <div className="h-8 w-20 rounded-lg bg-white/10" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/15 bg-white/10 p-6 flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="h-5 w-40 rounded bg-white/10" />
+          <div className="h-4 w-56 rounded bg-white/5" />
+        </div>
+
+        <div className="w-14 h-8 rounded-full bg-white/20" />
+      </div>
+    </section>
+  )
+}
 
 export default function SettingsView() {
   const [preferences, setPreferences] = useState<SkillPreference[]>([])
@@ -93,15 +151,31 @@ export default function SettingsView() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get("/api/preferences").then(res => {
-      const user = res.data.user
-
-      setPreferences(user.preferences || [])
-      setPlacementMode(user.placementMode || false)
-      setSaved(true)
-      setLoading(false)
-    })
+    loadPreferences()
   }, [])
+
+  function loadPreferences() {
+    setLoading(true)
+
+    api
+      .get("/api/preferences")
+      .then(res => {
+        const user = res.data.user
+
+        setPreferences(
+          normalizePreferences(user.preferences || [])
+        )
+        setPlacementMode(user.placementMode || false)
+        setSaved(true)
+      })
+      .catch(() => {
+        toast.error("Failed to load preferences")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
+
 
   function toggleSkill(skill: Skill) {
     setSaved(false)
@@ -126,46 +200,49 @@ export default function SettingsView() {
       )
     )
   }
+  function normalizePreferences(
+    saved: SkillPreference[]
+  ): SkillPreference[] {
+    return ALL_SKILLS.map(skill => {
+      const found = saved.find(p => p.skill === skill)
 
+      if (found) return found
+
+      return {
+        skill,
+        enabled: false,
+        difficulty: DEFAULT_DIFFICULTY
+      }
+    })
+  }
   function saveChanges() {
-  api
-    .put("/api/preferences", {
-      preferences,
-      placementMode
-    })
-    .then(() => {
-      setSaved(true)
-      toast.success("Preferences updated")
-    })
-    .catch(() => {
-      toast.error("Failed to save preferences")
-    })
-}
+    api
+      .put("/api/preferences", {
+        preferences,
+        placementMode
+      })
+      .then(() => {
+        toast.success("Preferences updated")
+        loadPreferences()
+      })
+      .catch(() => {
+        toast.error("Failed to save preferences")
+      })
+  }
 
-function discardChanges() {
-  setLoading(true)
 
-  api
-    .get("/api/preferences")
-    .then(res => {
-      const user = res.data.user
-      setPreferences(user.preferences || [])
-      setPlacementMode(user.placementMode || false)
-      setSaved(true)
-      setLoading(false)
-      toast("Changes discarded", { icon: "↩" })
-    })
-    .catch(() => {
-      setLoading(false)
-      toast.error("Failed to reload preferences")
-    })
-}
+  function discardChanges() {
+    loadPreferences()
+    toast("Changes discarded", { icon: "↩" })
+  }
+
 
 
 
   if (loading) {
-    return <p className="text-white/40">Loading settings...</p>
-  }
+  return <SettingsSkeleton />
+}
+
 
   return (
     <section className="font-geist space-y-8 mx-10  mt-10 mb-10">
@@ -245,7 +322,7 @@ function discardChanges() {
             setPlacementMode(!placementMode)
             setSaved(false)
           }}
-          className={`w-14 h-8 rounded-full transition ${placementMode
+          className={`w-14 h-8 rounded-full transition cursor-pointer ${placementMode
             ? "bg-green-500"
             : "bg-white/20"
             }`}
