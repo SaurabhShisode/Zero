@@ -1,10 +1,7 @@
-export const toDay = (date?: Date | string | number) => {
-  const base = date ? new Date(date) : new Date()
+import { startOfDay } from "date-fns"
+import { toZonedTime } from "date-fns-tz"
 
-  const istOffset = 5.5 * 60 * 60 * 1000
-  const istTime = new Date(base.getTime() + istOffset)
-
-  istTime.setHours(0, 0, 0, 0)
-
-  return new Date(istTime.getTime() - istOffset)
+export const toDay = () => {
+  const istNow = toZonedTime(new Date(), "Asia/Kolkata")
+  return startOfDay(istNow)
 }
