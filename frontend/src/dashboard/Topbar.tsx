@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LogOut} from "lucide-react";
+import { LogOut } from "lucide-react";
 import type { View } from "./Sidebar";
 import { useAuthStore } from "../store/authStore";
 import type { RefObject } from "react";
@@ -49,7 +49,7 @@ export default function Topbar({ scrollRef }: Props) {
         <header
             className={`
     fixed top-0 right-0 z-30
-    w-full md:w-[calc(100%-16rem)]
+    w-full lg:w-[calc(100%-16rem)]
     backdrop-blur-xl
     will-change-transform
     ${border ? "border-b border-white/10 bg-white/40" : "bg-white/5"}
@@ -67,12 +67,12 @@ export default function Topbar({ scrollRef }: Props) {
 
 
             <div className="flex items-center justify-between px-8 py-5">
-                <h1 className="text-lg  font-geist tracking-tight">
-                   <span className="text-gray-400">Welcome</span>{user?.name ? ` , ${user.name}` : ""}
+                <h1 className="text-lg mx-10 lg:mx-0  font-geist tracking-tight">
+                    <span className="text-gray-400">Welcome</span>{user?.name ? ` , ${user.name}` : ""}
                 </h1>
 
                 <div className="flex items-center gap-8 font-geist">
-                    
+
 
                     <button
                         onClick={logout}

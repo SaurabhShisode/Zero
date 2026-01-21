@@ -318,7 +318,8 @@ export default function Landing() {
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-black text-white py-28 mt-24"
+        id="why-zero"
+        className="relative bg-black text-white pt-28 mt-24 pb-32"
       >
         <div className="max-w-7xl mx-auto px-8">
           <h1 className="font-geist text-6xl mb-20">Four ways we make your
@@ -725,11 +726,11 @@ buildConsistency();
       </motion.section>
 
       <motion.section
-        initial={{ opacity: 0, y: 60, scale: 0.9 }}
+        initial={{ opacity: 0, y: 200, scale: 0.9 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-black text-white py-10"
+        className="relative bg-black text-white pt-32 z-0"
       >
         <div className="relative flex items-center justify-center gap-2 mb-4">
           <img
@@ -748,11 +749,8 @@ buildConsistency();
       </motion.section>
 
       <motion.section
-        initial={{ opacity: 0, y: 80 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 0.9, ease: "easeOut" }}
-        className="relative py-32 px-6 max-w-7xl mx-auto"
+        
+        className="relative pb-32 px-6 max-w-7xl mx-auto z-20"
       >
 
 
