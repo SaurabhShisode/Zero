@@ -4,6 +4,8 @@ import { api } from "../api/client"
 import { Bug, Plus, Trash, Clock, CheckCircle, AlertTriangle } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 import toast from "react-hot-toast"
+import { BugOff } from "lucide-react"
+
 const ADMIN_EMAILS = ["shisodesaurabh48@gmail.com"]
 
 type BugReport = {
@@ -42,28 +44,28 @@ export default function BugsView() {
       setLoading(false)
     }
   }
-const user = useAuthStore(s => s.user)
-const isAdmin = Boolean(user?.email && ADMIN_EMAILS.includes(user.email))
-async function updateStatus(
-  id: string,
-  status: "open" | "in_progress" | "fixed"
-) {
-  try {
-    const res = await api.patch(`/api/bugs/${id}/status`, {
-      status
-    })
+  const user = useAuthStore(s => s.user)
+  const isAdmin = Boolean(user?.email && ADMIN_EMAILS.includes(user.email))
+  async function updateStatus(
+    id: string,
+    status: "open" | "in_progress" | "fixed"
+  ) {
+    try {
+      const res = await api.patch(`/api/bugs/${id}/status`, {
+        status
+      })
 
-    setBugs(prev =>
-      prev.map(b =>
-        b._id === id ? res.data.bug : b
+      setBugs(prev =>
+        prev.map(b =>
+          b._id === id ? res.data.bug : b
+        )
       )
-    )
 
-    toast.success("Bug status updated")
-  } catch {
-    toast.error("You are not authorized to update status")
+      toast.success("Bug status updated")
+    } catch {
+      toast.error("You are not authorized to update status")
+    }
   }
-}
 
   async function createBug() {
     if (!title.trim() || !description.trim()) {
@@ -152,7 +154,7 @@ async function updateStatus(
           <h1 className="text-2xl font-semibold tracking-tight">
             Bug Reports
           </h1>
-         
+
         </div>
 
         <button
@@ -170,12 +172,20 @@ async function updateStatus(
         </p>
       )}
 
-      {!loading && bugs.length === 0 && (
-        <p className="text-white/40 text-sm">
-          No bugs reported yet. Everything looks good.
-        </p>
-      )}
+    
+{!loading && bugs.length === 0 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-2xl  p-8 text-center"
+                >
+                    <p className="text-white/40 text-2xl">
+                    <BugOff className="w-24 h-24 text-white mx-auto mb-4" />
 
+                       No bugs reported yet. Everything looks good.
+                    </p>
+                </motion.div>
+            )}
       <div className="space-y-4">
         <AnimatePresence>
           {bugs.map(bug => (
@@ -195,43 +205,43 @@ async function updateStatus(
                 </div>
 
                 <div className="flex items-center gap-3">
-  {statusBadge(bug.status)}
+                  {statusBadge(bug.status)}
 
-  {isAdmin && (
-    <div className="flex gap-1">
-      <button
-        onClick={() => updateStatus(bug._id, "open")}
-        className="text-xs px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10 transition cursor-pointer"
-      >
-        Open
-      </button>
+                  {isAdmin && (
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => updateStatus(bug._id, "open")}
+                        className="text-xs px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10 transition cursor-pointer"
+                      >
+                        Open
+                      </button>
 
-      <button
-        onClick={() => updateStatus(bug._id, "in_progress")}
-        className="text-xs px-2 py-1 rounded border border-yellow-400/40 text-yellow-400 hover:bg-yellow-400/10 transition cursor-pointer"
-      >
-        Progress
-      </button>
+                      <button
+                        onClick={() => updateStatus(bug._id, "in_progress")}
+                        className="text-xs px-2 py-1 rounded border border-yellow-400/40 text-yellow-400 hover:bg-yellow-400/10 transition cursor-pointer"
+                      >
+                        Progress
+                      </button>
 
-      <button
-        onClick={() => updateStatus(bug._id, "fixed")}
-        className="text-xs px-2 py-1 rounded border border-green-400/40 text-green-400 hover:bg-green-400/10 transition cursor-pointer"
-      >
-        Fix
-      </button>
-    </div>
-  )}
+                      <button
+                        onClick={() => updateStatus(bug._id, "fixed")}
+                        className="text-xs px-2 py-1 rounded border border-green-400/40 text-green-400 hover:bg-green-400/10 transition cursor-pointer"
+                      >
+                        Fix
+                      </button>
+                    </div>
+                  )}
 
-  {bug.author._id === userId && (
-    <button
-      onClick={() => deleteBug(bug._id)}
-      className="text-red-400 hover:text-red-300 transition cursor-pointer"
-      title="Delete bug"
-    >
-      <Trash className="w-4 h-4" />
-    </button>
-  )}
-</div>
+                  {bug.author._id === userId && (
+                    <button
+                      onClick={() => deleteBug(bug._id)}
+                      className="text-red-400 hover:text-red-300 transition cursor-pointer"
+                      title="Delete bug"
+                    >
+                      <Trash className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
               </div>
 

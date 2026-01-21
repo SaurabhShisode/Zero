@@ -519,7 +519,17 @@ export default function ProfileView() {
         className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex flex-col md:flex-row gap-6 items-start md:items-center"
       >
         <img
-          src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${user.name}`}
+        src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.name)}`}
+
+
+
+
+
+
+
+
+
+
           className="w-24 h-24 rounded-2xl shadow-xl"
         />
 
