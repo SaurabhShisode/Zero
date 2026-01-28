@@ -5,12 +5,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "seed": "tsx src/scripts/seedProblems.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "lint": "echo \"(no lint step yet)\""
-  },
+  "dev": "tsx watch src/server.ts",
+  "seed": "tsx src/scripts/seedProblems.ts",
+  "build": "tsc",
+  "start": "node dist/server.js",
+  "cron": "node dist/cron/dailyCron.js",
+  "lint": "echo \"(no lint step yet)\""
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",
