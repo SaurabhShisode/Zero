@@ -92,7 +92,7 @@ export default function DiscussionsView() {
       setLoading(false)
     }
   }
- 
+
 
   function toggleComments(postId: string) {
     if (openComments === postId) {
@@ -279,20 +279,20 @@ export default function DiscussionsView() {
       setPendingAction(null)
     }
   }
-if (!hydrated) {
-  return (
-    <section className="px-8 pt-8 text-white/40">
-      Loading session...
-    </section>
-  )
-}
+  if (!hydrated) {
+    return (
+      <section className="px-4 md:px-8 pt-6 md:pt-8 text-white/40">
+        Loading session...
+      </section>
+    )
+  }
 
 
   return (
-    <section className="font-geist px-8 pt-8 pb-20 space-y-6 text-white">
+    <section className="font-geist px-4 md:px-8 pt-6 md:pt-8 pb-20 space-y-4 md:space-y-6 text-white">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
             Community Discussions
           </h1>
           <p className="text-white/40 text-sm mt-1">
@@ -302,35 +302,37 @@ if (!hydrated) {
 
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-white/90 transition cursor-pointer"
+          className="flex items-center gap-2 px-1 md:px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-white/90 transition cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           New Post
         </button>
       </div>
 
-      <div className="flex gap-2">
-        {SORTS.map(s => {
-          const Icon = s.icon
-          return (
-            <button
-              key={s.id}
-              onClick={() => setSort(s.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition cursor-pointer ${sort === s.id
-                ? "bg-white text-black"
-                : "bg-white/5 text-white/70 hover:bg-white/10"
-                }`}
-            >
-              <Icon className="w-4 h-4" />
-              {s.label}
-            </button>
-          )
-        })}
+      <div className="flex flex-col md:flex-row gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {SORTS.map(s => {
+            const Icon = s.icon
+            return (
+              <button
+                key={s.id}
+                onClick={() => setSort(s.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition cursor-pointer ${sort === s.id
+                  ? "bg-white text-black"
+                  : "bg-white/5 text-white/70 hover:bg-white/10"
+                  }`}
+              >
+                <Icon className="w-4 h-4" />
+                {s.label}
+              </button>
+            )
+          })}
+        </div>
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search discussions..."
-          className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white/80 outline-none w-64"
+          className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white/80 outline-none w-full md:w-64"
         />
 
       </div>
@@ -342,7 +344,7 @@ if (!hydrated) {
             {[1, 2, 3, 4].map(i => (
               <div
                 key={i}
-                className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5 animate-pulse"
+                className="rounded-xl md:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 md:p-5 flex gap-3 md:gap-5 animate-pulse"
               >
                 <div className="flex-1 space-y-4">
                   <div className="flex items-center gap-2">
@@ -396,28 +398,28 @@ if (!hydrated) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 flex gap-5"
+                  className="rounded-xl md:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 md:p-5 flex gap-3 md:gap-5"
                 >
 
 
                   <div className="flex-1 space-y-2 min-w-0">
                     <div className="flex items-center justify-between gap-2 text-sm">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
                         <button
                           onClick={() =>
                             navigate(`/u/${post.author.profileSlug}`)
                           }
-                          className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer"
+                          className="flex items-center gap-2 text-white/80 hover:text-white font-medium transition cursor-pointer min-w-0"
                         >
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/10">
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white/10 flex-shrink-0">
                             <User className="w-4 h-4 text-white/60" />
                           </div>
-                          {post.author.name}
+                          <span className="truncate">{post.author.name}</span>
                         </button>
 
-                        <span className="text-white/30">•</span>
+                        <span className="text-white/30 flex-shrink-0">•</span>
 
-                        <span className="text-white/40">
+                        <span className="text-white/40 flex-shrink-0">
                           {timeAgo(post.createdAt)}
                         </span>
                       </div>
@@ -433,7 +435,7 @@ if (!hydrated) {
                               setConfirmOpen(true)
                             }}
 
-                            className="text-red-400 hover:text-red-300 transition cursor-pointer"
+                            className="text-red-400 hover:text-red-300 transition cursor-pointer flex-shrink-0"
                             title="Delete post"
                           >
                             <Trash className="w-4 h-4" />
@@ -448,7 +450,7 @@ if (!hydrated) {
                         onClick={() =>
                           navigate(`/discussions/${post._id}`)
                         }
-                        className="text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
+                        className="text-base md:text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
                       >
                         {post.title}
                       </h2>
@@ -483,7 +485,7 @@ if (!hydrated) {
 
 
                     <div className="flex items-center justify-between pt-3  ">
-                      <div className="flex items-center gap-4 text-sm text-white/50">
+                      <div className="flex items-center gap-3 md:gap-4 text-sm text-white/50">
                         <button
                           onClick={() => vote(post._id, "up")}
                           className={`flex items-center gap-1 transition cursor-pointer ${post.myVote === "up"
@@ -527,7 +529,7 @@ if (!hydrated) {
                       >
 
                         <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full  flex items-center justify-center bg-white/10">
+                          <div className="w-8 h-8 rounded-full  flex items-center justify-center bg-white/10 flex-shrink-0">
                             <User className="w-5 h-5 text-white/60" />
                           </div>
 
@@ -556,7 +558,7 @@ if (!hydrated) {
 
                         </div>
 
-                        <div className="p-4 space-y-3">
+                        <div className="p-3 md:p-4 space-y-3">
                           {(comments[post._id]?.length || 0) === 0 && (
                             <p className="text-sm text-white/40 text-center ">
                               No comments yet. Be the first to start the discussion.
@@ -570,22 +572,22 @@ if (!hydrated) {
                                 key={c._id}
                                 className="flex gap-3 bg-white/5 border border-white/10 rounded-lg p-3"
                               >
-                                <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10">
+                                <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/10 flex-shrink-0">
                                   <User className="w-4 h-4 text-white/60" />
                                 </div>
 
-                                <div className="flex-1 gap-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-xs text-white/60">
+                                <div className="flex-1 gap-y-2 min-w-0">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2 text-xs text-white/60 min-w-0">
                                       <span
                                         onClick={() => navigate(`/u/${c.author.profileSlug}`)}
-                                        className="cursor-pointer hover:text-white transition"
+                                        className="cursor-pointer hover:text-white transition truncate"
                                       >
                                         {c.author.name}
                                       </span>
 
-                                      <span className="text-white/30">•</span>
-                                      <span>{timeAgo(c.createdAt)}</span>
+                                      <span className="text-white/30 flex-shrink-0">•</span>
+                                      <span className="flex-shrink-0">{timeAgo(c.createdAt)}</span>
                                     </div>
 
                                     {hydrated && myUserId && String(c.author._id) === String(myUserId) && (
@@ -600,14 +602,14 @@ if (!hydrated) {
                                           setConfirmOpen(true)
                                         }}
 
-                                        className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer"
+                                        className="text-xs text-red-400 hover:text-red-300 transition cursor-pointer flex-shrink-0"
                                       >
                                         <Trash className="w-4 h-4" />
                                       </button>
                                     )}
                                   </div>
 
-                                  <p className="text-sm text-white/70 mt-2">
+                                  <p className="text-sm text-white/70 mt-2 break-words">
                                     {c.message}
                                   </p>
                                 </div>
@@ -647,13 +649,13 @@ if (!hydrated) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-xl rounded-2xl border border-white/15 bg-black/80 p-6 space-y-4"
+              className="w-full max-w-xl rounded-xl md:rounded-2xl border border-white/15 bg-black/80 p-5 md:p-6 space-y-4"
             >
               <h2 className="text-lg font-semibold">
                 Create Discussion
@@ -681,7 +683,7 @@ if (!hydrated) {
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none"
               />
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex flex-col md:flex-row justify-end gap-3 pt-2">
                 <button
                   onClick={() => setShowCreate(false)}
                   className="px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer"
