@@ -125,7 +125,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-white flex items-center justify-center px-6">
+    <div className="relative min-h-screen overflow-hidden text-white flex items-center justify-center px-4 sm:px-6">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImage})` }}
@@ -134,10 +134,10 @@ export default function Onboarding() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0f172a]/80 to-black" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
 
-      <div className="relative z-10 w-full max-w-lg rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 space-y-8 shadow-[0_40px_120px_rgba(0,0,0,0.6)] font-geist">
+      <div className="relative z-10 w-full max-w-lg rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-8 space-y-6 sm:space-y-8 shadow-[0_40px_120px_rgba(0,0,0,0.6)] font-geist">
 
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-xl sm:text-2xl font-semibold">
             Welcome to Zero
           </h1>
           <p className="text-sm text-white/60">
@@ -178,11 +178,10 @@ export default function Onboarding() {
                   <button
                     key={skill}
                     onClick={() => toggleSkill(skill)}
-                    className={`px-4 py-3 rounded-lg border transition cursor-pointer ${
-                      active
+                    className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border transition cursor-pointer text-sm sm:text-base ${active
                         ? "bg-white text-black border-white"
                         : "bg-white/5 border-white/15 text-white hover:border-white/40"
-                    }`}
+                      }`}
                   >
                     {SKILL_LABELS[skill]}
 
@@ -209,15 +208,14 @@ export default function Onboarding() {
                       level === "Easy"
                         ? "Starting steady. Discipline beats burnout."
                         : level === "Medium"
-                        ? "Good. You are building real interview strength."
-                        : "Hard mode. Respect. This is where growth happens."
+                          ? "Good. You are building real interview strength."
+                          : "Hard mode. Respect. This is where growth happens."
                     )
                   }}
-                  className={`flex-1 py-3 rounded-lg border transition cursor-pointer ${
-                    difficulty === level
+                  className={`flex-1 py-2.5 sm:py-3 rounded-lg border transition cursor-pointer text-sm sm:text-base ${difficulty === level
                       ? "bg-white text-black border-white"
                       : "bg-white/5 border-white/15 text-white hover:border-white/40"
-                  }`}
+                    }`}
                 >
                   {level}
                 </button>
@@ -254,18 +252,16 @@ export default function Onboarding() {
                     return next
                   })
                 }
-                className={`w-12 h-6 rounded-full transition relative cursor-pointer ${
-                  placementMode
+                className={`w-12 h-6 rounded-full transition relative cursor-pointer ${placementMode
                     ? "bg-white"
                     : "bg-white/20"
-                }`}
+                  }`}
               >
                 <span
-                  className={`absolute top-1 left-1 w-4 h-4 rounded-full transition ${
-                    placementMode
+                  className={`absolute top-1 left-1 w-4 h-4 rounded-full transition ${placementMode
                       ? "translate-x-6 bg-black"
                       : "translate-x-0 bg-white"
-                  }`}
+                    }`}
                 />
               </button>
             </div>

@@ -83,7 +83,7 @@ export default function Landing() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
 
         <nav className="relative z-20 w-full">
-          <div className="max-w-6xl mx-auto px-8 py-4 flex items-center gap-10">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center gap-4 sm:gap-6 md:gap-10">
             <div className="flex items-center">
               <img
                 src={zeroLogo}
@@ -95,7 +95,7 @@ export default function Landing() {
               <p className=" text-2xl text-white font-geist ">zero</p>
             </div>
 
-            <div className="flex gap-6 items-center text-sm font-geist">
+            <div className="hidden md:flex gap-6 items-center text-sm font-geist">
               <button
                 onClick={() => scrollToSection("home")}
                 className="text-white/60 hover:text-white transition hover:bg-white/10 hover:backdrop-blur p-2 rounded-md cursor-pointer"
@@ -131,22 +131,22 @@ export default function Landing() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="max-w-5xl mx-auto px-8 text-center"
           >
-            <h1 className="text-5xl text-white md:text-[84px] tracking-[0.02em] leading-tight font-garamond">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[84px] text-white tracking-[0.02em] leading-tight font-garamond">
               #1 Consistency-First
               <br /> Practice Platform
             </h1>
 
-            <p className="mt-8 text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed font-geist">
+            <p className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed font-geist px-4">
               Zero gives you one focused problem every day.
               Built for consistency,<br /> not overwhelm.
             </p>
 
-            <div className="mt-10 flex justify-center gap-4 font-geist">
+            <div className="mt-8 sm:mt-10 flex justify-center gap-4 font-geist px-4">
               <Link
                 ref={ctaRef}
                 to="/signup"
                 className="
-    relative bg-white/90 text-black px-3 py-3 rounded-md font-medium
+    relative bg-white/90 text-black px-4 sm:px-6 md:px-3 py-2.5 sm:py-3 rounded-md font-medium text-sm sm:text-base
     backdrop-blur-sm
     shadow-[0_10px_30px_rgba(0,0,0,0.15)]
     transition-all duration-300 ease-out
@@ -167,12 +167,12 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.7, ease: "easeOut" }}
-              className="relative mt-14 flex justify-center font-geist"
+              className="relative mt-10 sm:mt-12 md:mt-14 flex justify-center font-geist px-4"
             >
               <div className="relative group w-full max-w-4xl">
                 <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
-                <div className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl font-geist text-left">
+                <div className="relative rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl font-geist text-left">
 
                   <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
                     <div className="h-3 w-3 rounded-full bg-red-500/80" />
@@ -180,17 +180,17 @@ export default function Landing() {
                     <div className="h-3 w-3 rounded-full bg-green-500/80" />
                   </div>
 
-                  <div className="p-6 space-y-6">
-                    <div className="flex items-start justify-between gap-6">
+                  <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-6">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6">
                       <div className="space-y-2">
                         <span className="inline-flex text-[11px] uppercase tracking-wide text-white/60 border border-white/20 px-2 py-0.5 rounded text-left">
                           DSA
                         </span>
 
-                        <div className="flex items-center gap-8 flex-wrap">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-8 flex-wrap w-full sm:w-auto">
                           <Link
                             to="/problems/longest-substring-without-repeating-characters"
-                            className="text-lg text-white font-medium tracking-tight hover:underline"
+                            className="text-base sm:text-lg text-white font-medium tracking-tight hover:underline"
                           >
                             Longest Substring Without Repeating Characters
                           </Link>
@@ -245,50 +245,50 @@ export default function Landing() {
                         <p className="text-xs uppercase tracking-wide text-white/40">Discussions</p>
                       </div>
 
-                      <div className="space-y-4">
-                        <div className="flex gap-3 items-start bg-white/20 p-4 rounded-lg bg-blur-sm border border-white/10">
+                      <div className="space-y-3 sm:space-y-4">
+                        <div className="flex gap-2 sm:gap-3 items-start bg-white/20 p-3 sm:p-4 rounded-lg bg-blur-sm border border-white/10">
                           <img
                             src="/avatars/user1.png"
                             alt=""
-                            className="h-8 w-8 rounded-full object-cover"
+                            className="h-6 w-6 sm:h-8 sm:w-8 rounded-full object-cover"
                           />
                           <div>
                             <div className="text-sm text-white/80 font-medium">
                               aman.dev
                             </div>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
                               Sliding window clicks once you track last seen indices instead of counts.
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex gap-3 items-start bg-white/20 p-4 rounded-lg bg-blur-sm border border-white/10">
+                        <div className="flex gap-2 sm:gap-3 items-start bg-white/20 p-3 sm:p-4 rounded-lg bg-blur-sm border border-white/10">
                           <img
                             src="/avatars/user2.png"
                             alt=""
-                            className="h-8 w-8 rounded-full object-cover"
+                            className="h-6 w-6 sm:h-8 sm:w-8 rounded-full object-cover"
                           />
                           <div>
                             <div className="text-sm text-white/80 font-medium">
                               codewithneha
                             </div>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
                               Resetting the window incorrectly is the most common mistake here.
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex gap-3 items-start bg-white/20 p-4 rounded-lg bg-blur-sm border border-white/10">
+                        <div className="flex gap-2 sm:gap-3 items-start bg-white/20 p-3 sm:p-4 rounded-lg bg-blur-sm border border-white/10">
                           <img
                             src="/avatars/user3.png"
                             alt=""
-                            className="h-8 w-8 rounded-full object-cover"
+                            className="h-6 w-6 sm:h-8 sm:w-8 rounded-full object-cover"
                           />
                           <div>
                             <div className="text-sm text-white/80 font-medium">
                               rahul.codes
                             </div>
-                            <p className="text-sm text-white/60 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
                               HashMap gives linear time. Brute force fails on long strings.
                             </p>
                           </div>
@@ -319,29 +319,29 @@ export default function Landing() {
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         id="why-zero"
-        className="relative bg-black text-white pt-28 mt-24 pb-32"
+        className="relative bg-black text-white pt-16 sm:pt-20 md:pt-28 mt-16 sm:mt-20 md:mt-24 pb-20 sm:pb-28 md:pb-32"
       >
-        <div className="max-w-7xl mx-auto px-8">
-          <h1 className="font-geist text-6xl mb-20">Four ways we make your
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+          <h1 className="font-geist text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-12 sm:mb-16 md:mb-20">Four ways we make your
             <br /> preparations better</h1>
 
-          <div className="grid md:grid-cols-2 md:grid-rows-2 gap-16 font-geist">
+          <div className="grid grid-cols-1 md:grid-cols-2 md:grid-rows-2 gap-8 sm:gap-12 md:gap-16 font-geist">
 
 
-            <div className="relative flex items-end p-8 bg-[#314d8d] rounded-4xl border border-white/10 overflow-hidden">
+            <div className="relative flex items-end p-6 sm:p-8 bg-[#314d8d] rounded-3xl sm:rounded-4xl border border-white/10 overflow-hidden min-h-[300px] sm:min-h-[400px]">
 
 
-              <div className="absolute top-24 right-[-68px] w-[440px]">
+              <div className="absolute top-16 sm:top-20 md:top-24 right-[-40px] sm:right-[-60px] md:right-[-68px] w-[300px] sm:w-[380px] md:w-[440px]">
 
 
-                <div className="absolute -top-6 -left-6 w-[360px] rounded-xl border border-white/10 bg-[#1b2436]/80 backdrop-blur-md shadow-md z-0">
+                <div className="absolute -top-4 sm:-top-6 -left-4 sm:-left-6 w-[260px] sm:w-[320px] md:w-[360px] rounded-xl border border-white/10 bg-[#1b2436]/80 backdrop-blur-md shadow-md z-0">
                   <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10">
                     <span className="h-3 w-3 rounded-full bg-red-500/40" />
                     <span className="h-3 w-3 rounded-full bg-yellow-500/40" />
                     <span className="h-3 w-3 rounded-full bg-green-500/40" />
                   </div>
 
-                  <pre className="px-4 py-3 text-sm font-mono text-white/50 leading-relaxed">
+                  <pre className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-mono text-white/50 leading-relaxed">
                     {`// daily discipline
 for (day in journey) {
   practice(day);
@@ -358,7 +358,7 @@ for (day in journey) {
                     <span className="h-3 w-3 rounded-full bg-green-500/70" />
                   </div>
 
-                  <pre className="px-4 py-3 text-base font-mono text-white/70 leading-relaxed">
+                  <pre className="px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base font-mono text-white/70 leading-relaxed">
                     {`function stayInterviewReady(day) {
   if (!practice(day)) return false;
 
@@ -377,7 +377,7 @@ buildConsistency();
               <div className="absolute inset-0 bg-gradient-to-t from-[#070b14] via-[#0f172a]/90 z-20 to-transparent" />
 
 
-              <h2 className="relative z-10 text-4xl md:text-5xl font-semibold leading-tight  z-24">
+              <h2 className="relative z-10 text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight  z-24">
                 <span className="text-white/30">
                   Everything You <br /> Need To <br />
                 </span>
@@ -390,37 +390,37 @@ buildConsistency();
 
 
 
-            <div className="flex flex-col gap-6 p-8 bg-white/10 backdrop-blur-sm border border-white/10 rounded-4xl relative overflow-hidden font-geist">
+            <div className="flex flex-col gap-4 sm:gap-6 p-6 sm:p-8 bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl sm:rounded-4xl relative overflow-hidden font-geist">
 
 
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent opacity-40 pointer-events-none" />
 
 
               <div className="relative">
-                <h3 className="text-lg font-medium text-white">
+                <h3 className="text-base sm:text-lg font-medium text-white">
                   Daily focused practice
                 </h3>
                 <p className="text-white/50 text-sm mt-1">
                   One problem. Clear thinking. Real progress.
                 </p>
               </div>
-              <p className="relative text-white/60 text-lg leading-relaxed max-w-md">
+              <p className="relative text-white/60 text-base sm:text-lg leading-relaxed max-w-md">
                 Zero helps you build interview confidence through focused daily practice,
                 clear thinking, and reflection without overwhelm or burnout.
               </p>
 
 
-              <div className="relative group right-[-40px] top-20">
+              <div className="relative group right-0 sm:right-[-20px] md:right-[-40px] top-12 sm:top-16 md:top-20">
                 <div className="absolute -inset-2 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
-                <div className="relative rounded-2xl bg-white/90 text-black shadow-[0_30px_80px_rgba(0,0,0,0.35)] overflow-hidden">
+                <div className="relative rounded-xl sm:rounded-2xl bg-white/90 text-black shadow-[0_20px_60px_rgba(0,0,0,0.35)] overflow-hidden">
                   <div className="flex items-center gap-2 px-4 py-3 border-b border-black/10 bg-white">
                     <span className="h-3 w-3 rounded-full bg-red-500" />
                     <span className="h-3 w-3 rounded-full bg-yellow-400" />
                     <span className="h-3 w-3 rounded-full bg-green-500" />
                   </div>
 
-                  <div className="p-5 space-y-4">
+                  <div className="p-4 sm:p-5 space-y-3 sm:space-y-4">
                     <div>
                       <h4 className="font-semibold text-base">
                         Today’s Problem
@@ -453,8 +453,8 @@ buildConsistency();
 
 
 
-            <div className="space-y-6  p-8  bg-white/10  rounded-4xl bg-blur-sm border border-white/10 relative overflow-hidden font-geist">
-              <h3 className="text-xl font-semibold tracking-tight">
+            <div className="space-y-4 sm:space-y-6  p-6 sm:p-8  bg-white/10  rounded-3xl sm:rounded-4xl bg-blur-sm border border-white/10 relative overflow-hidden font-geist">
+              <h3 className="text-lg sm:text-xl font-semibold tracking-tight">
                 Practice what interviews actually test
               </h3>
 
@@ -471,7 +471,7 @@ buildConsistency();
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3, duration: 0.7, ease: "easeOut" }}
-                className="relative mt-6 top-24 "
+                className="relative mt-4 sm:mt-6 top-12 sm:top-16 md:top-24 "
               >
                 <div className="relative group max-w-lg ">
                   <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
@@ -534,18 +534,18 @@ buildConsistency();
             </div>
 
 
-            <div className="relative p-8 bg-white/10 backdrop-blur-sm border border-white/10 rounded-3xl overflow-hidden font-geist">
+            <div className="relative p-6 sm:p-8 bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl sm:rounded-3xl overflow-hidden font-geist">
 
-              <h3 className="text-xl font-semibold tracking-tight mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold tracking-tight mb-4 sm:mb-6">
                 A consistency-first learning loop
               </h3>
 
-              <p className="text-white/60 leading-relaxed max-w-lg mb-12">
+              <p className="text-white/60 leading-relaxed max-w-lg mb-8 sm:mb-12">
                 Zero is designed as a simple daily loop that builds clarity, discipline,
                 and confidence until interviews feel natural.
               </p>
 
-              <div className="relative rounded-2xl bg-white/80 text-black shadow-[0_20px_60px_rgba(0,0,0,0.25)] overflow-hidden right-10 top-16">
+              <div className="relative rounded-xl sm:rounded-2xl bg-white/80 text-black shadow-[0_15px_50px_rgba(0,0,0,0.25)] overflow-hidden right-0 sm:right-[-10px] md:right-10 top-8 sm:top-12 md:top-16">
 
 
                 <div className="flex items-center gap-2 px-4 py-3 border-b border-black/10 bg-white/90">
@@ -614,23 +614,23 @@ buildConsistency();
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="relative bg-black text-white py-32"
       >
-        <div className=" mx-10 lg:mx-30 px-8 text-center">
+        <div className=" mx-4 sm:mx-6 md:mx-10 lg:mx-30 px-4 sm:px-6 md:px-8 text-center">
 
-          <h2 className="text-4xl md:text-6xl font-geist tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-geist tracking-tight">
             Daily practice in <span className="text-white/40">3 steps</span>
           </h2>
 
-          <p className="mt-4 text-white/60 text-lg max-w-2xl mx-auto leading-relaxed font-geist">
+          <p className="mt-3 sm:mt-4 text-white/60 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-geist px-4">
             A focused daily loop that turns clear thinking and repetition into <br />lasting interview readiness.
           </p>
 
 
           <div className="relative mt-20">
 
-            <div className="grid md:grid-cols-3 gap-28 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-20 md:gap-28 items-start">
 
               <div className="group relative">
-                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+                <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-48 sm:h-56 md:h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
 
                   <img
                     src={step1}
@@ -648,7 +648,7 @@ buildConsistency();
 
                 </div>
 
-                <h3 className="mt-6 text-left font-medium text-4xl font-geist">
+                <h3 className="mt-4 sm:mt-6 text-left font-medium text-3xl sm:text-4xl font-geist">
                   <span className="text-white/40 mr-2">01</span>
                   Configure Zero
                 </h3>
@@ -662,7 +662,7 @@ buildConsistency();
 
 
               <div className="group relative">
-                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+                <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-48 sm:h-56 md:h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
                   <img
                     src={step2}
                     alt="Solve with focus"
@@ -677,7 +677,7 @@ buildConsistency();
                   />
                 </div>
 
-                <h3 className="mt-6 text-left font-medium text-4xl font-geist">
+                <h3 className="mt-4 sm:mt-6 text-left font-medium text-3xl sm:text-4xl font-geist">
                   <span className="text-white/40 mr-2">02</span>
                   Solve with focus
                 </h3>
@@ -691,7 +691,7 @@ buildConsistency();
 
 
               <div className="group relative">
-                <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
+                <div className="relative rounded-2xl sm:rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-4 sm:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.4)] h-48 sm:h-56 md:h-60 overflow-hidden hover:scale-105 transition-transform duration-300">
                   <img
                     src={step3}
                     alt="Build confidence"
@@ -706,7 +706,7 @@ buildConsistency();
                   />
                 </div>
 
-                <h3 className="mt-6 text-left font-medium text-4xl font-geist">
+                <h3 className="mt-4 sm:mt-6 text-left font-medium text-3xl sm:text-4xl font-geist">
                   <span className="text-white/40 mr-2">03</span>
                   Build confidence
                 </h3>
@@ -730,26 +730,26 @@ buildConsistency();
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative bg-black text-white pt-32 z-0"
+        className="relative bg-black text-white md:pt-32 z-0"
       >
-        <div className="relative flex items-center justify-center gap-2 mb-4">
+        <div className="relative flex items-center justify-center gap-2 mb-3 sm:mb-4 px-4">
           <img
             src={zeroLogo}
             alt="Zero logo"
-            className="h-24 w-24"
+            className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24"
           />
-          <h1 className="font-geist text-6xl">
+          <h1 className="font-geist text-4xl sm:text-5xl md:text-6xl">
             Regrets.
           </h1>
         </div>
 
-        <h1 className="font-geist text-6xl text-center mb-20">
+        <h1 className="font-geist text-4xl sm:text-5xl md:text-6xl text-center mb-12 sm:mb-16 md:mb-20 px-4">
           Build yourself with consistency.
         </h1>
       </motion.section>
 
       <motion.section
-        
+
         className="relative pb-32 px-6 max-w-7xl mx-auto z-20"
       >
 
@@ -757,7 +757,7 @@ buildConsistency();
         <div className="relative rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl p-14 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-[#7DA2FF]/10 via-transparent to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-16 items-stretch relative">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 sm:gap-12 md:gap-16 items-stretch relative">
 
             <motion.div
               initial={{ opacity: 0, x: -40 }}
@@ -770,7 +770,7 @@ buildConsistency();
                   Without Zero
                 </p>
 
-                <div className="mb-12 flex flex-wrap justify-center gap-8">
+                <div className="mb-8 sm:mb-10 md:mb-12 flex flex-wrap justify-center gap-6 sm:gap-8">
                   {[gfgLogo, lcLogo, hackerrankLogo, w3schoolsLogo].map((logo, i) => (
                     <motion.div
                       key={i}
@@ -781,13 +781,13 @@ buildConsistency();
                       <img
                         src={logo}
                         alt="platform"
-                        className="w-20 h-20 object-contain grayscale hover:grayscale-0 transition"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-contain grayscale hover:grayscale-0 transition"
                       />
                     </motion.div>
                   ))}
                 </div>
 
-                <ul className="space-y-6 text-sm text-left font-geist">
+                <ul className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-left font-geist">
                   {[
                     "Scattered learning across platforms",
                     "No consistent daily structure",
@@ -818,7 +818,7 @@ buildConsistency();
                   With Zero
                 </p>
 
-                <div className="mb-12 flex justify-center">
+                <div className="mb-8 sm:mb-10 md:mb-12 flex justify-center">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 180, damping: 12 }}
@@ -828,12 +828,12 @@ buildConsistency();
                     <img
                       src={zeroLogo}
                       alt="Zero"
-                      className="relative w-24 h-24 object-contain"
+                      className="relative w-20 h-20 sm:w-24 sm:h-24 object-contain"
                     />
                   </motion.div>
                 </div>
 
-                <ul className="space-y-6 text-sm text-left font-geist">
+                <ul className="space-y-4 sm:space-y-6 text-xs sm:text-sm text-left font-geist">
                   {[
                     "One focused daily problem loop",
                     "Clear strengths and weak spots",
@@ -853,9 +853,9 @@ buildConsistency();
       </motion.section>
 
 
-      <section id="faqs" className="relative bg-black text-white py-28">
-        <div className="max-w-4xl mx-auto px-8">
-          <h2 className="text-4xl md:text-5xl font-geist  mb-16">
+      <section id="faqs" className="relative bg-black text-white md:py-28">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-geist  mb-12 sm:mb-14 md:mb-16">
             Frequently asked questions
           </h2>
 
@@ -866,15 +866,15 @@ buildConsistency();
               return (
                 <div
                   key={i}
-                  className="rounded-2xl  border border-white/15 bg-white/10 backdrop-blur-sm shadow-lg overflow-hidden transition font-geist "
+                  className="rounded-xl sm:rounded-2xl  border border-white/15 bg-white/10 backdrop-blur-sm shadow-lg overflow-hidden transition font-geist "
                 >
                   <button
                     onClick={() =>
                       setOpenIndex(isOpen ? null : i)
                     }
-                    className="w-full flex items-center justify-between px-6 py-5 text-left cursor-pointer"
+                    className="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 text-left cursor-pointer"
                   >
-                    <span className="text-lg font-medium text-white">
+                    <span className="text-base sm:text-lg font-medium text-white">
                       {item.q}
                     </span>
 
@@ -924,11 +924,11 @@ buildConsistency();
         <div className="max-w-7xl mx-auto px-10 py-32 grid md:grid-cols-2 items-center gap-16 font-geist">
 
           <div className="space-y-6">
-            <h2 className="text-4xl md:text-5xl font-semibold leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
               Platform that helps you <br /> build consistency, not streaks.
             </h2>
 
-            <p className=" text-lg max-w-md">
+            <p className=" text-base sm:text-lg max-w-md">
               Try Zero on your next practice session and build confidence in real time.
             </p>
 
@@ -987,7 +987,7 @@ buildConsistency();
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="max-w-7xl mx-auto px-10 py-20 grid md:grid-cols-4 gap-12 text-sm relative z-10"
+            className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-16 sm:py-18 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-12 text-sm relative z-10"
           >
             <div className="font-medium text-lg">
               Zero

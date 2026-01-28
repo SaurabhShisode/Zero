@@ -106,13 +106,13 @@ function DifficultySelect({
 }
 function SettingsSkeleton() {
   return (
-    <section className="font-geist space-y-8 mx-10 mt-10 mb-10 animate-pulse">
+    <section className="font-geist space-y-6 sm:space-y-8 mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 animate-pulse">
       <div className="space-y-2">
         <div className="h-6 w-32 rounded bg-white/10" />
         <div className="h-4 w-64 rounded bg-white/5" />
       </div>
 
-      <div className="rounded-2xl border border-white/15 bg-white/10 p-6 space-y-4">
+      <div className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4">
         <div className="h-5 w-40 rounded bg-white/10" />
 
         <div className="space-y-3">
@@ -132,7 +132,7 @@ function SettingsSkeleton() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/15 bg-white/10 p-6 flex items-center justify-between">
+      <div className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-2">
           <div className="h-5 w-40 rounded bg-white/10" />
           <div className="h-4 w-56 rounded bg-white/5" />
@@ -240,12 +240,12 @@ export default function SettingsView() {
 
 
   if (loading) {
-  return <SettingsSkeleton />
-}
+    return <SettingsSkeleton />
+  }
 
 
   return (
-    <section className="font-geist space-y-8 mx-10  mt-10 mb-10">
+    <section className="font-geist space-y-6 sm:space-y-8 mx-4 sm:mx-6 md:mx-10  mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10">
       <div>
         <h1 className="text-xl font-semibold">
           Settings
@@ -258,7 +258,7 @@ export default function SettingsView() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-white/15 bg-white/10 p-6 space-y-4"
+        className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4"
       >
         <h2 className="text-lg font-medium">
           Daily skills
@@ -268,7 +268,7 @@ export default function SettingsView() {
           {preferences.map(pref => (
             <div
               key={pref.skill}
-              className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 rounded-lg border border-white/10 bg-white/5 px-3 sm:px-4 py-3"
             >
               <div className="flex items-center gap-3">
                 <button
@@ -306,7 +306,7 @@ export default function SettingsView() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl border border-white/15 bg-white/10 p-6 flex items-center justify-between"
+        className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div>
           <h2 className="text-lg font-medium">

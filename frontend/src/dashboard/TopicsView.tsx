@@ -88,7 +88,7 @@ export default function TopicsView() {
 
 
   return (
-    <section className="space-y-6 font-geist mx-10 mt-10 mb-10">
+    <section className="space-y-4 sm:space-y-6 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10">
       <div>
         <h1 className="text-xl font-semibold">Topic Wise Practice</h1>
         <p className="text-white/40">
@@ -131,8 +131,8 @@ export default function TopicsView() {
                 transition={{ delay: i * 0.05 }}
                 className="relative"
               >
-                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse">
-                  <div className="flex items-center justify-between">
+                <div className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 sm:p-5 md:p-6 animate-pulse">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="space-y-3 min-w-0">
                       <div className="flex gap-2">
                         <div className="h-5 w-14 bg-white/20 rounded" />
@@ -175,7 +175,7 @@ export default function TopicsView() {
                     }
                   })
                 }
-                className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex items-center justify-between cursor-pointer"
+                className="relative rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 cursor-pointer"
               >
                 <div className="min-w-0 space-y-2">
                   <div className="flex gap-2 flex-wrap">
@@ -207,13 +207,13 @@ export default function TopicsView() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
                       window.open(p.link, "_blank")
                     }}
-                    className="px-3 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
+                    className="px-3 py-2 rounded-lg border border-white/20 text-xs sm:text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
                   >
                     Solve
                     <ExternalLink className="w-4 h-4" />

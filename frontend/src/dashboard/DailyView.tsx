@@ -79,13 +79,13 @@ export default function DailyView() {
   }
   if (loading) {
     return (
-      <section className="space-y-8 font-geist mx-10 mt-10 mb-10 text-white">
+      <section className="space-y-6 sm:space-y-8 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 text-white">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="space-y-2 animate-pulse"
         >
-          <div className="h-6 w-48 bg-white/20 rounded" />
+          <div className="h-5 sm:h-6 w-36 sm:w-48 bg-white/20 rounded" />
           <div className="h-4 w-72 bg-white/10 rounded" />
         </motion.div>
 
@@ -99,7 +99,7 @@ export default function DailyView() {
               className="relative mt-8 flex justify-center"
             >
               <div className="relative w-full">
-                <div className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 animate-pulse space-y-4">
+                <div className="rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 sm:p-5 md:p-6 animate-pulse space-y-3 sm:space-y-4">
                   <div className="flex items-center gap-2">
                     <div className="h-4 w-16 bg-white/20 rounded" />
                     <div className="h-4 w-14 bg-white/10 rounded" />
@@ -157,9 +157,9 @@ export default function DailyView() {
               }
 
 
-              className="relative rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl text-left cursor-pointer"
+              className="relative rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl text-left cursor-pointer"
             >
-              <div className="p-6 space-y-6">
+              <div className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-6">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex text-[11px] tracking-wide text-white/60 border border-white/20 px-2 py-0.5 rounded">
@@ -180,10 +180,10 @@ export default function DailyView() {
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                     <div
 
-                      className="flex-1 text-lg text-white font-medium tracking-tight  min-w-0"
+                      className="flex-1 text-base sm:text-lg text-white font-medium tracking-tight  min-w-0"
                     >
                       {item.problem.title}
                     </div>
@@ -193,7 +193,7 @@ export default function DailyView() {
                         e.stopPropagation()
                         window.open(item.problem.link, "_blank")
                       }}
-                      className="px-3 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
+                      className="px-3 py-2 rounded-lg border border-white/20 text-xs sm:text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
                     >
                       Solve
                       <ExternalLink className="w-4 h-4" />

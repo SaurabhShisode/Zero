@@ -20,63 +20,63 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
 
-const getRateLimitMessage = (err: any) => {
-  if (err?.response?.status === 429) {
-    const retryAfter = err.response.headers?.["retry-after"];
-    if (retryAfter) {
-      const minutes = Math.ceil(Number(retryAfter) / 60);
-      return `Too many attempts. Try again in ${minutes} minute${minutes > 1 ? "s" : ""}.`;
+  const getRateLimitMessage = (err: any) => {
+    if (err?.response?.status === 429) {
+      const retryAfter = err.response.headers?.["retry-after"];
+      if (retryAfter) {
+        const minutes = Math.ceil(Number(retryAfter) / 60);
+        return `Too many attempts. Try again in ${minutes} minute${minutes > 1 ? "s" : ""}.`;
+      }
+      return "Too many attempts. Try again in a few minutes.";
     }
-    return "Too many attempts. Try again in a few minutes.";
-  }
 
-  return err?.response?.data?.message || "Something went wrong.";
-};
+    return err?.response?.data?.message || "Something went wrong.";
+  };
 
-const submit = async () => {
-  try {
-    setLoading(true);
-    setError("");
+  const submit = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-    const res = await api.post("/api/auth/login", { email, password });
-    const user = res.data.user;
+      const res = await api.post("/api/auth/login", { email, password });
+      const user = res.data.user;
 
-    setAuth(user, res.data.token);
+      setAuth(user, res.data.token);
 
-    const hasSkill = user.preferences.some((p: any) => p.enabled);
-    navigate(hasSkill ? "/" : "/onboarding");
-  } catch (err: any) {
-    setError(getRateLimitMessage(err));
-  } finally {
-    setLoading(false);
-  }
-};
+      const hasSkill = user.preferences.some((p: any) => p.enabled);
+      navigate(hasSkill ? "/" : "/onboarding");
+    } catch (err: any) {
+      setError(getRateLimitMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const loginWithGoogle = async () => {
-  try {
-    setLoading(true);
-    setError("");
+  const loginWithGoogle = async () => {
+    try {
+      setLoading(true);
+      setError("");
 
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const idToken = await result.user.getIdToken();
 
-    const res = await api.post("/api/auth/google", {
-      token: idToken
-    });
+      const res = await api.post("/api/auth/google", {
+        token: idToken
+      });
 
-    const user = res.data.user;
+      const user = res.data.user;
 
-    setAuth(user, res.data.token);
+      setAuth(user, res.data.token);
 
-    const hasSkill = user.preferences.some((p: any) => p.enabled);
-    navigate(hasSkill ? "/" : "/onboarding");
-  } catch (err: any) {
-    setError(getRateLimitMessage(err));
-  } finally {
-    setLoading(false);
-  }
-};
+      const hasSkill = user.preferences.some((p: any) => p.enabled);
+      navigate(hasSkill ? "/" : "/onboarding");
+    } catch (err: any) {
+      setError(getRateLimitMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 
@@ -95,18 +95,18 @@ const loginWithGoogle = async () => {
 
 
 
-      <div className="relative z-10 flex-1 flex items-center justify-center px-6">
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6">
         <div className="relative group w-full max-w-md">
 
 
           <div className="absolute -inset-1 rounded-3xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
 
 
-          <div className="relative rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.6)] overflow-hidden">
-            <div className="p-8 space-y-6">
+          <div className="relative rounded-2xl sm:rounded-3xl border border-white/15 bg-white/5 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.6)] overflow-hidden">
+            <div className="p-6 sm:p-8 space-y-5 sm:space-y-6">
 
               <div className="text-center space-y-2">
-                <h1 className="text-2xl font-geist font-semibold">
+                <h1 className="text-xl sm:text-2xl font-geist font-semibold">
                   Login to Zero
                 </h1>
                 <p className="text-sm text-white/60 font-geist">
@@ -145,33 +145,33 @@ const loginWithGoogle = async () => {
 
               <div className="space-y-4 font-geist">
                 <input
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition text-sm sm:text-base"
                   placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <div className="relative">
-  <input
-    type={showPassword ? "text" : "password"}
-    className="w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition"
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-  />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 rounded-lg bg-white/5 border border-white/15 text-white placeholder-white/40 focus:outline-none focus:border-white/40 focus:bg-white/10 transition text-sm sm:text-base"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
 
-  <button
-    type="button"
-    onClick={() => setShowPassword((v) => !v)}
-    className="absolute inset-y-0 right-3 flex items-center text-white/40 hover:text-white transition cursor-pointer"
-  >
-    {showPassword ? (
-      <EyeOff className="h-5 w-5 text-black" />
-    ) : (
-      <Eye className="h-5 w-5 text-black" />
-    )}
-  </button>
-</div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute inset-y-0 right-3 flex items-center text-white/40 hover:text-white transition cursor-pointer"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-black" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-black" />
+                    )}
+                  </button>
+                </div>
 
               </div>
 
@@ -185,8 +185,8 @@ const loginWithGoogle = async () => {
                 onClick={submit}
                 disabled={loading}
                 className="
-                w-full py-3 rounded-lg
-                bg-white text-black font-medium
+                w-full py-2.5 sm:py-3 rounded-lg
+                bg-white text-black font-medium text-sm sm:text-base
                 shadow-[0_10px_30px_rgba(0,0,0,0.3)]
                 transition-all duration-300
                 hover:bg-white/90 hover:scale-[1.02]
