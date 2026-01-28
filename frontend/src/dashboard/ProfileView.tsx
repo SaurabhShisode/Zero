@@ -519,7 +519,7 @@ export default function ProfileView() {
         className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 flex flex-col md:flex-row gap-6 items-start md:items-center"
       >
         <img
-        src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.name)}`}
+          src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.name)}`}
 
 
 
@@ -917,39 +917,41 @@ export default function ProfileView() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
-        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
+        className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 md:p-6 space-y-4"
       >
         <div className="flex items-center gap-2 text-white/60">
           <UserPlus className="w-4 h-4" />
           <p className="text-sm tracking-wide">Add friend</p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col md:flex-row gap-2">
           <input
             value={friendSlug}
             onChange={(e) => setFriendSlug(e.target.value)}
             placeholder="Enter profile slug"
-            className="flex-1 rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none"
+            className="w-full md:flex-1 rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white outline-none"
           />
 
-          <button
-            onClick={addFriend}
-            className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium cursor-pointer"
-          >
-            Add
-          </button>
+          <div className="flex mt-4 md:mt-0 gap-2 w-full md:w-auto">
+            <button
+              onClick={addFriend}
+              className="flex-1 md:flex-none px-4 py-2 rounded-lg bg-white text-black text-sm font-medium cursor-pointer"
+            >
+              Add
+            </button>
 
-          <button
-            onClick={compareFriend}
-            className="px-4 py-2 cursor-pointer rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
-          >
-            <BarChart2 className="w-4 h-4" />
-            Compare
-          </button>
+            <button
+              onClick={compareFriend}
+              className="flex-1 md:flex-none px-4 py-2 cursor-pointer rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center justify-center gap-2"
+            >
+              <BarChart2 className="w-4 h-4" />
+              Compare
+            </button>
+          </div>
         </div>
 
         {compareData && (
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div className="rounded-lg border border-white/10 p-4">
               <p className="text-sm text-white/40">You</p>
               <p className="text-lg font-semibold">
@@ -966,6 +968,7 @@ export default function ProfileView() {
           </div>
         )}
       </motion.div>
+
     </section>
   )
 }
