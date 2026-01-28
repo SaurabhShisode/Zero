@@ -67,7 +67,7 @@ export default function Topbar({ scrollRef }: Props) {
 
 
             <div className="flex items-center justify-between px-4 sm:px-6 md:px-8 py-4 sm:py-5">
-                <h1 className="text-base sm:text-lg mx-4 sm:mx-6 md:mx-10 lg:mx-0  font-geist tracking-tight">
+                <h1 className="text-sm md:text-lg mx-14 md:mx-10 lg:mx-0  font-geist tracking-tight">
                     <span className="text-gray-400">Welcome</span>{user?.name ? ` , ${user.name}` : ""}
                 </h1>
 
