@@ -65,25 +65,16 @@ export default function DiscussionsView() {
   const [commentText, setCommentText] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({})
 
-  const { user, hydrated } = useAuthStore(
-    state => ({
-      user: state.user,
-      hydrated: state.hydrated
-    })
-  )
-
-
-
-
-
-
-
-
+  const user = useAuthStore(state => state.user)
+  const hydrated = useAuthStore(state => state.hydrated)
 
   useEffect(() => {
     if (!hydrated) return
     loadPosts()
-  }, [sort, hydrated, user])
+  }, [sort, hydrated])
+
+
+
 
   async function loadPosts() {
     setLoading(true)

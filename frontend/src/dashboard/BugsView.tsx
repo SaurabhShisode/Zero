@@ -148,21 +148,21 @@ export default function BugsView() {
   }
 
   return (
-    <section className="font-geist px-8 pt-8 pb-20 space-y-6 text-white">
-      <div className="flex items-center justify-between">
+    <section className="font-geist px-4 md:px-8 pt-6 md:pt-8 pb-20 space-y-4 md:space-y-6 text-white">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
             Bug Reports
           </h1>
-
         </div>
 
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-400 transition cursor-pointer"
+          className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-400 transition cursor-pointer flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
-          Report Bug
+          <span className="hidden sm:inline">Report Bug</span>
+          <span className="sm:hidden">Report</span>
         </button>
       </div>
 
@@ -172,20 +172,20 @@ export default function BugsView() {
         </p>
       )}
 
-    
-{!loading && bugs.length === 0 && (
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl  p-8 text-center"
-                >
-                    <p className="text-white/40 text-2xl">
-                    <BugOff className="w-24 h-24 text-white mx-auto mb-4" />
 
-                       No bugs reported yet. Everything looks good.
-                    </p>
-                </motion.div>
-            )}
+      {!loading && bugs.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl  p-8 text-center"
+        >
+          <p className="text-white/40 text-2xl">
+            <BugOff className="w-24 h-24 text-white mx-auto mb-4" />
+
+            No bugs reported yet. Everything looks good.
+          </p>
+        </motion.div>
+      )}
       <div className="space-y-4">
         <AnimatePresence>
           {bugs.map(bug => (
@@ -194,21 +194,21 @@ export default function BugsView() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-5 space-y-3"
+              className="rounded-xl md:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-4 md:p-5 space-y-3"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div className="flex items-center gap-2 text-sm text-white/60">
-                  <Bug className="w-4 h-4 text-red-400" />
-                  <span>{bug.author.name}</span>
+                  <Bug className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <span className="truncate">{bug.author.name}</span>
                   <span className="text-white/30">•</span>
-                  <span>{timeAgo(bug.createdAt)}</span>
+                  <span className="flex-shrink-0">{timeAgo(bug.createdAt)}</span>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3 flex-wrap">
                   {statusBadge(bug.status)}
 
                   {isAdmin && (
-                    <div className="flex gap-1">
+                    <div className="flex gap-1 flex-wrap">
                       <button
                         onClick={() => updateStatus(bug._id, "open")}
                         className="text-xs px-2 py-1 rounded border border-red-400/40 text-red-400 hover:bg-red-400/10 transition cursor-pointer"
@@ -242,10 +242,9 @@ export default function BugsView() {
                     </button>
                   )}
                 </div>
-
               </div>
 
-              <h2 className="text-lg font-semibold tracking-tight">
+              <h2 className="text-base md:text-lg font-semibold tracking-tight">
                 {bug.title}
               </h2>
 
@@ -263,13 +262,13 @@ export default function BugsView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-xl rounded-2xl border border-white/15 bg-black/80 p-6 space-y-4"
+              className="w-full max-w-xl rounded-xl md:rounded-2xl border border-white/15 bg-black/80 p-5 md:p-6 space-y-4"
             >
               <h2 className="text-lg font-semibold text-red-400">
                 Report a Bug
@@ -290,7 +289,7 @@ export default function BugsView() {
                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none resize-none scrollbar-hide"
               />
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-2">
                 <button
                   onClick={() => setShowCreate(false)}
                   className="px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition cursor-pointer"
