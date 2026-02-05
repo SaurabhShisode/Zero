@@ -475,9 +475,10 @@ export default function DiscussionsView() {
                     </div>
 
                     <div className="text-white/50 text-sm">
-                      <p className={expandedPosts[post._id] ? "" : "line-clamp-3"}>
+                      <p className={`whitespace-pre-line ${expandedPosts[post._id] ? "" : "line-clamp-3"}`}>
                         {post.body}
                       </p>
+
 
                       {post.body.length > 180 && (
                         <button
