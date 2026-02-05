@@ -973,7 +973,6 @@ buildConsistency();
 
 
         <footer className="relative  text-white font-geist overflow-hidden">
-
           <div
             className="absolute h-[400px] w-[1600px] bottom-0 left-1/2 -translate-x-1/2 bg-blue-500/20 pointer-events-none"
             style={{
@@ -981,7 +980,6 @@ buildConsistency();
               WebkitMaskImage: "radial-gradient(50% 50% at bottom center, black, transparent)",
             }}
           ></div>
-
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -989,52 +987,115 @@ buildConsistency();
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 py-16 sm:py-18 md:py-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-12 text-sm relative z-10"
           >
-            <div className="font-medium text-lg">
-              Zero
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <img src={zeroLogo} alt="logo" className="w-8 h-8" />
+                <span className="font-medium text-lg text-white">Zero</span>
+              </div>
+              <p className="text-white/40 text-xs leading-relaxed max-w-[200px]">
+                Consistency-first daily practice platform for engineers.
+              </p>
             </div>
 
             <div className="space-y-3">
               <div className="font-medium text-white/80">
-                Resources
+                Platform
               </div>
 
-              {["Mobile", "Manifesto", "Press", "Bug Bounty"].map(item => (
-                <div
-                  key={item}
+              {[
+                { label: "Why Zero", action: () => scrollToSection("why-zero") },
+                { label: "FAQs", action: () => scrollToSection("faqs") },
+              ].map(item => (
+                <button
+                  key={item.label}
+                  onClick={item.action}
                   className="
-            cursor-pointer
-            text-white/50
-            transition-all duration-200
-            hover:text-white
-            hover:translate-x-1
-            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-          "
+                    block text-left
+                    cursor-pointer
+                    text-white/50
+                    transition-all duration-200
+                    hover:text-white
+                    hover:translate-x-1
+                  "
                 >
-                  {item}
-                </div>
+                  {item.label}
+                </button>
               ))}
+
+              <Link
+                to="/signup"
+                className="
+                  block
+                  cursor-pointer
+                  text-white/50
+                  transition-all duration-200
+                  hover:text-white
+                  hover:translate-x-1
+                "
+              >
+                Sign up
+              </Link>
+              <Link
+                to="/login"
+                className="
+                  block
+                  cursor-pointer
+                  text-white/50
+                  transition-all duration-200
+                  hover:text-white
+                  hover:translate-x-1
+                "
+              >
+                Login
+              </Link>
             </div>
 
             <div className="space-y-3">
               <div className="font-medium text-white/80">
-                Support
+                Community
               </div>
 
-              {["Help Center", "Contact Us"].map(item => (
-                <div
-                  key={item}
-                  className="
-            cursor-pointer
-            text-white/50
-            transition-all duration-200
-            hover:text-white
-            hover:translate-x-1
-            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-          "
-                >
-                  {item}
-                </div>
-              ))}
+              <Link
+                to="/dashboard"
+                className="
+                  block
+                  cursor-pointer
+                  text-white/50
+                  transition-all duration-200
+                  hover:text-white
+                  hover:translate-x-1
+                "
+              >
+                Discussions
+              </Link>
+              <a
+                href="https://github.com/shisodesaurabh/Zero"
+                target="_blank"
+                rel="noreferrer"
+                className="
+                  block
+                  cursor-pointer
+                  text-white/50
+                  transition-all duration-200
+                  hover:text-white
+                  hover:translate-x-1
+                "
+              >
+                GitHub
+              </a>
+              <Link
+                to="/dashboard"
+                className="
+                  block
+                  cursor-pointer
+                  text-white/50
+                  transition-all duration-200
+                  hover:text-white
+                  hover:translate-x-1
+                "
+              >
+                Report a Bug
+              </Link>
             </div>
 
             <div className="space-y-3">
@@ -1042,26 +1103,27 @@ buildConsistency();
                 Legal
               </div>
 
-              {["Privacy Policy", "Terms of Service", "Data Processing Agreement", "Subprocessors"].map(item => (
-                <div
+              {["Privacy Policy", "Terms of Service"].map(item => (
+                <a
                   key={item}
+                  href="#"
                   className="
-            cursor-pointer
-            text-white/50
-            transition-all duration-200
-            hover:text-white
-            hover:translate-x-1
-            hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]
-          "
+                    block
+                    cursor-pointer
+                    text-white/50
+                    transition-all duration-200
+                    hover:text-white
+                    hover:translate-x-1
+                  "
                 >
                   {item}
-                </div>
+                </a>
               ))}
             </div>
           </motion.div>
         </footer>
 
-      </motion.section>
+      </motion.section >
 
 
       <Link
@@ -1075,6 +1137,6 @@ buildConsistency();
       >
         Start with Zero
       </Link>
-    </div>
+    </div >
   );
 }
