@@ -50,11 +50,11 @@ const start = async () => {
   }
 
   app.listen(env.port, () => {
- 
+
     console.log(`API running on :${env.port}`);
   });
 
-  
+
 };
 
 start();

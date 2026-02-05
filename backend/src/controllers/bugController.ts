@@ -1,6 +1,7 @@
 import type { Request, Response } from "express"
 import mongoose from "mongoose"
 import Bug from "../models/Bug.js"
+import { parsePagination, buildMeta } from "../utils/paginate.js"
 
 function toObjectId(raw: string | string[] | undefined) {
   const value = Array.isArray(raw) ? raw[0] : raw
@@ -94,12 +95,18 @@ export async function createBug(req: Request, res: Response) {
 
 export async function getBugs(req: Request, res: Response) {
   try {
-    const bugs = await Bug.find()
-      .populate("author", "name profileSlug")
-      .sort({ createdAt: -1 })
-      .limit(100)
+    const { page, limit, skip } = parsePagination(req.query as Record<string, unknown>, { page: 1, limit: 20 })
 
-    res.json({ bugs })
+    const [bugs, total] = await Promise.all([
+      Bug.find()
+        .populate("author", "name profileSlug")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Bug.countDocuments()
+    ])
+
+    res.json({ bugs, pagination: buildMeta(page, limit, total) })
   } catch (err) {
     console.error("Get bugs error:", err)
     res.status(500).json({ message: "Failed to fetch bugs" })

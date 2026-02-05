@@ -48,3 +48,5 @@ frontend/dist/
 # env files
 .env
 .env.*
+/backend/data
+backend/scripts/seedProblems.ts

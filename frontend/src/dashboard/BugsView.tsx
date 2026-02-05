@@ -25,6 +25,9 @@ type BugReport = {
 export default function BugsView() {
   const [bugs, setBugs] = useState<BugReport[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -34,18 +37,26 @@ export default function BugsView() {
   const userId = useAuthStore(s => s.user?._id)
 
   useEffect(() => {
-    loadBugs()
+    loadBugs(1, true)
   }, [])
 
-  async function loadBugs() {
-    setLoading(true)
+  async function loadBugs(pageNum = page, reset = false) {
+    if (reset) setLoading(true)
+    else setLoadingMore(true)
     try {
-      const res = await api.get("/api/bugs")
-      setBugs(res.data.bugs || [])
+      const res = await api.get(`/api/bugs?page=${pageNum}&limit=20`)
+      if (reset) {
+        setBugs(res.data.bugs || [])
+      } else {
+        setBugs(prev => [...prev, ...res.data.bugs])
+      }
+      setHasMore(res.data.pagination?.hasNextPage ?? false)
+      setPage(pageNum + 1)
     } catch {
       toast.error("Failed to load bug reports")
     } finally {
       setLoading(false)
+      setLoadingMore(false)
     }
   }
   const user = useAuthStore(s => s.user)
@@ -266,6 +277,16 @@ export default function BugsView() {
             </motion.div>
           ))}
         </AnimatePresence>
+
+        {!loading && hasMore && (
+          <button
+            onClick={() => loadBugs()}
+            disabled={loadingMore}
+            className="w-full py-3 rounded-xl bg-white/5 border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition text-sm font-medium disabled:opacity-50 cursor-pointer"
+          >
+            {loadingMore ? "Loading..." : "Load More"}
+          </button>
+        )}
       </div>
 
       <AnimatePresence>

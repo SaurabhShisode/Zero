@@ -2,6 +2,7 @@ import type { Request, Response } from "express"
 import mongoose from "mongoose"
 import CommunityPost from "../models/CommunityPost.js"
 import CommunityComment from "../models/CommunityComment.js"
+import { parsePagination, buildMeta } from "../utils/paginate.js"
 
 function getId(raw: string | string[] | undefined) {
   const value = Array.isArray(raw) ? raw[0] : raw
@@ -44,14 +45,18 @@ export async function getPosts(req: Request, res: Response) {
     ]
 
     if (sort === "top") {
-      pipeline.push({ $sort: { voteScore: -1 } })
+      pipeline.push({ $sort: { voteScore: -1, createdAt: -1 } })
     } else if (sort === "new") {
       pipeline.push({ $sort: { createdAt: -1 } })
     } else {
-      pipeline.push({ $sort: { engagementScore: -1 } })
+      pipeline.push({ $sort: { engagementScore: -1, createdAt: -1 } })
     }
 
-    pipeline.push({ $limit: 50 })
+    const { page, limit, skip } = parsePagination(req.query as Record<string, unknown>, { page: 1, limit: 20 })
+    const total = await CommunityPost.countDocuments()
+
+    pipeline.push({ $skip: skip })
+    pipeline.push({ $limit: limit })
 
     pipeline.push({
       $lookup: {
@@ -114,7 +119,7 @@ export async function getPosts(req: Request, res: Response) {
       }
     })
 
-    res.json({ posts: formattedPosts })
+    res.json({ posts: formattedPosts, pagination: buildMeta(page, limit, total) })
   } catch (err) {
     console.error("Get posts error:", err)
     res.status(500).json({ message: "Failed to fetch posts" })
@@ -216,12 +221,18 @@ export async function getComments(req: Request, res: Response) {
       return res.status(400).json({ message: "Invalid post id" })
     }
 
-    const comments = await CommunityComment.find({ post: postId })
-      .populate("author", "_id name profileSlug")
+    const { page, limit, skip } = parsePagination(req.query as Record<string, unknown>, { page: 1, limit: 30 })
 
-      .sort({ createdAt: -1 })
+    const [comments, total] = await Promise.all([
+      CommunityComment.find({ post: postId })
+        .populate("author", "_id name profileSlug")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      CommunityComment.countDocuments({ post: postId })
+    ])
 
-    res.json({ comments })
+    res.json({ comments, pagination: buildMeta(page, limit, total) })
   } catch (err) {
     console.error("Get comments error:", err)
     res.status(500).json({ message: "Failed to fetch comments" })

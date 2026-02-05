@@ -56,6 +56,9 @@ export default function DiscussionsView() {
   const [posts, setPosts] = useState<Post[]>([])
   const [sort, setSort] = useState("trending")
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
   const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({})
 
   const [showCreate, setShowCreate] = useState(false)
@@ -70,21 +73,32 @@ export default function DiscussionsView() {
 
   useEffect(() => {
     if (!hydrated) return
-    loadPosts()
+    setPosts([])
+    setPage(1)
+    setHasMore(true)
+    loadPosts(1, true)
   }, [sort, hydrated])
 
 
 
 
-  async function loadPosts() {
-    setLoading(true)
+  async function loadPosts(pageNum = page, reset = false) {
+    if (reset) setLoading(true)
+    else setLoadingMore(true)
     try {
-      const res = await api.get(`/api/community/posts?sort=${sort}`)
-      setPosts(res.data.posts)
+      const res = await api.get(`/api/community/posts?sort=${sort}&page=${pageNum}&limit=20`)
+      if (reset) {
+        setPosts(res.data.posts)
+      } else {
+        setPosts(prev => [...prev, ...res.data.posts])
+      }
+      setHasMore(res.data.pagination?.hasNextPage ?? false)
+      setPage(pageNum + 1)
     } catch {
       toast.error("Failed to load discussions")
     } finally {
       setLoading(false)
+      setLoadingMore(false)
     }
   }
 
@@ -634,6 +648,16 @@ export default function DiscussionsView() {
                 </motion.div>
               ))}
         </AnimatePresence>
+
+        {!loading && hasMore && !search.trim() && (
+          <button
+            onClick={() => loadPosts()}
+            disabled={loadingMore}
+            className="w-full py-3 rounded-xl bg-white/5 border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition text-sm font-medium disabled:opacity-50 cursor-pointer"
+          >
+            {loadingMore ? "Loading..." : "Load More"}
+          </button>
+        )}
       </div>
 
       <AnimatePresence>
