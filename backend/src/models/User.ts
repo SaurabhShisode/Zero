@@ -13,6 +13,7 @@ export interface IUser {
     current: number;
     max: number;
     freezeAvailable: number;
+    lastActivityDate: Date | null;
   };
   friends: Types.ObjectId[];
   badges: string[];
@@ -55,6 +56,7 @@ const userSchema = new Schema<IUser>(
       current: { type: Number, default: 0 },
       max: { type: Number, default: 0 },
       freezeAvailable: { type: Number, default: 1 },
+      lastActivityDate: { type: Date, default: null },
     },
   },
   { timestamps: true }

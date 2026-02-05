@@ -105,7 +105,7 @@ export default function ProfileView() {
         setFetched(true)
       })
       .finally(() => setLoading(false))
-  }, [hydrated, user?._id, fetched])
+  }, [hydrated, user, fetched])
 
   function timeAgo(dateStr: string) {
     const now = new Date()

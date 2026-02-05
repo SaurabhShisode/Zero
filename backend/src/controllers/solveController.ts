@@ -38,19 +38,10 @@ export const markSolve = async (
       }
     }
 
-    function dayRange(d: Date) {
-      const start = new Date(d)
-      start.setHours(0, 0, 0, 0)
-
-      const end = new Date(d)
-      end.setHours(23, 59, 59, 999)
-
-      return { start, end }
-    }
 
     session.startTransaction()
 
-  
+
     const solve = await Solve.findOneAndUpdate(
       { user: userId, problem: problemObjectId, date },
       {
@@ -74,7 +65,7 @@ export const markSolve = async (
       )
     }
 
-  
+
     if (status === "wrong" || status === "skipped") {
       const offsets = [3, 7, 14]
 
@@ -93,7 +84,7 @@ export const markSolve = async (
       }
     }
 
- 
+
     if (status === "solved") {
       const user = await User.findById(userId).session(session)
       if (!user) {
@@ -102,30 +93,27 @@ export const markSolve = async (
         return res.json({ solve })
       }
 
-      const todayRange = dayRange(date)
 
-      const hadTodaySolve = await SolvedProblem.exists({
-        user: userId,
-        solvedAt: { $gte: todayRange.start, $lte: todayRange.end }
-      }).session(session)
+      const todayStr = date.toISOString().slice(0, 10)
+      const lastActivityStr = user.streak.lastActivityDate
+        ? new Date(user.streak.lastActivityDate).toISOString().slice(0, 10)
+        : null
 
-      if (!hadTodaySolve) {
+
+      if (lastActivityStr !== todayStr) {
         const yesterday = addDays(date, -1)
-        const yRange = dayRange(yesterday)
+        const yesterdayStr = yesterday.toISOString().slice(0, 10)
 
-        const hadYesterdaySolve = await SolvedProblem.exists({
-          user: userId,
-          solvedAt: { $gte: yRange.start, $lte: yRange.end }
-        }).session(session)
+        if (lastActivityStr === yesterdayStr) {
 
-        user.streak.current = hadYesterdaySolve
-          ? user.streak.current + 1
-          : 1
+          user.streak.current += 1
+        } else {
 
-        user.streak.max = Math.max(
-          user.streak.max,
-          user.streak.current
-        )
+          user.streak.current = 1
+        }
+
+        user.streak.max = Math.max(user.streak.max, user.streak.current)
+        user.streak.lastActivityDate = date
 
         await user.save({ session })
       }

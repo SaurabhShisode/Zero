@@ -64,10 +64,13 @@ export default function DiscussionsView() {
   const [tags, setTags] = useState("")
   const [commentText, setCommentText] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({})
-  const user = useAuthStore(state => state.user)
-  const hydrated = useAuthStore(state => state.hydrated)
 
-  const myUserId = user?._id
+  const { user, hydrated } = useAuthStore(
+    state => ({
+      user: state.user,
+      hydrated: state.hydrated
+    })
+  )
 
 
 
@@ -78,8 +81,9 @@ export default function DiscussionsView() {
 
 
   useEffect(() => {
+    if (!hydrated) return
     loadPosts()
-  }, [sort])
+  }, [sort, hydrated, user])
 
   async function loadPosts() {
     setLoading(true)
@@ -424,23 +428,21 @@ export default function DiscussionsView() {
                         </span>
                       </div>
 
-                      {hydrated && myUserId && post.author.profileSlug && (
-                        post.author.profileSlug === user?.profileSlug && (
-                          <button
-                            onClick={() => {
-                              setPendingAction({
-                                type: "post",
-                                postId: post._id
-                              })
-                              setConfirmOpen(true)
-                            }}
+                      {hydrated && user && post.author.profileSlug === user.profileSlug && (
+                        <button
+                          onClick={() => {
+                            setPendingAction({
+                              type: "post",
+                              postId: post._id
+                            })
+                            setConfirmOpen(true)
+                          }}
 
-                            className="text-red-400 hover:text-red-300 transition cursor-pointer flex-shrink-0"
-                            title="Delete post"
-                          >
-                            <Trash className="w-4 h-4" />
-                          </button>
-                        )
+                          className="text-red-400 hover:text-red-300 transition cursor-pointer flex-shrink-0"
+                          title="Delete post"
+                        >
+                          <Trash className="w-4 h-4" />
+                        </button>
                       )}
                     </div>
 
@@ -590,7 +592,7 @@ export default function DiscussionsView() {
                                       <span className="flex-shrink-0">{timeAgo(c.createdAt)}</span>
                                     </div>
 
-                                    {hydrated && myUserId && String(c.author._id) === String(myUserId) && (
+                                    {hydrated && user && String(c.author._id) === String(user._id) && (
 
                                       <button
                                         onClick={() => {
