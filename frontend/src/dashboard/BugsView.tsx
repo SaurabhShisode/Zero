@@ -5,6 +5,7 @@ import { Bug, Plus, Trash, Clock, CheckCircle, AlertTriangle } from "lucide-reac
 import { useAuthStore } from "../store/authStore"
 import toast from "react-hot-toast"
 import { BugOff } from "lucide-react"
+import ConfirmModal from "../components/ConfirmModal"
 
 const ADMIN_EMAILS = ["shisodesaurabh48@gmail.com"]
 
@@ -27,6 +28,9 @@ export default function BugsView() {
   const [showCreate, setShowCreate] = useState(false)
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const userId = useAuthStore(s => s.user?._id)
 
   useEffect(() => {
@@ -90,12 +94,17 @@ export default function BugsView() {
   }
 
   async function deleteBug(id: string) {
+    setDeleting(true)
     try {
       await api.delete(`/api/bugs/${id}`)
       setBugs(prev => prev.filter(b => b._id !== id))
-      toast("Bug removed", { icon: "✖" })
+      toast.success("Bug deleted")
     } catch {
       toast.error("Failed to delete bug")
+    } finally {
+      setDeleting(false)
+      setConfirmOpen(false)
+      setPendingDeleteId(null)
     }
   }
 
@@ -234,7 +243,10 @@ export default function BugsView() {
 
                   {bug.author._id === userId && (
                     <button
-                      onClick={() => deleteBug(bug._id)}
+                      onClick={() => {
+                        setPendingDeleteId(bug._id)
+                        setConfirmOpen(true)
+                      }}
                       className="text-red-400 hover:text-red-300 transition cursor-pointer"
                       title="Delete bug"
                     >
@@ -278,7 +290,7 @@ export default function BugsView() {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="Bug title"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none"
+                className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-sm outline-none"
               />
 
               <textarea
@@ -308,6 +320,21 @@ export default function BugsView() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Delete Bug Report"
+        description="Are you sure you want to delete this bug report? This action cannot be undone."
+        confirmText="Delete"
+        loading={deleting}
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingDeleteId(null)
+        }}
+        onConfirm={() => {
+          if (pendingDeleteId) deleteBug(pendingDeleteId)
+        }}
+      />
     </section>
   )
 }

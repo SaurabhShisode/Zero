@@ -327,7 +327,7 @@ export default function DiscussionsView() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search discussions..."
-          className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white/80 outline-none w-full md:w-64"
+          className="px-4 py-2 rounded-lg bg-white/5 border border-white/15 text-sm text-white/80 outline-none w-full md:w-64"
         />
 
       </div>

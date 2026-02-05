@@ -365,7 +365,7 @@ export default function ProblemPage() {
                   .map((c) => (
                     <div
                       key={c._id}
-                      className="bg-white/5 border border-white/10 rounded-lg p-4 "
+                      className="bg-white/5 border border-white/15 rounded-lg p-4 "
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">

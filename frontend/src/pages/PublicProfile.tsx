@@ -318,7 +318,7 @@ export default function PublicProfileView() {
               {[1, 2, 3].map(i => (
                 <div
                   key={i}
-                  className="rounded-xl border border-white/10 bg-white/5 p-4 text-center"
+                  className="rounded-xl border border-white/15 bg-white/5 p-4 text-center"
                 >
                   <div className="h-4 w-12 bg-white/20 rounded mx-auto mb-2" />
                   <div className="h-6 w-16 bg-white/20 rounded mx-auto" />

@@ -56,7 +56,7 @@ function DifficultySelect({
 
   if (disabled) {
     return (
-      <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white/40">
+      <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/15 text-sm text-white/40">
         {value}
       </div>
     )

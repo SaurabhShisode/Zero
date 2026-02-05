@@ -49,7 +49,7 @@ export default function PlacementView() {
               <select
                 value={company}
                 onChange={e => setCompany(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none"
+                className="w-full bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-sm outline-none"
               >
                 <option value="faang">FAANG</option>
                 <option value="service">Service-based</option>

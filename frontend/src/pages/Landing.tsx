@@ -174,7 +174,7 @@ export default function Landing() {
 
                 <div className="relative rounded-xl sm:rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl font-geist text-left">
 
-                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-white/15">
                     <div className="h-3 w-3 rounded-full bg-red-500/80" />
                     <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
                     <div className="h-3 w-3 rounded-full bg-green-500/80" />

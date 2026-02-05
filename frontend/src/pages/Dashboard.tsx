@@ -2,12 +2,12 @@ import { useEffect, useState, useRef } from "react"
 
 import Sidebar from "../dashboard/Sidebar"
 import Topbar from "../dashboard/Topbar"
+import BottomNav from "../dashboard/BottomNav"
 import type { View } from "../dashboard/Sidebar"
 
 import DailyView from "../dashboard/DailyView"
 import CompanyView from "../dashboard/CompanyView"
 import TopicsView from "../dashboard/TopicsView"
-//import PlacementView from "../dashboard/PlacementView"
 import DiscussionsView from "../dashboard/CommunityView"
 import ProfileView from "../dashboard/ProfileView"
 import SettingsView from "../dashboard/SettingsView"
@@ -74,11 +74,13 @@ export default function Dashboard() {
 
         <main
           ref={scrollRef}
-          className="flex-1 overflow-y-auto scrollbar-hide pt-16"
+          className="flex-1 overflow-y-auto scrollbar-hide pt-16 pb-20 lg:pb-0"
         >
           {renderView()}
         </main>
       </div>
+
+      <BottomNav active={view} onChange={setView} />
     </div>
   )
 }

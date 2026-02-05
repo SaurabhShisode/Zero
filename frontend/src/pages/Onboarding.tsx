@@ -134,7 +134,7 @@ export default function Onboarding() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-[#0f172a]/80 to-black" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_60%)]" />
 
-      <div className="relative z-10 w-full max-w-lg rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-8 space-y-6 sm:space-y-8 shadow-[0_40px_120px_rgba(0,0,0,0.6)] font-geist">
+      <div className="relative z-10 w-full max-w-lg rounded-xl sm:rounded-2xl border border-white/15 bg-white/5 backdrop-blur-xl p-6 sm:p-8 space-y-6 sm:space-y-8 shadow-[0_40px_120px_rgba(0,0,0,0.6)] font-geist">
 
         <div className="text-center space-y-2">
           <h1 className="text-xl sm:text-2xl font-semibold">

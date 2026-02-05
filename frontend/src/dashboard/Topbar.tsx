@@ -52,7 +52,7 @@ export default function Topbar({ scrollRef }: Props) {
     w-full lg:w-[calc(100%-16rem)]
     backdrop-blur-xl
     will-change-transform
-    ${border ? "border-b border-white/10 bg-white/40" : "bg-white/5"}
+    ${border ? "border-b border-white/15 bg-white/40" : "bg-white/5"}
   `}
             style={{
                 animation: hidden
