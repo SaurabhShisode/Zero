@@ -59,7 +59,7 @@ export default function Sidebar({ active, onChange, open, onClose }: Props) {
       />
 
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 flex flex-col border-r border-white/15 bg-white/5 backdrop-blur-xl transform transition-transform duration-300 ease-out lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"
+        className={`fixed left-0 top-0 h-[100dvh] w-64 flex flex-col border-r border-white/15 bg-white/5 backdrop-blur-xl transform transition-transform duration-300 ease-out lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <button

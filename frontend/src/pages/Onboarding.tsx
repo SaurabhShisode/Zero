@@ -125,7 +125,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-white flex items-center justify-center px-4 sm:px-6">
+    <div className="relative min-h-[100dvh] overflow-hidden text-white flex items-center justify-center px-4 sm:px-6">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImage})` }}

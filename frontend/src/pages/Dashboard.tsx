@@ -53,7 +53,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex relative">
+    <div className="min-h-[100dvh] bg-black text-white flex relative">
       <Sidebar
         active={view}
         onChange={setView}
@@ -68,7 +68,7 @@ export default function Dashboard() {
         <Menu className="w-6 h-6 text-white" />
       </button>
 
-      <div className="flex-1 flex flex-col ml-0 lg:ml-64 h-screen w-full">
+      <div className="flex-1 flex flex-col ml-0 lg:ml-64 h-[100dvh] w-full">
 
         <Topbar view={view} scrollRef={scrollRef} />
 

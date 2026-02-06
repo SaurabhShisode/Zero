@@ -198,7 +198,7 @@ export default function ProblemPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-[100dvh] bg-black text-white">
         <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -237,7 +237,7 @@ export default function ProblemPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white ">
+    <div className="min-h-[100dvh] bg-black text-white ">
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

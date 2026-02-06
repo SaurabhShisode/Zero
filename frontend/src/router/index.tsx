@@ -15,7 +15,7 @@ export default function AppRouter() {
 
   if (token && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
+      <div className="min-h-[100dvh] flex items-center justify-center text-white">
         Restoring session...
       </div>
     )

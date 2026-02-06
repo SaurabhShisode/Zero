@@ -91,7 +91,7 @@ export default function Signup() {
 
 
   return (
-    <div className="relative min-h-screen overflow-hidden text-white flex flex-col">
+    <div className="relative min-h-[100dvh] overflow-hidden text-white flex flex-col">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${bgImage})` }}

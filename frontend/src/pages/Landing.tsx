@@ -73,8 +73,8 @@ export default function Landing() {
   }, [lastScrollY]);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <section className="relative min-h-screen overflow-hidden">
+    <div className="min-h-[100dvh] bg-black text-white">
+      <section className="relative min-h-[100dvh] overflow-hidden">
 
 
         <div className="absolute  inset-0 bg-gradient-to-b from-[#0b0f1a] via-[#0f172a] to-black" />
