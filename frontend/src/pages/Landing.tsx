@@ -96,13 +96,13 @@ export default function Landing() {
             </div>
 
             <div className="hidden md:flex gap-6 items-center text-sm font-geist">
-              <button
-                onClick={() => scrollToSection("home")}
+              <Link
+                to="/login"
                 className="text-white/60 hover:text-white transition hover:bg-white/10 hover:backdrop-blur p-2 rounded-md cursor-pointer"
               >
-
                 Home
-              </button>
+              </Link>
+
 
               <button
                 onClick={() => scrollToSection("faqs")}

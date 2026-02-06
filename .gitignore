@@ -50,3 +50,6 @@ frontend/dist/
 .env.*
 /backend/data
 backend/scripts/seedProblems.ts
+context.txt
+zero.txt
+zero.txt
