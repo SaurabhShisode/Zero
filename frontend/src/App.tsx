@@ -11,7 +11,7 @@ export default function App() {
   }, [hydrate])
 
   return (
-    <>
+    <div className="bg-black">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -39,6 +39,6 @@ export default function App() {
 
 
       <AppRouter />
-    </>
+    </div>
   )
 }
