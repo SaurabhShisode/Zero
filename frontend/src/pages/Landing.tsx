@@ -201,7 +201,7 @@ export default function Landing() {
                             rel="noreferrer"
                             className="text-sm text-white/50 hover:text-white transition"
                           >
-                            LeetCode ↗
+                            Solve ↗
                           </a>
                           <button
                             type="button"

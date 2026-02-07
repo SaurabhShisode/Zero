@@ -39,6 +39,9 @@ app.use("/api/community", communityRoutes)
 app.use("/api/bugs", bugRoutes)
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/", (req, res) => {
+  res.send("Zero Backend API is running")
+})
 
 const start = async () => {
   try {
