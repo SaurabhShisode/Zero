@@ -8,18 +8,17 @@ import PublicProfile from "../pages/PublicProfile"
 import Landing from "../pages/Landing"
 import Onboarding from "../pages/Onboarding"
 import ProblemPage from "../pages/ProblemPage"
+import Loader from "../components/Loader"
+
 
 export default function AppRouter() {
   const token = useAuthStore((s) => s.token)
   const user = useAuthStore((s) => s.user)
 
   if (token && !user) {
-    return (
-      <div className="min-h-[100dvh] flex items-center justify-center text-white">
-        Restoring session...
-      </div>
-    )
-  }
+  return <Loader text="Restoring session..." />
+}
+
 
   return (
     <Routes>
