@@ -454,9 +454,7 @@ export default function DiscussionsView() {
 
                     <div className="flex flex-wrap items-center gap-3 pt-2">
                       <h2
-                        onClick={() =>
-                          navigate(`/discussions/${post._id}`)
-                        }
+                    
                         className="text-base md:text-lg font-semibold tracking-tight hover:text-white transition cursor-pointer"
                       >
                         {post.title}
