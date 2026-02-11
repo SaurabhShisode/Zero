@@ -45,38 +45,57 @@ export default function DailyView() {
   }, [])
 
   const markSolved = async (
-    dailyId: string,
-    problemId: string,
-    nextSolved: boolean
-  ) => {
-    try {
-      const status = nextSolved ? "solved" : "wrong"
+  dailyId: string,
+  problemId: string,
+  nextSolved: boolean
+) => {
+  const previousValue = solved[dailyId]
 
-      await api.post("/api/solve", {
-        problemId,
-        status,
-        approachNote: nextSolved
-          ? "Solved using standard approach"
-          : undefined,
-        placementMode: false
-      })
+  setSolved((prev) => ({
+    ...prev,
+    [dailyId]: nextSolved
+  }))
 
-      setSolved((prev) => ({
-        ...prev,
-        [dailyId]: nextSolved
-      }))
+  setDaily((prev) =>
+    prev.map((item) =>
+      item._id === dailyId
+        ? { ...item, solveStatus: nextSolved ? "solved" : "wrong" }
+        : item
+    )
+  )
 
-      setDaily((prev) =>
-        prev.map((item) =>
-          item._id === dailyId
-            ? { ...item, solveStatus: nextSolved ? "solved" : "wrong" }
-            : item
-        )
+  try {
+    const status = nextSolved ? "solved" : "wrong"
+
+    await api.post("/api/solve", {
+      problemId,
+      status,
+      approachNote: nextSolved
+        ? "Solved using standard approach"
+        : undefined,
+      placementMode: false
+    })
+  } catch {
+    setSolved((prev) => ({
+      ...prev,
+      [dailyId]: previousValue
+    }))
+
+    setDaily((prev) =>
+      prev.map((item) =>
+        item._id === dailyId
+          ? {
+              ...item,
+              solveStatus: previousValue ? "solved" : "wrong"
+            }
+          : item
       )
-    } catch {
-      alert("Failed to update solve status")
-    }
+    )
+
+    alert("Failed to update solve status")
   }
+}
+
   if (loading) {
     return (
       <section className="space-y-6 sm:space-y-8 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 text-white">

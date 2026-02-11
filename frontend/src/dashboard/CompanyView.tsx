@@ -56,29 +56,37 @@ export default function CompanyView() {
   }, [selected])
 
   const markSolved = async (
-    problemId: string,
-    nextSolved: boolean
-  ) => {
-    try {
-      const status = nextSolved ? "solved" : "wrong"
+  problemId: string,
+  nextSolved: boolean
+) => {
+  const previousValue = solved[problemId]
 
-      await api.post("/api/solve", {
-        problemId,
-        status,
-        approachNote: nextSolved
-          ? "Solved using standard approach"
-          : undefined,
-        placementMode: false
-      })
+  setSolved((prev) => ({
+    ...prev,
+    [problemId]: nextSolved
+  }))
 
-      setSolved((prev) => ({
-        ...prev,
-        [problemId]: nextSolved
-      }))
-    } catch {
-      alert("Failed to update solve status")
-    }
+  try {
+    const status = nextSolved ? "solved" : "wrong"
+
+    await api.post("/api/solve", {
+      problemId,
+      status,
+      approachNote: nextSolved
+        ? "Solved using standard approach"
+        : undefined,
+      placementMode: false
+    })
+  } catch {
+    setSolved((prev) => ({
+      ...prev,
+      [problemId]: previousValue
+    }))
+
+    alert("Failed to update solve status")
   }
+}
+
 
 
   return (

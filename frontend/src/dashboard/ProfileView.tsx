@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useShallow } from "zustand/react/shallow"
 
-
 type HeatmapDay = {
   date: string
   count: number
@@ -27,7 +26,6 @@ type RecentSolve = {
   }
 }
 
-
 type ProfileStats = {
   easySolved: number
   easyTotal: number
@@ -36,7 +34,6 @@ type ProfileStats = {
   hardSolved: number
   hardTotal: number
 }
-
 
 
 export default function ProfileView() {
