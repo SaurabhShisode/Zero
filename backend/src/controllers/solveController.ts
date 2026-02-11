@@ -47,7 +47,8 @@ export const markSolve = async (
       {
         status,
         approachNote,
-        placementMode: placementMode === true
+        placementMode: placementMode === true,
+        solvedAt: new Date()
       },
       { upsert: true, new: true, session }
     )

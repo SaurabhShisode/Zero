@@ -18,7 +18,7 @@ type HeatCell = {
 }
 
 type RecentSolve = {
-  date: string
+  solvedAt: string
   problem: {
     _id: string
     title: string
@@ -800,7 +800,7 @@ export default function ProfileView() {
                   {r.problem.title}
                 </p>
                 <p className="text-xs text-white/40">
-                  {timeAgo(r.date)}
+                  {timeAgo(r.solvedAt)}
                 </p>
 
               </div>

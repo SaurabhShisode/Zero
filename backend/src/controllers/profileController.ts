@@ -35,9 +35,9 @@ export const publicProfile = async (
       user: user._id,
       status: "solved"
     })
-      .sort({ date: -1 })
+      .sort({ solvedAt: -1 })
       .limit(30)
-      .select("date")
+      .select("solvedAt date")
 
     return res.json({ user, recent })
   } catch {
@@ -462,19 +462,19 @@ export const getRecentSolves = async (
       user: req.userId,
       status: "solved"
     })
-      .sort({ date: -1 })
+      .sort({ solvedAt: -1 })
       .limit(10)
       .populate("problem", "title difficulty")
-      .select("date problem")
+      .select("solvedAt problem")
 
     const formatted = solves.map(s => ({
-  date: s.date,
-  problem: {
-    _id: (s.problem as any)?._id,
-    title: (s.problem as any)?.title || "Unknown",
-    difficulty: (s.problem as any)?.difficulty || "Easy"
-  }
-}))
+      solvedAt: s.solvedAt,
+      problem: {
+        _id: (s.problem as any)?._id,
+        title: (s.problem as any)?.title || "Unknown",
+        difficulty: (s.problem as any)?.difficulty || "Easy"
+      }
+    }))
 
 
     return res.json({ recent: formatted })
@@ -533,13 +533,13 @@ export const getPublicRecentSolves = async (
       user: user._id,
       status: "solved"
     })
-      .sort({ date: -1 })
+      .sort({ solvedAt: -1 })
       .limit(10)
       .populate("problem", "title difficulty")
-      .select("date problem")
+      .select("solvedAt problem")
 
     const formatted = solves.map(s => ({
-      date: s.date,
+      solvedAt: s.solvedAt,
       problem: {
         _id: (s.problem as any)?._id,
         title: (s.problem as any)?.title || "Unknown",
