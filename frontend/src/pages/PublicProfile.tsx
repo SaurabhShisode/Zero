@@ -447,7 +447,7 @@ export default function PublicProfileView() {
 
         <div className="flex items-center gap-6">
           <img
-            src={`https://api.dicebear.com/6.x/thumbs/svg?seed=${user.profileSlug}`}
+            src={`https://api.dicebear.com/7.x/identicon/svg?seed=${user.profileSlug}`}
             className="w-24 h-24 rounded-2xl shadow-xl"
           />
 

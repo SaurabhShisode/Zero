@@ -518,15 +518,6 @@ export default function ProfileView() {
         <img
           src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.name)}`}
 
-
-
-
-
-
-
-
-
-
           className="w-24 h-24 rounded-2xl shadow-xl"
         />
 
