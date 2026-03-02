@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api/client"
 import { ExternalLink } from "lucide-react"
+import { useKeyboardNav } from "../hooks/useKeyboardNav"
+import KeyboardHelp from "../components/KeyboardHelp"
 
 type Problem = {
   _id: string
@@ -61,39 +63,71 @@ export default function TopicsView() {
       .finally(() => setLoading(false))
   }, [selected])
 
- const markSolved = async (
-  problemId: string,
-  nextSolved: boolean
-) => {
-  const previousValue = solved[problemId]
+  const markSolved = async (
+    problemId: string,
+    nextSolved: boolean
+  ) => {
+    const previousValue = solved[problemId]
 
-  setSolved((prev) => ({
-    ...prev,
-    [problemId]: nextSolved
-  }))
-
-  try {
-    const status = nextSolved ? "solved" : "wrong"
-
-    await api.post("/api/solve", {
-      problemId,
-      status,
-      approachNote: nextSolved
-        ? "Solved using standard approach"
-        : undefined,
-      placementMode: false
-    })
-  } catch {
     setSolved((prev) => ({
       ...prev,
-      [problemId]: previousValue
+      [problemId]: nextSolved
     }))
 
-    alert("Failed to update solve status")
+    try {
+      const status = nextSolved ? "solved" : "wrong"
+
+      await api.post("/api/solve", {
+        problemId,
+        status,
+        approachNote: nextSolved
+          ? "Solved using standard approach"
+          : undefined,
+        placementMode: false
+      })
+    } catch {
+      setSolved((prev) => ({
+        ...prev,
+        [problemId]: previousValue
+      }))
+
+      alert("Failed to update solve status")
+    }
   }
-}
 
+  const handleOpen = useCallback(
+    (index: number) => {
+      const p = problems[index]
+      if (p) {
+        navigate(`/problems/${p._id}`, {
+          state: {
+            fromLabel: "Topic-wise",
+            fromPath: "/topics",
+            contextLabel: p.title
+          }
+        })
+      }
+    },
+    [problems, navigate]
+  )
 
+  const handleToggle = useCallback(
+    (index: number) => {
+      const p = problems[index]
+      if (p) {
+        const next = !solved[p._id]
+        markSolved(p._id, next)
+      }
+    },
+    [problems, solved]
+  )
+
+  const { activeIndex, showHelp, setShowHelp } = useKeyboardNav({
+    itemCount: problems.length,
+    onOpen: handleOpen,
+    onToggle: handleToggle,
+    enabled: !loading
+  })
   return (
     <section className="space-y-4 sm:space-y-6 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10">
       <div>
@@ -165,10 +199,11 @@ export default function TopicsView() {
           problems.map((p, index) => (
             <motion.div
               key={p._id}
+              data-kb-index={index}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03, duration: 0.4 }}
-              className="relative group"
+              className={`relative group ${activeIndex === index ? "ring-2 ring-white/40 rounded-2xl" : ""}`}
             >
               <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition" />
 
@@ -266,6 +301,11 @@ export default function TopicsView() {
             </motion.div>
           ))}
       </div>
+
+      <KeyboardHelp
+        visible={showHelp}
+        onClose={() => setShowHelp((v) => !v)}
+      />
 
     </section>
   )

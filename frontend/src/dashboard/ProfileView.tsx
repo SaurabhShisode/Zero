@@ -1,11 +1,23 @@
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useState, useRef } from "react"
+import { motion, useSpring, useTransform } from "framer-motion"
 import { api } from "../api/client"
-import { Copy, Award, UserPlus, BarChart2 } from "lucide-react"
+import { Copy, Award, UserPlus, BarChart2, Download } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useShallow } from "zustand/react/shallow"
+import html2canvas from "html2canvas"
+
+function AnimatedNumber({ value }: { value: number }) {
+  const spring = useSpring(0, { stiffness: 50, damping: 20 })
+  const display = useTransform(spring, (v) => Math.round(v))
+
+  useEffect(() => {
+    spring.set(value)
+  }, [value, spring])
+
+  return <motion.span>{display}</motion.span>
+}
 
 type HeatmapDay = {
   date: string
@@ -43,6 +55,8 @@ export default function ProfileView() {
       hydrated: state.hydrated
     }))
   )
+
+  const shareCardRef = useRef<HTMLDivElement>(null)
 
 
   const navigate = useNavigate()
@@ -543,13 +557,38 @@ export default function ProfileView() {
           </div>
         </div>
 
-        <button
-          onClick={copyProfileLink}
-          className="self-start cursor-pointer md:self-center px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
-        >
-          <Copy className="w-4 h-4" />
-          {copied ? "Copied" : "Copy link"}
-        </button>
+        <div className="flex gap-2 self-start md:self-center">
+          <button
+            onClick={copyProfileLink}
+            className="cursor-pointer px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
+          >
+            <Copy className="w-4 h-4" />
+            {copied ? "Copied" : "Copy link"}
+          </button>
+
+          <button
+            onClick={async () => {
+              if (!shareCardRef.current) return
+              try {
+                const canvas = await html2canvas(shareCardRef.current, {
+                  backgroundColor: null,
+                  scale: 2
+                })
+                const link = document.createElement("a")
+                link.download = `zero-${user.profileSlug}.png`
+                link.href = canvas.toDataURL("image/png")
+                link.click()
+                toast.success("Share card downloaded")
+              } catch {
+                toast.error("Failed to export image")
+              }
+            }}
+            className="cursor-pointer px-4 py-2 rounded-lg border border-white/20 text-sm text-white/70 hover:text-white transition flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Export
+          </button>
+        </div>
       </motion.div>
 
 
@@ -626,7 +665,7 @@ export default function ProfileView() {
 
             <div className="absolute text-center">
               <p className="text-4xl font-semibold">
-                {solvedTotal}/{allTotal}
+                <AnimatedNumber value={solvedTotal} />/{allTotal}
               </p>
 
               <p className="text-sm text-white/50">
@@ -641,9 +680,8 @@ export default function ProfileView() {
                 Easy
               </p>
               <p className="text-lg font-semibold">
-                {stats?.easySolved || 0}/
+                <AnimatedNumber value={stats?.easySolved || 0} />/
                 {stats?.easyTotal || 0}
-
               </p>
             </div>
 
@@ -652,7 +690,7 @@ export default function ProfileView() {
                 Med.
               </p>
               <p className="text-lg font-semibold">
-                {stats?.mediumSolved || 0}/{stats?.mediumTotal || 0}
+                <AnimatedNumber value={stats?.mediumSolved || 0} />/{stats?.mediumTotal || 0}
               </p>
             </div>
 
@@ -661,8 +699,7 @@ export default function ProfileView() {
                 Hard
               </p>
               <p className="text-lg font-semibold">
-                {stats?.hardSolved || 0}/{stats?.hardTotal || 0}
-
+                <AnimatedNumber value={stats?.hardSolved || 0} />/{stats?.hardTotal || 0}
               </p>
             </div>
           </div>
@@ -679,7 +716,7 @@ export default function ProfileView() {
               Current streak
             </p>
             <p className="text-6xl font-semibold">
-              {user.streak?.current || 0}
+              <AnimatedNumber value={user.streak?.current || 0} />
               <span className="text-base text-white/40 ml-1">
                 days
               </span>
@@ -693,7 +730,7 @@ export default function ProfileView() {
               Longest streak
             </p>
             <p className="text-6xl font-semibold">
-              {user.streak?.max || 0}
+              <AnimatedNumber value={user.streak?.max || 0} />
               <span className="text-base text-white/40 ml-1">
                 days
               </span>
@@ -956,6 +993,63 @@ export default function ProfileView() {
           </div>
         )}
       </motion.div>
+
+      <div
+        ref={shareCardRef}
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: 0,
+          width: "480px",
+          padding: "32px",
+          background: "linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)",
+          borderRadius: "20px",
+          fontFamily: "Geist, Inter, system-ui, sans-serif",
+          color: "white"
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
+          <img
+            src={`https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(user.profileSlug)}`}
+            style={{ width: "48px", height: "48px", borderRadius: "12px" }}
+          />
+          <div>
+            <p style={{ fontSize: "20px", fontWeight: 600, margin: 0 }}>{user.name}</p>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.4)", margin: 0 }}>@{user.profileSlug}</p>
+          </div>
+          <div style={{ marginLeft: "auto", fontSize: "14px", color: "rgba(255,255,255,0.3)" }}>ZERO</div>
+        </div>
+
+        <div style={{ display: "flex", gap: "16px", marginBottom: "20px" }}>
+          <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+            <p style={{ fontSize: "28px", fontWeight: 700, margin: 0 }}>{user.streak?.current || 0}</p>
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>Current Streak</p>
+          </div>
+          <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+            <p style={{ fontSize: "28px", fontWeight: 700, margin: 0 }}>{user.streak?.max || 0}</p>
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>Max Streak</p>
+          </div>
+          <div style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: "12px", padding: "16px", textAlign: "center" }}>
+            <p style={{ fontSize: "28px", fontWeight: 700, margin: 0 }}>{solvedTotal}</p>
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", margin: "4px 0 0" }}>Solved</p>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
+            <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "2px", background: "rgb(34,197,94)" }} />
+            <span style={{ color: "rgba(255,255,255,0.5)" }}>Easy {stats?.easySolved || 0}/{stats?.easyTotal || 0}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
+            <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "2px", background: "rgb(250,204,21)" }} />
+            <span style={{ color: "rgba(255,255,255,0.5)" }}>Med {stats?.mediumSolved || 0}/{stats?.mediumTotal || 0}</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "12px" }}>
+            <span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "2px", background: "rgb(239,68,68)" }} />
+            <span style={{ color: "rgba(255,255,255,0.5)" }}>Hard {stats?.hardSolved || 0}/{stats?.hardTotal || 0}</span>
+          </div>
+        </div>
+      </div>
 
     </section>
   )

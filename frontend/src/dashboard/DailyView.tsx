@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { motion } from "framer-motion"
 import { api } from "../api/client"
 import { ExternalLink } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
+import confetti from "canvas-confetti"
+import { useAuthStore } from "../store/authStore"
+import { useKeyboardNav } from "../hooks/useKeyboardNav"
+import KeyboardHelp from "../components/KeyboardHelp"
 
 type DailyProblem = {
   _id: string
@@ -16,11 +20,30 @@ type DailyProblem = {
   solveStatus: "solved" | "wrong" | "skipped" | null
 }
 
+const MILESTONES = [1, 7, 14, 30, 50, 100, 200, 365]
+
+function fireConfetti() {
+  confetti({
+    particleCount: 150,
+    spread: 80,
+    origin: { y: 0.6 },
+    colors: ["#22c55e", "#facc15", "#3b82f6", "#a855f7", "#ef4444"]
+  })
+  setTimeout(() => {
+    confetti({
+      particleCount: 80,
+      spread: 100,
+      origin: { y: 0.5 }
+    })
+  }, 300)
+}
+
 export default function DailyView() {
   const [daily, setDaily] = useState<DailyProblem[]>([])
   const [loading, setLoading] = useState(false)
   const [solved, setSolved] = useState<Record<string, boolean>>({})
   const navigate = useNavigate()
+  const hydrate = useAuthStore(s => s.hydrate)
 
   const location = useLocation()
 
@@ -45,56 +68,98 @@ export default function DailyView() {
   }, [])
 
   const markSolved = async (
-  dailyId: string,
-  problemId: string,
-  nextSolved: boolean
-) => {
-  const previousValue = solved[dailyId]
+    dailyId: string,
+    problemId: string,
+    nextSolved: boolean
+  ) => {
+    const previousValue = solved[dailyId]
 
-  setSolved((prev) => ({
-    ...prev,
-    [dailyId]: nextSolved
-  }))
-
-  setDaily((prev) =>
-    prev.map((item) =>
-      item._id === dailyId
-        ? { ...item, solveStatus: nextSolved ? "solved" : "wrong" }
-        : item
-    )
-  )
-
-  try {
-    const status = nextSolved ? "solved" : "wrong"
-
-    await api.post("/api/solve", {
-      problemId,
-      status,
-      approachNote: nextSolved
-        ? "Solved using standard approach"
-        : undefined,
-      placementMode: false
-    })
-  } catch {
     setSolved((prev) => ({
       ...prev,
-      [dailyId]: previousValue
+      [dailyId]: nextSolved
     }))
 
     setDaily((prev) =>
       prev.map((item) =>
         item._id === dailyId
-          ? {
-              ...item,
-              solveStatus: previousValue ? "solved" : "wrong"
-            }
+          ? { ...item, solveStatus: nextSolved ? "solved" : "wrong" }
           : item
       )
     )
 
-    alert("Failed to update solve status")
+    try {
+      const status = nextSolved ? "solved" : "wrong"
+
+      await api.post("/api/solve", {
+        problemId,
+        status,
+        approachNote: nextSolved
+          ? "Solved using standard approach"
+          : undefined,
+        placementMode: false
+      })
+
+      if (nextSolved) {
+        await hydrate()
+        const currentStreak = useAuthStore.getState().user?.streak?.current || 0
+        if (MILESTONES.includes(currentStreak)) {
+          fireConfetti()
+        }
+      }
+    } catch {
+      setSolved((prev) => ({
+        ...prev,
+        [dailyId]: previousValue
+      }))
+
+      setDaily((prev) =>
+        prev.map((item) =>
+          item._id === dailyId
+            ? {
+              ...item,
+              solveStatus: previousValue ? "solved" : "wrong"
+            }
+            : item
+        )
+      )
+
+      alert("Failed to update solve status")
+    }
   }
-}
+
+  const handleOpen = useCallback(
+    (index: number) => {
+      const item = daily[index]
+      if (item) {
+        navigate(`/problems/${item.problem._id}`, {
+          state: {
+            fromLabel: "Daily",
+            fromPath: location.pathname + location.search,
+            contextLabel: item.problem.title
+          }
+        })
+      }
+    },
+    [daily, navigate, location]
+  )
+
+  const handleToggle = useCallback(
+    (index: number) => {
+      const item = daily[index]
+      if (item) {
+        const next = !solved[item._id]
+        markSolved(item._id, item.problem._id, next)
+      }
+    },
+    [daily, solved]
+  )
+
+  const { activeIndex, showHelp, setShowHelp } = useKeyboardNav({
+    itemCount: daily.length,
+    onOpen: handleOpen,
+    onToggle: handleToggle,
+    enabled: !loading
+  })
 
   if (loading) {
     return (
@@ -143,7 +208,7 @@ export default function DailyView() {
 
   return (
     <section className="space-y-8 font-geist mx-10 mt-10 scrollbar-hide mb-10">
-      <h1 className="text-xl font-semibold">Today’s Problems</h1>
+      <h1 className="text-xl font-semibold">Today's Problems</h1>
 
 
 
@@ -156,10 +221,12 @@ export default function DailyView() {
       {daily.map((item, index) => (
         <motion.div
           key={item._id}
+          data-kb-index={index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.6, ease: "easeOut" }}
-          className="relative mt-4 flex justify-center "
+          className={`relative mt-4 flex justify-center ${activeIndex === index ? "ring-2 ring-white/40 rounded-2xl" : ""
+            }`}
         >
           <div className="relative group w-full">
             <div className="absolute -inset-1 rounded-2xl bg-white/10 blur-xl opacity-0 group-hover:opacity-100 transition duration-500" />
@@ -260,6 +327,11 @@ export default function DailyView() {
           </div>
         </motion.div>
       ))}
+
+      <KeyboardHelp
+        visible={showHelp}
+        onClose={() => setShowHelp((v) => !v)}
+      />
     </section>
   )
 }

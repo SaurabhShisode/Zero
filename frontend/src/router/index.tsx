@@ -8,6 +8,7 @@ import PublicProfile from "../pages/PublicProfile"
 import Landing from "../pages/Landing"
 import Onboarding from "../pages/Onboarding"
 import ProblemPage from "../pages/ProblemPage"
+import NotFound from "../pages/NotFound"
 import Loader from "../components/Loader"
 
 
@@ -16,8 +17,8 @@ export default function AppRouter() {
   const user = useAuthStore((s) => s.user)
 
   if (token && !user) {
-  return <Loader text="Restoring session..." />
-}
+    return <Loader text="Restoring session..." />
+  }
 
 
   return (
@@ -40,14 +41,16 @@ export default function AppRouter() {
         element={token ? <ProblemPage /> : <Navigate to="/login" />}
       />
 
-      
-    
 
-    
+
+
+
       <Route
         path="/u/:slug"
         element={<PublicProfile />}
       />
+
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
