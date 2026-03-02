@@ -7,6 +7,7 @@ import { SolvedProblem } from "../models/SolvedProblem.js";
 import { RevisionTask } from "../models/RevisionTask.js";
 import { toDay } from "../utils/dates.js";
 import { User } from "../models/User.js";
+import { checkAndAwardBadges } from "../services/badges.js";
 
 
 export const markSolve = async (
@@ -85,13 +86,14 @@ export const markSolve = async (
       }
     }
 
+    let newBadges: string[] = []
 
     if (status === "solved") {
       const user = await User.findById(userId).session(session)
       if (!user) {
         await session.commitTransaction()
         session.endSession()
-        return res.json({ solve })
+        return res.json({ solve, newBadges })
       }
 
 
@@ -118,12 +120,25 @@ export const markSolve = async (
 
         await user.save({ session })
       }
+
+      await session.commitTransaction()
+      session.endSession()
+
+      try {
+        newBadges = await checkAndAwardBadges(
+          userId,
+          user.streak.current,
+          user.streak.max
+        )
+      } catch { }
+
+      return res.json({ solve, newBadges })
     }
 
     await session.commitTransaction()
     session.endSession()
 
-    return res.json({ solve })
+    return res.json({ solve, newBadges })
   } catch (err) {
     await session.abortTransaction()
     session.endSession()

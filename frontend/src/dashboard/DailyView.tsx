@@ -4,9 +4,12 @@ import { api } from "../api/client"
 import { ExternalLink } from "lucide-react"
 import { useNavigate, useLocation } from "react-router-dom"
 import confetti from "canvas-confetti"
+import toast from "react-hot-toast"
 import { useAuthStore } from "../store/authStore"
 import { useKeyboardNav } from "../hooks/useKeyboardNav"
 import KeyboardHelp from "../components/KeyboardHelp"
+import { BADGE_MAP } from "../constants/badges"
+import type { BadgeId } from "../constants/badges"
 
 type DailyProblem = {
   _id: string
@@ -90,7 +93,7 @@ export default function DailyView() {
     try {
       const status = nextSolved ? "solved" : "wrong"
 
-      await api.post("/api/solve", {
+      const solveRes = await api.post("/api/solve", {
         problemId,
         status,
         approachNote: nextSolved
@@ -100,6 +103,14 @@ export default function DailyView() {
       })
 
       if (nextSolved) {
+        const newBadges: string[] = solveRes.data?.newBadges || []
+        for (const badgeId of newBadges) {
+          const badge = BADGE_MAP[badgeId as BadgeId]
+          if (badge) {
+            toast(`${badge.emoji} Badge unlocked: ${badge.label}`, { duration: 4000 })
+          }
+        }
+
         await hydrate()
         const currentStreak = useAuthStore.getState().user?.streak?.current || 0
         if (MILESTONES.includes(currentStreak)) {

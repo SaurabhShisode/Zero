@@ -3,8 +3,11 @@ import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api/client"
 import { ExternalLink } from "lucide-react"
+import toast from "react-hot-toast"
 import { useKeyboardNav } from "../hooks/useKeyboardNav"
 import KeyboardHelp from "../components/KeyboardHelp"
+import { BADGE_MAP } from "../constants/badges"
+import type { BadgeId } from "../constants/badges"
 
 type Problem = {
   _id: string
@@ -71,7 +74,7 @@ export default function CompanyView() {
     try {
       const status = nextSolved ? "solved" : "wrong"
 
-      await api.post("/api/solve", {
+      const solveRes = await api.post("/api/solve", {
         problemId,
         status,
         approachNote: nextSolved
@@ -79,6 +82,16 @@ export default function CompanyView() {
           : undefined,
         placementMode: false
       })
+
+      if (nextSolved) {
+        const newBadges: string[] = solveRes.data?.newBadges || []
+        for (const badgeId of newBadges) {
+          const badge = BADGE_MAP[badgeId as BadgeId]
+          if (badge) {
+            toast(`${badge.emoji} Badge unlocked: ${badge.label}`, { duration: 4000 })
+          }
+        }
+      }
     } catch {
       setSolved((prev) => ({
         ...prev,

@@ -1,12 +1,13 @@
 import { useEffect, useState, useRef } from "react"
 import { motion, useSpring, useTransform } from "framer-motion"
 import { api } from "../api/client"
-import { Copy, Award, UserPlus, BarChart2, Download } from "lucide-react"
+import { Copy, Award, UserPlus, BarChart2, Download, Lock } from "lucide-react"
 import { useAuthStore } from "../store/authStore"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useShallow } from "zustand/react/shallow"
 import html2canvas from "html2canvas"
+import { ALL_BADGES } from "../constants/badges"
 
 function AnimatedNumber({ value }: { value: number }) {
   const spring = useSpring(0, { stiffness: 50, damping: 20 })
@@ -853,26 +854,46 @@ export default function ProfileView() {
         transition={{ delay: 0.5, duration: 0.5 }}
         className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-6 space-y-4"
       >
-        <div className="flex items-center gap-2 text-white/60">
-          <Award className="w-4 h-4" />
-          <p className="text-sm tracking-wide">Badges</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-white/60">
+            <Award className="w-4 h-4" />
+            <p className="text-sm tracking-wide">Badges</p>
+          </div>
+          <span className="text-xs text-white/30">
+            {badges.filter((b) => ALL_BADGES.some((ab) => ab.id === b)).length}/{ALL_BADGES.length} unlocked
+          </span>
         </div>
 
-        {badges.length === 0 && (
-          <p className="text-sm text-white/40">
-            No badges yet. Stay consistent to unlock milestones.
-          </p>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          {badges.map((b) => (
-            <span
-              key={b}
-              className="text-xs px-2 py-1 rounded border border-white/20 text-white/70"
-            >
-              {b}
-            </span>
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {ALL_BADGES.map((badge) => {
+            const earned = badges.includes(badge.id)
+            return (
+              <div
+                key={badge.id}
+                className={`relative rounded-xl border p-3 text-center transition-all duration-300 ${earned
+                  ? `${badge.bgColor} ${badge.borderColor} hover:scale-105`
+                  : "bg-white/[0.03] border-white/10 opacity-40"
+                  }`}
+                title={badge.description}
+              >
+                <div className="text-2xl mb-1">
+                  {earned ? badge.emoji : ""}
+                </div>
+                {!earned && (
+                  <Lock className="w-5 h-5 mx-auto mb-1 text-white/20" />
+                )}
+                <p
+                  className={`text-xs font-medium truncate ${earned ? badge.color : "text-white/30"
+                    }`}
+                >
+                  {badge.label}
+                </p>
+                <p className="text-[10px] text-white/30 mt-0.5 truncate">
+                  {badge.description}
+                </p>
+              </div>
+            )
+          })}
         </div>
       </motion.div>
 
