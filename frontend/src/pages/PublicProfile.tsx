@@ -6,6 +6,8 @@ import { Award } from "lucide-react"
 import toast from "react-hot-toast"
 import { useAuthStore } from "../store/authStore"
 import { ArrowLeft } from 'lucide-react';
+import { BADGE_MAP } from "../constants/badges"
+import type { BadgeId } from "../constants/badges"
 type HeatmapDay = {
   date: string
   count: number
@@ -673,15 +675,33 @@ export default function PublicProfileView() {
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2">
-          {(user.badges || []).map(b => (
-            <span
-              key={b}
-              className="text-xs px-2 py-1 rounded border border-white/20 text-white/70"
-            >
-              {b}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-3">
+          {(user.badges || []).map((b) => {
+            const badge = BADGE_MAP[b as BadgeId]
+            if (!badge) return (
+              <span
+                key={b}
+                className="text-xs px-2 py-1 rounded border border-white/20 text-white/70"
+              >
+                {b}
+              </span>
+            )
+            return (
+              <div
+                key={b}
+                className={`rounded-xl border p-3 text-center ${badge.bgColor} ${badge.borderColor}`}
+                title={badge.description}
+              >
+                <div className="text-2xl mb-1">{badge.emoji}</div>
+                <p className={`text-xs font-medium ${badge.color}`}>
+                  {badge.label}
+                </p>
+                <p className="text-[10px] text-white/30 mt-0.5">
+                  {badge.description}
+                </p>
+              </div>
+            )
+          })}
         </div>
       </motion.div>
 

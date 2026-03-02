@@ -110,6 +110,9 @@ export default function DailyView() {
             toast(`${badge.emoji} Badge unlocked: ${badge.label}`, { duration: 4000 })
           }
         }
+        if (newBadges.length > 0) {
+          fireConfetti()
+        }
 
         await hydrate()
         const currentStreak = useAuthStore.getState().user?.streak?.current || 0

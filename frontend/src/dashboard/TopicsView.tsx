@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api/client"
 import { ExternalLink } from "lucide-react"
+import confetti from "canvas-confetti"
 import toast from "react-hot-toast"
 import { useKeyboardNav } from "../hooks/useKeyboardNav"
 import KeyboardHelp from "../components/KeyboardHelp"
@@ -96,6 +97,9 @@ export default function TopicsView() {
           if (badge) {
             toast(`${badge.emoji} Badge unlocked: ${badge.label}`, { duration: 4000 })
           }
+        }
+        if (newBadges.length > 0) {
+          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } })
         }
       }
     } catch {

@@ -24,7 +24,7 @@ export const publicProfile = async (
     }
 
     const user = await User.findOne({ profileSlug: slug }).select(
-      "name profileSlug streak"
+      "name profileSlug streak badges"
     )
 
     if (!user) {
