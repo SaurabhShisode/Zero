@@ -24,7 +24,7 @@ type DailyProblem = {
   solveStatus: "solved" | "wrong" | "skipped" | null
 }
 
-const MILESTONES = [1, 7, 14, 30, 50, 100, 200, 365]
+const MILESTONES = [7, 14, 30, 50, 100, 200, 365]
 
 function fireConfetti() {
   confetti({

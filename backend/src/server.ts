@@ -16,6 +16,7 @@ import communityRoutes from "./routes/community.js"
 import revisionRoutes from "./routes/revision.js";
 import notificationRoutes from "./routes/notifications.js";
 import bookmarkRoutes from "./routes/bookmarks.js";
+import { sendEveningReminders } from "./services/eveningReminder.js";
 
 
 const app = express();
@@ -57,11 +58,13 @@ const start = async () => {
   }
 
   app.listen(env.port, () => {
-
     console.log(`API running on :${env.port}`);
   });
 
-
+  cron.schedule("30 12 * * *", () => {
+    console.log("Running evening reminder cron (6 PM IST)")
+    sendEveningReminders()
+  })
 };
 
 start();

@@ -85,6 +85,8 @@ export const markSolve = async (
           { upsert: true, session }
         )
       }
+
+      await createNotification(userId, "revision", "Revision tasks scheduled", "3 revision sessions queued at day 3, 7, and 14.")
     }
 
     let newBadges: string[] = []

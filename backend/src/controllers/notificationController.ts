@@ -60,7 +60,7 @@ export const markAllRead = async (
 
 export const createNotification = async (
     userId: Types.ObjectId,
-    type: "badge" | "streak" | "friend" | "revision",
+    type: "badge" | "streak" | "friend" | "revision" | "reminder",
     title: string,
     body: string = ""
 ) => {
