@@ -5,6 +5,7 @@ import { Solve } from "../models/Solve.js"
 import { toDay } from "../utils/dates.js"
 import { Problem } from "../models/Problem.js"
 import mongoose from "mongoose"
+import { createNotification } from "./notificationController.js"
 
 type Difficulty = "Easy" | "Medium" | "Hard"
 
@@ -95,6 +96,9 @@ export const addFriend = async (
     }
 
     await Promise.all([user.save(), friend.save()])
+
+    await createNotification(friend._id, "friend", `${user.name} added you as a friend`)
+    await createNotification(user._id, "friend", `You and ${friend.name} are now friends`)
 
     return res.json({ message: "Friends added" })
   } catch {

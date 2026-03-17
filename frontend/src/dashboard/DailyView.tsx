@@ -11,6 +11,7 @@ import KeyboardHelp from "../components/KeyboardHelp"
 import { BADGE_MAP } from "../constants/badges"
 import type { BadgeId } from "../constants/badges"
 
+
 type DailyProblem = {
   _id: string
   skill: string
@@ -288,52 +289,54 @@ export default function DailyView() {
                       {item.problem.title}
                     </div>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(item.problem.link, "_blank")
-                      }}
-                      className="px-3 py-2 rounded-lg border border-white/20 text-xs sm:text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
-                    >
-                      Solve
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          window.open(item.problem.link, "_blank")
+                        }}
+                        className="px-3 py-2 rounded-lg border border-white/20 text-xs sm:text-sm text-white/70 hover:text-white transition cursor-pointer flex items-center gap-2"
+                      >
+                        Solve
+                        <ExternalLink className="w-4 h-4" />
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        const next = !solved[item._id]
-                        markSolved(item._id, item.problem._id, next)
-                      }}
-                      className="shrink-0 ml-4 flex items-center gap-2 text-sm text-white/60 select-none cursor-pointer"
-                    >
-                      <span
-                        className={`
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          const next = !solved[item._id]
+                          markSolved(item._id, item.problem._id, next)
+                        }}
+                        className="shrink-0 ml-4 flex items-center gap-2 text-sm text-white/60 select-none cursor-pointer"
+                      >
+                        <span
+                          className={`
                           h-5 w-5 rounded-md
                           border border-white/30
                           flex items-center justify-center
                           transition
                           ${solved[item._id]
-                            ? "bg-white border-white"
-                            : "bg-transparent"
-                          }
+                              ? "bg-white border-white"
+                              : "bg-transparent"
+                            }
                         `}
-                      >
-                        {solved[item._id] && (
-                          <svg
-                            className="h-3 w-3 text-black"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                          >
-                            <path d="M5 10l3 3 7-7" />
-                          </svg>
-                        )}
-                      </span>
-                      Mark solved
-                    </button>
+                        >
+                          {solved[item._id] && (
+                            <svg
+                              className="h-3 w-3 text-black"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                            >
+                              <path d="M5 10l3 3 7-7" />
+                            </svg>
+                          )}
+                        </span>
+                        Mark solved
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -8,6 +8,7 @@ import { RevisionTask } from "../models/RevisionTask.js";
 import { toDay } from "../utils/dates.js";
 import { User } from "../models/User.js";
 import { checkAndAwardBadges } from "../services/badges.js";
+import { createNotification } from "./notificationController.js";
 
 
 export const markSolve = async (
@@ -130,6 +131,13 @@ export const markSolve = async (
           user.streak.current,
           user.streak.max
         )
+        for (const badge of newBadges) {
+          await createNotification(userId, "badge", `Badge unlocked: ${badge}`, "Keep going!")
+        }
+        const MILESTONES = [7, 14, 30, 50, 100, 200, 365]
+        if (MILESTONES.includes(user.streak.current)) {
+          await createNotification(userId, "streak", `${user.streak.current}-day streak!`, "You're on fire!")
+        }
       } catch { }
 
       return res.json({ solve, newBadges })

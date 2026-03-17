@@ -8,6 +8,7 @@ import toast from "react-hot-toast"
 import { useShallow } from "zustand/react/shallow"
 import html2canvas from "html2canvas"
 import { ALL_BADGES } from "../constants/badges"
+import CompareModal from "../components/CompareModal"
 
 function AnimatedNumber({ value }: { value: number }) {
   const spring = useSpring(0, { stiffness: 50, damping: 20 })
@@ -83,9 +84,10 @@ export default function ProfileView() {
 
 
   const [friendSlug, setFriendSlug] = useState("")
-  const [compareData, setCompareData] = useState<{
-    you: { streak: any }
-    friend: { streak: any }
+  const [showCompare, setShowCompare] = useState(false)
+  const [compareModalData, setCompareModalData] = useState<{
+    you: { name: string; profileSlug: string; streak: { current: number; max: number }; solvedTotal?: number }
+    friend: { name: string; profileSlug: string; streak: { current: number; max: number }; solvedTotal?: number }
   } | null>(null)
 
   const [friends, setFriends] = useState<
@@ -210,14 +212,35 @@ export default function ProfileView() {
         `/api/profile/public/${friendSlug.trim()}`
       )
 
-      const friendId = res.data.user._id
+      const friendUser = res.data.user
+      const friendId = friendUser._id
+      const friendRecent = res.data.recent || []
 
       const compareRes = await api.get(
         `/api/profile/compare/${friendId}`
       )
 
-      setCompareData(compareRes.data)
-      toast.success("Comparison loaded")
+      setCompareModalData({
+        you: {
+          name: user!.name,
+          profileSlug: user!.profileSlug,
+          streak: {
+            current: compareRes.data.you.streak?.current || 0,
+            max: compareRes.data.you.streak?.max || 0
+          },
+          solvedTotal
+        },
+        friend: {
+          name: friendUser.name,
+          profileSlug: friendUser.profileSlug,
+          streak: {
+            current: compareRes.data.friend.streak?.current || 0,
+            max: compareRes.data.friend.streak?.max || 0
+          },
+          solvedTotal: friendRecent.length
+        }
+      })
+      setShowCompare(true)
     } catch {
       toast.error("Could not compare with friend")
     }
@@ -996,23 +1019,12 @@ export default function ProfileView() {
           </div>
         </div>
 
-        {compareData && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            <div className="rounded-lg border border-white/10 p-4">
-              <p className="text-sm text-white/40">You</p>
-              <p className="text-lg font-semibold">
-                {compareData.you.streak.current} day streak
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-white/10 p-4">
-              <p className="text-sm text-white/40">Friend</p>
-              <p className="text-lg font-semibold">
-                {compareData.friend.streak.current} day streak
-              </p>
-            </div>
-          </div>
-        )}
+        <CompareModal
+          visible={showCompare}
+          onClose={() => setShowCompare(false)}
+          you={compareModalData?.you || null}
+          friend={compareModalData?.friend || null}
+        />
       </motion.div>
 
       <div

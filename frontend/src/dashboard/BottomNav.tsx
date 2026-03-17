@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react"
 import { Calendar, MessageCircle, User, RefreshCcw, Settings } from "lucide-react"
+import { api } from "../api/client"
 import type { View } from "./Sidebar"
 
-const NAV_ITEMS: { id: View; icon: React.ElementType }[] = [
+const NAV_ITEMS: { id: View; icon: React.ElementType; badge?: boolean }[] = [
     { id: "daily", icon: Calendar },
-    { id: "revision", icon: RefreshCcw },
+    { id: "revision", icon: RefreshCcw, badge: true },
     { id: "community", icon: MessageCircle },
     { id: "profile", icon: User },
     { id: "settings", icon: Settings }
@@ -15,6 +17,15 @@ type Props = {
 }
 
 export default function BottomNav({ active, onChange }: Props) {
+    const [revisionCount, setRevisionCount] = useState(0)
+
+    useEffect(() => {
+        api.get("/api/revision/pending").then((res) => {
+            const tasks = res.data?.tasks || res.data?.revisions || []
+            setRevisionCount(Array.isArray(tasks) ? tasks.length : 0)
+        }).catch(() => { })
+    }, [])
+
     return (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-t border-white/15 safe-area-pb">
             <div className="flex justify-around items-center h-16 px-2">
@@ -27,11 +38,18 @@ export default function BottomNav({ active, onChange }: Props) {
                             key={item.id}
                             onClick={() => onChange(item.id)}
                             className={`flex flex-col items-center justify-center w-14 h-14 rounded-xl transition ${isActive
-                                    ? "bg-white/15 text-white"
-                                    : "text-white/50 hover:text-white/80"
+                                ? "bg-white/15 text-white"
+                                : "text-white/50 hover:text-white/80"
                                 }`}
                         >
-                            <Icon className="w-5 h-5" />
+                            <div className="relative">
+                                <Icon className="w-5 h-5" />
+                                {item.badge && revisionCount > 0 && (
+                                    <span className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-red-500 text-[8px] font-bold text-white flex items-center justify-center">
+                                        {revisionCount > 9 ? "9+" : revisionCount}
+                                    </span>
+                                )}
+                            </div>
                         </button>
                     )
                 })}

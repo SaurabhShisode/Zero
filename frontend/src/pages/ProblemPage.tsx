@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useLocation } from "react-router-dom";
 import ConfirmModal from "../components/ConfirmModal"
 import { ExternalLink } from "lucide-react"
+import BookmarkButton from "../components/BookmarkButton"
 
 type Problem = {
   _id: string;
@@ -284,12 +285,15 @@ export default function ProblemPage() {
                   {problem.title}
                 </h1>
 
-                {isSolved && (
-                  <span className="flex items-center gap-1 text-green-400 text-sm">
-                    <CircleCheckBig className="w-4 h-4" />
-                    Solved
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <BookmarkButton problemId={problem._id} />
+                  {isSolved && (
+                    <span className="flex items-center gap-1 text-green-400 text-sm">
+                      <CircleCheckBig className="w-4 h-4" />
+                      Solved
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <span

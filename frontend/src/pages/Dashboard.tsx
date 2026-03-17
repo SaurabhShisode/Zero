@@ -13,6 +13,8 @@ import ProfileView from "../dashboard/ProfileView"
 import SettingsView from "../dashboard/SettingsView"
 import BugsView from "../dashboard/BugsView"
 import RevisionView from "../dashboard/RevisionView"
+import SavedView from "../dashboard/SavedView"
+import NotificationsView from "../dashboard/NotificationsView"
 
 import { Menu } from "lucide-react"
 
@@ -35,8 +37,6 @@ export default function Dashboard() {
         return <CompanyView />
       case "topics":
         return <TopicsView />
-      // case "placement":
-      //   return <PlacementView />
       case "community":
         return <DiscussionsView />
       case "revision":
@@ -47,6 +47,10 @@ export default function Dashboard() {
         return <SettingsView />
       case "bugs":
         return <BugsView />
+      case "saved":
+        return <SavedView />
+      case "notifications":
+        return <NotificationsView />
       default:
         return <DailyView />
     }
@@ -70,7 +74,7 @@ export default function Dashboard() {
 
       <div className="flex-1 flex flex-col ml-0 lg:ml-64 h-[100dvh] w-full">
 
-        <Topbar view={view} scrollRef={scrollRef} />
+        <Topbar view={view} scrollRef={scrollRef} onViewChange={setView} />
 
         <main
           ref={scrollRef}

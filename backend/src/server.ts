@@ -14,6 +14,8 @@ import profileRoutes from "./routes/profile.js";
 import problemRoutes from "./routes/problems.js";
 import communityRoutes from "./routes/community.js"
 import revisionRoutes from "./routes/revision.js";
+import notificationRoutes from "./routes/notifications.js";
+import bookmarkRoutes from "./routes/bookmarks.js";
 
 
 const app = express();
@@ -37,6 +39,8 @@ app.use("/api/problems", problemRoutes);
 app.use("/api/revision", revisionRoutes);
 app.use("/api/community", communityRoutes)
 app.use("/api/bugs", bugRoutes)
+app.use("/api/notifications", notificationRoutes)
+app.use("/api/bookmarks", bookmarkRoutes)
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 app.get("/", (req, res) => {
