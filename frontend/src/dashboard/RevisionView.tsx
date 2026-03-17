@@ -80,7 +80,7 @@ export default function RevisionView() {
         <section className="font-geist px-8 pt-8 pb-20 space-y-6 text-white">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight">
+                    <h1 className="text-xl font-semibold">
                         Revisions
                     </h1>
                     <p className="text-white/40 text-sm mt-1">

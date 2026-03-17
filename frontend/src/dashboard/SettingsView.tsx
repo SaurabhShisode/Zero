@@ -250,7 +250,7 @@ export default function SettingsView() {
         <h1 className="text-xl font-semibold">
           Settings
         </h1>
-        <p className="text-white/40">
+        <p className="text-sm text-white/40 mt-1">
           Configure daily skills and placement discipline
         </p>
       </div>

@@ -228,7 +228,7 @@ export default function DailyView() {
 
 
       {!loading && daily.length === 0 && (
-        <p className="text-white/40">
+        <p className="text-sm text-white/40 mt-1">
           No daily problems yet. Check back tomorrow.
         </p>
       )}

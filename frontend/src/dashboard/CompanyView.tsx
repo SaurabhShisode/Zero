@@ -143,7 +143,7 @@ export default function CompanyView() {
     <section className="space-y-4 sm:space-y-6 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10">
       <div>
         <h1 className="text-xl font-semibold">Company Wise Problems</h1>
-        <p className="text-white/40">
+        <p className="text-sm text-white/40 mt-1">
           Practice problems filtered by FAANG, Service-based, and Startups.
         </p>
       </div>

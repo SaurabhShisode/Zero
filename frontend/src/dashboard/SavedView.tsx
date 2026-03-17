@@ -88,7 +88,7 @@ export default function SavedView() {
         <section className="space-y-8 font-geist mx-4 sm:mx-6 md:mx-10 mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10">
             <div className="flex items-center gap-3">
 
-                <h2 className="text-xl font-semibold">Saved Problems</h2>
+                <h1 className="text-xl font-semibold">Saved Problems</h1>
                 {bookmarks.length > 0 && (
                     <span className="text-xs text-white/30">{bookmarks.length} saved</span>
                 )}

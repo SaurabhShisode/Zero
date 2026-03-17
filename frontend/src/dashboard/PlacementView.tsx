@@ -21,10 +21,10 @@ export default function PlacementView() {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-2"
       >
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-xl font-semibold">
           Placement Arena
         </h1>
-        <p className="text-white/40">
+        <p className="text-sm text-white/40 mt-1">
           Simulate real company assessments with timed, mixed-skill challenges.
         </p>
       </motion.div>

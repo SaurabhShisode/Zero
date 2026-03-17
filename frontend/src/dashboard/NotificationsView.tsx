@@ -99,7 +99,7 @@ export default function NotificationsView() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
 
-                    <h2 className="text-xl font-semibold">Notifications</h2>
+                    <h1 className="text-xl font-semibold">Notifications</h1>
                     {unreadCount > 0 && (
                         <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
                             {unreadCount} new

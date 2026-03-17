@@ -171,7 +171,7 @@ export default function BugsView() {
     <section className="font-geist px-4 md:px-8 pt-6 md:pt-8 pb-20 space-y-4 md:space-y-6 text-white">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
+          <h1 className="text-xl font-semibold">
             Bug Reports
           </h1>
         </div>
