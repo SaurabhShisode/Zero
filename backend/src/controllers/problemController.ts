@@ -150,3 +150,106 @@ export const getProblemsBySkill = async (
     return res.status(500).json({ message: "Failed to fetch skill problems" })
   }
 }
+
+// Advanced filtering with multiple criteria
+export const filterProblems = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
+  try {
+    const {
+      skills = [],
+      difficulties = [],
+      companyTags = [],
+      search = "",
+      page = 1,
+      limit = 20
+    } = req.query;
+
+    const query: any = {};
+
+    // Filter by skills
+    if (Array.isArray(skills) && skills.length > 0) {
+      query.skills = { $in: skills };
+    } else if (typeof skills === "string" && skills) {
+      query.skills = { $in: [skills] };
+    }
+
+    // Filter by difficulties
+    if (Array.isArray(difficulties) && difficulties.length > 0) {
+      query.difficulty = { $in: difficulties };
+    } else if (typeof difficulties === "string" && difficulties) {
+      query.difficulty = { $in: [difficulties] };
+    }
+
+    // Filter by company tags
+    if (Array.isArray(companyTags) && companyTags.length > 0) {
+      query.companyTags = { $in: companyTags };
+    } else if (typeof companyTags === "string" && companyTags) {
+      query.companyTags = { $in: [companyTags] };
+    }
+
+    // Full-text search
+    if (typeof search === "string" && search.trim()) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { skills: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(String(page)) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(String(limit)) || 20));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [problems, total] = await Promise.all([
+      Problem.find(query)
+        .select("title link difficulty skills companyTags")
+        .sort({ difficulty: 1, title: 1 })
+        .skip(skip)
+        .limit(limitNum),
+      Problem.countDocuments(query)
+    ]);
+
+    return res.json({
+      problems,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum)
+      }
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Failed to filter problems" });
+  }
+};
+
+// Search problems by title or skill
+export const searchProblems = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { q = "", limit = 10 } = req.query;
+
+    if (typeof q !== "string" || q.trim().length < 2) {
+      return res.status(400).json({ message: "Search query must be at least 2 characters" });
+    }
+
+    const limitNum = Math.min(50, Math.max(1, parseInt(String(limit)) || 10));
+
+    const problems = await Problem.find({
+      $or: [
+        { title: { $regex: q, $options: "i" } },
+        { skills: { $regex: q, $options: "i" } },
+        { companyTags: { $regex: q, $options: "i" } }
+      ]
+    })
+      .select("title link difficulty skills companyTags")
+      .limit(limitNum);
+
+    return res.json({ problems });
+  } catch {
+    return res.status(500).json({ message: "Failed to search problems" });
+  }
+};
