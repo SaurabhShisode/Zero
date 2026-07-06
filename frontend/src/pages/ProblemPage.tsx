@@ -328,17 +328,25 @@ export default function ProblemPage() {
               </a>
 
               {history.length > 0 && (
-                <div className="py-2 flex items-center gap-2">
-                  <p className="text-sm tracking-wide text-white/40">This problem was a Daily Problem on:</p>
-                  {history.map((h) => {
-                    const d = new Date(h.date)
-                    const day = String(d.getDate()).padStart(2, "0")
-                    const month = String(d.getMonth() + 1).padStart(2, "0")
-                    const year = d.getFullYear()
-                    return (
-                      <span key={h._id} className="text-sm text-white/60">{day}/{month}/{year}</span>
-                    )
-                  })}
+                <div className="py-2 flex flex-wrap items-start gap-2">
+                  <p className="text-sm tracking-wide text-white/40 shrink-0">
+                    This problem was a Daily Problem on:
+                  </p>
+
+                  <div className="flex flex-wrap gap-2">
+                    {history.map((h) => {
+                      const d = new Date(h.date)
+                      const day = String(d.getDate()).padStart(2, "0")
+                      const month = String(d.getMonth() + 1).padStart(2, "0")
+                      const year = d.getFullYear()
+
+                      return (
+                        <span key={h._id} className="text-sm text-white/60">
+                          {day}/{month}/{year}
+                        </span>
+                      )
+                    })}
+                  </div>
                 </div>
               )}
             </div>
