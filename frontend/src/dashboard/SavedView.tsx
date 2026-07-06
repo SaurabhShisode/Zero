@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bookmark, ExternalLink, Tag, Folder, ChevronLeft, ArrowLeft } from "lucide-react"
+import { Bookmark, ExternalLink, Tag, Folder,  ArrowLeft } from "lucide-react"
 import { api } from "../api/client"
 import { useNavigate, useLocation } from "react-router-dom"
 import toast from "react-hot-toast"

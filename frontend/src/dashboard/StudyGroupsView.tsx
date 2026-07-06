@@ -678,38 +678,7 @@ function SessionsTab(props: {
   )
 }
 
-function DiscussionTab({ discussions, form, setForm, onPost }: {
-  discussions: Discussion[]
-  form: { problemId: string; type: string; message: string }
-  setForm: (form: { problemId: string; type: string; message: string }) => void
-  onPost: () => void
-}) {
-  return (
-    <div className="grid grid-cols-1 xl:grid-cols-[0.8fr_1.2fr] gap-4">
-      <div className={`${shell} p-5 space-y-3`}>
-        <h2 className="font-semibold">Post Discussion</h2>
-        <input className={inputClass} placeholder="Problem ID (optional)" value={form.problemId} onChange={(e) => setForm({ ...form, problemId: e.target.value })} />
-        <select className={inputClass} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-          <option value="note">Note</option><option value="hint">Hint</option><option value="approach">Approach</option><option value="complexity">Complexity</option><option value="mistake">Mistake</option>
-        </select>
-        <textarea className={`${inputClass} h-28 resize-none`} placeholder="Share a hint, approach, complexity, or mistake..." value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
-        <button onClick={onPost} className="w-full rounded-lg bg-white px-4 py-2 text-sm font-medium text-black hover:bg-white/90">Post</button>
-      </div>
-      <div className="space-y-3">
-        {discussions.length === 0 ? <Empty label="No group discussion yet." /> : discussions.map((item) => (
-          <div key={item._id} className={`${shell} p-4`}>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-white/40">
-              <span className="font-medium text-white/70">{item.user?.name || "Member"}</span>
-              <span className="rounded border border-white/10 px-2 py-0.5">{item.type}</span>
-              {item.problem && <span>{item.problem.title}</span>}
-            </div>
-            <p className="mt-3 text-sm text-white/75">{item.message}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
+
 
 function CollectionsTab({
   groupId: _groupId,
