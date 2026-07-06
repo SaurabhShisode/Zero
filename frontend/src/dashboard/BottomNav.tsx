@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Calendar, MessageCircle, User, RefreshCcw, Settings } from "lucide-react"
+import { Calendar, MessageCircle, User, RefreshCcw, Users } from "lucide-react"
 import { api } from "../api/client"
 import type { View } from "./Sidebar"
 
@@ -7,8 +7,8 @@ const NAV_ITEMS: { id: View; icon: React.ElementType; badge?: boolean }[] = [
     { id: "daily", icon: Calendar },
     { id: "revision", icon: RefreshCcw, badge: true },
     { id: "community", icon: MessageCircle },
-    { id: "profile", icon: User },
-    { id: "settings", icon: Settings }
+    { id: "studygroups", icon: Users },
+    { id: "profile", icon: User }
 ]
 
 type Props = {

@@ -2,11 +2,12 @@ import { useEffect, useState, useCallback } from "react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 import { api } from "../api/client"
-import { ExternalLink } from "lucide-react"
+import { ExternalLink, Filter } from "lucide-react"
 import confetti from "canvas-confetti"
 import toast from "react-hot-toast"
 import { useKeyboardNav } from "../hooks/useKeyboardNav"
 import KeyboardHelp from "../components/KeyboardHelp"
+import FilterModal from "../components/FilterModal"
 import { BADGE_MAP } from "../constants/badges"
 import type { BadgeId } from "../constants/badges"
 
@@ -37,6 +38,7 @@ export default function TopicsView() {
   const [problems, setProblems] = useState<Problem[]>([])
   const [loading, setLoading] = useState(false)
   const [solved, setSolved] = useState<Record<string, boolean>>({})
+  const [showFilter, setShowFilter] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -66,6 +68,11 @@ export default function TopicsView() {
       })
       .finally(() => setLoading(false))
   }, [selected])
+
+  const handleFilterApply = (filteredProblems: Problem[]) => {
+    setProblems(filteredProblems)
+    setShowFilter(false)
+  }
 
   const markSolved = async (
     problemId: string,
@@ -154,7 +161,7 @@ export default function TopicsView() {
         </p>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center">
         {SKILLS.map((skill) => (
           <button
             key={skill.key}
@@ -168,7 +175,21 @@ export default function TopicsView() {
             {skill.label}
           </button>
         ))}
+        
+        <button
+          onClick={() => setShowFilter(true)}
+          className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg text-sm bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition cursor-pointer"
+        >
+          <Filter size={18} />
+          Advanced Filter
+        </button>
       </div>
+
+      <FilterModal 
+        isOpen={showFilter} 
+        onClose={() => setShowFilter(false)} 
+        onApply={handleFilterApply}
+      />
 
 
 

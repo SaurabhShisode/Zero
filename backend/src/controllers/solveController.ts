@@ -22,7 +22,7 @@ export const markSolve = async (
       return res.status(401).json({ message: "Unauthorized" })
     }
 
-    const { problemId, status, approachNote, placementMode } = req.body
+    const { problemId, status, approachNote, placementMode, startedAt, interviewMode } = req.body
 
     if (!problemId || !status) {
       return res.status(400).json({ message: "problemId and status required" })
@@ -40,9 +40,21 @@ export const markSolve = async (
       }
     }
 
+    // Calculate time spent if startedAt is provided
+    let timeSpent: number | undefined;
+    let solvedWithinTime: boolean | undefined;
+    if (startedAt && typeof startedAt === "string") {
+      const startTime = new Date(startedAt);
+      const endTime = new Date();
+      timeSpent = Math.floor((endTime.getTime() - startTime.getTime()) / 1000); // in seconds
+      
+      // If interview mode, check if solved within 45 minutes
+      if (interviewMode) {
+        solvedWithinTime = timeSpent <= 2700; // 45 minutes in seconds
+      }
+    }
 
     session.startTransaction()
-
 
     const solve = await Solve.findOneAndUpdate(
       { user: userId, problem: problemObjectId, date },
@@ -50,7 +62,11 @@ export const markSolve = async (
         status,
         approachNote,
         placementMode: placementMode === true,
-        solvedAt: new Date()
+        solvedAt: new Date(),
+        ...(startedAt && { startedAt: new Date(startedAt) }),
+        ...(timeSpent && { timeSpent }),
+        ...(interviewMode && { interviewMode }),
+        ...(solvedWithinTime !== undefined && { solvedWithinTime })
       },
       { upsert: true, new: true, session }
     )

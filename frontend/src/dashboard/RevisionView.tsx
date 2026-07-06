@@ -11,7 +11,7 @@ type Problem = {
     title: string
     difficulty: "Easy" | "Medium" | "Hard"
     link: string
-    skills: string[]
+    skills?: string[]
 }
 
 type RevisionTask = {
@@ -34,8 +34,19 @@ export default function RevisionView() {
 
     async function loadRevisions() {
         try {
-            const res = await api.get("/api/revision/pending")
-            setTasks(res.data.tasks || [])
+            setLoading(true)
+            // Try to get both old and new endpoints
+            const [oldRes, newRes] = await Promise.allSettled([
+                api.get("/api/revision/pending").catch(() => null),
+                api.get("/api/analytics/revisions").catch(() => null)
+            ])
+
+            if (newRes.status === "fulfilled" && newRes.value) {
+                const byDay = newRes.value.data?.byDay || {}
+                setTasks((Object.values(byDay).flat() as RevisionTask[]).filter((task) => task?.problem))
+            } else if (oldRes.status === "fulfilled" && oldRes.value) {
+                setTasks(oldRes.value.data.tasks || [])
+            }
         } catch {
             toast.error("Failed to load revisions")
         } finally {
@@ -43,19 +54,22 @@ export default function RevisionView() {
         }
     }
 
-    async function markDone(taskId: string) {
+    async function markDone(taskId: string, problemId: string) {
         try {
             setMarking(taskId)
-
-            await api.post(`/api/revision/${taskId}/done`)
-
-            setTasks(prev =>
-                prev.filter(t => t._id !== taskId)
-            )
-
-            toast.success("Revision completed")
-        } catch {
-            toast.error("Failed to update revision")
+            await api.post(`/api/revision/${taskId}/done`).catch(() => {
+                // Fallback to solve endpoint
+                return api.post("/api/solve", {
+                    problemId,
+                    status: "solved",
+                    approachNote: "Revision completed"
+                })
+            })
+            toast.success("Revision marked as complete!")
+            loadRevisions()
+        } catch (err) {
+            console.error("Failed to mark done:", err)
+            toast.error("Failed to mark as complete")
         } finally {
             setMarking(null)
         }
@@ -182,7 +196,7 @@ export default function RevisionView() {
                                         Due {formatDate(task.scheduledFor)}
                                     </span>
 
-                                    {task.problem.skills.map(s => (
+                                    {(task.problem.skills || []).map(s => (
                                         <span
                                             key={s}
                                             className="text-xs px-2 py-0.5 rounded border border-white/20 text-white/50"
@@ -210,7 +224,7 @@ export default function RevisionView() {
                                     disabled={marking === task._id}
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        markDone(task._id)
+                                        markDone(task._id, task.problem._id)
                                     }}
                                     className="px-3 py-2 rounded-lg bg-white text-black text-sm font-medium transition hover:bg-white/90 disabled:opacity-50 cursor-pointer flex items-center gap-2"
                                 >

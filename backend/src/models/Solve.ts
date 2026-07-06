@@ -8,6 +8,10 @@ export interface ISolve {
   status: "solved" | "wrong" | "skipped";
   placementMode: boolean;
   approachNote?: string;
+  startedAt?: Date;
+  timeSpent?: number; // in seconds
+  interviewMode?: boolean;
+  solvedWithinTime?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +29,10 @@ const solveSchema = new Schema<ISolve>(
     },
     placementMode: { type: Boolean, default: false },
     approachNote: String,
+    startedAt: Date,
+    timeSpent: Number, // in seconds
+    interviewMode: { type: Boolean, default: false },
+    solvedWithinTime: Boolean,
   },
   { timestamps: true }
 );

@@ -37,7 +37,7 @@ export async function sendEveningReminders() {
       if (remaining > 0) {
         await createNotification(
           user._id,
-          "reminder",
+          "revision",
           `${remaining} daily problem${remaining > 1 ? "s" : ""} remaining`,
           "Don't forget to finish your daily practice!"
         )

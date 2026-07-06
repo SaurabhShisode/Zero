@@ -9,7 +9,9 @@ import {
   Bug,
   RefreshCcw,
   Bookmark,
-  X
+  X,
+  BarChart3,
+  Users
 } from "lucide-react"
 import zeroLogo from "/icons/zero.svg"
 import { api } from "../api/client"
@@ -25,6 +27,8 @@ export type View =
   | "bugs"
   | "saved"
   | "notifications"
+  | "analytics"
+  | "studygroups"
 
 const SIDEBAR_ITEMS: {
   id: View
@@ -34,7 +38,9 @@ const SIDEBAR_ITEMS: {
 }[] = [
     { id: "daily", label: "Daily Problems", icon: Calendar },
     { id: "revision", label: "Revisions", icon: RefreshCcw, badge: true },
+    { id: "analytics", label: "Analytics", icon: BarChart3 },
     { id: "saved", label: "Saved", icon: Bookmark },
+    { id: "studygroups", label: "Study Groups", icon: Users },
     { id: "company", label: "Company Wise", icon: Building2 },
     { id: "topics", label: "Topic Wise", icon: Layers },
     { id: "community", label: "Community", icon: MessageCircle },

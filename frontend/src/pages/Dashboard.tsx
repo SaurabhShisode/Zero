@@ -15,6 +15,8 @@ import BugsView from "../dashboard/BugsView"
 import RevisionView from "../dashboard/RevisionView"
 import SavedView from "../dashboard/SavedView"
 import NotificationsView from "../dashboard/NotificationsView"
+import AnalyticsView from "../dashboard/AnalyticsView"
+import StudyGroupsView from "../dashboard/StudyGroupsView"
 
 import { Menu } from "lucide-react"
 
@@ -51,6 +53,10 @@ export default function Dashboard() {
         return <SavedView />
       case "notifications":
         return <NotificationsView />
+      case "analytics":
+        return <AnalyticsView />
+      case "studygroups":
+        return <StudyGroupsView />
       default:
         return <DailyView />
     }

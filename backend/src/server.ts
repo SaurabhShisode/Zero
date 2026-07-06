@@ -16,6 +16,9 @@ import communityRoutes from "./routes/community.js"
 import revisionRoutes from "./routes/revision.js";
 import notificationRoutes from "./routes/notifications.js";
 import bookmarkRoutes from "./routes/bookmarks.js";
+import analyticsRoutes from "./routes/analytics.js";
+import filterRoutes from "./routes/filters.js";
+import studyGroupRoutes from "./routes/studyGroups.js";
 import { sendEveningReminders } from "./services/eveningReminder.js";
 
 
@@ -42,6 +45,9 @@ app.use("/api/community", communityRoutes)
 app.use("/api/bugs", bugRoutes)
 app.use("/api/notifications", notificationRoutes)
 app.use("/api/bookmarks", bookmarkRoutes)
+app.use("/api/analytics", analyticsRoutes)
+app.use("/api/filters", filterRoutes)
+app.use("/api/study-groups", studyGroupRoutes)
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 app.get("/", (req, res) => {
