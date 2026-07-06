@@ -60,11 +60,12 @@ export const markAllRead = async (
 
 export const createNotification = async (
     userId: Types.ObjectId,
-    type: "badge" | "streak" | "friend" | "revision" | "reminder",
+    type: "badge" | "streak" | "friend" | "revision" | "group_session" | "group_event" | "group_collection" | "group_mention",
     title: string,
-    body: string = ""
+    body: string = "",
+    link: string = ""
 ) => {
     try {
-        await Notification.create({ user: userId, type, title, body });
+        await Notification.create({ user: userId, type, title, body, link });
     } catch { }
 };

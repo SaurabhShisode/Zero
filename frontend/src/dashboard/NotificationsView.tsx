@@ -5,10 +5,11 @@ import { api } from "../api/client"
 
 type NotificationItem = {
     _id: string
-    type: "badge" | "streak" | "friend" | "revision"
+    type: "badge" | "streak" | "friend" | "revision" | "group_session" | "group_event" | "group_collection" | "group_mention"
     title: string
     body: string
     read: boolean
+    link?: string
     createdAt: string
 }
 
@@ -17,6 +18,18 @@ const TYPE_EMOJI: Record<string, string> = {
     streak: "🔥",
     friend: "👤",
     revision: "📝",
+    group_session: "📚",
+    group_event: "📅",
+    group_collection: "📌",
+    group_mention: "💬",
+}
+
+// Accent colours for the left border
+const TYPE_ACCENT: Record<string, string> = {
+    group_session: "border-l-2 border-l-blue-400/60",
+    group_event: "border-l-2 border-l-purple-400/60",
+    group_collection: "border-l-2 border-l-emerald-400/60",
+    group_mention: "border-l-2 border-l-amber-400/60",
 }
 
 export default function NotificationsView() {
@@ -135,7 +148,9 @@ export default function NotificationsView() {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.03, duration: 0.3 }}
-                        className={`rounded-xl border p-4 transition ${n.read
+                        className={`rounded-xl border p-4 transition pl-3 ${
+                            TYPE_ACCENT[n.type] || ""
+                        } ${n.read
                             ? "border-white/10 bg-white/[0.03]"
                             : "border-white/20 bg-white/[0.08]"
                             }`}
