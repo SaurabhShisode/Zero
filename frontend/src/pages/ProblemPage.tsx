@@ -407,7 +407,7 @@ export default function ProblemPage() {
                       </div>
                       {/* Render @mentions highlighted */}
                       <p className="text-sm text-white/60 leading-relaxed pl-9">
-                        {renderMessageWithMentions(c.message)}
+                        {renderMessageWithMentions(c.message, c.mentionedGroups)}
                       </p>
                     </div>
                   ))}
@@ -523,16 +523,33 @@ export default function ProblemPage() {
 }
 
 /** Render a message string with @GroupName spans highlighted */
-function renderMessageWithMentions(text: string) {
-  const parts = text.split(/(@[A-Za-z0-9 _-]+)/g)
-  return parts.map((part, i) => {
-    if (part.startsWith("@")) {
-      return (
-        <span key={i} className="text-purple-300 font-medium">
-          {part}
-        </span>
-      )
-    }
-    return <span key={i}>{part}</span>
-  })
+function renderMessageWithMentions(
+  text: string,
+  mentionedGroups: MentionedGroup[] = []
+) {
+  let parts: React.ReactNode[] = [text]
+
+  mentionedGroups
+    .sort((a, b) => b.name.length - a.name.length)
+    .forEach((group) => {
+      parts = parts.flatMap((part) => {
+        if (typeof part !== "string") return [part]
+
+        return part.split(`@${group.name}`).flatMap((segment, index, arr) => {
+          if (index === arr.length - 1) return [segment]
+
+          return [
+            segment,
+            <span
+              key={`${group._id}-${index}`}
+              className="text-purple-300 font-medium"
+            >
+              @{group.name}
+            </span>
+          ]
+        })
+      })
+    })
+
+  return parts
 }
